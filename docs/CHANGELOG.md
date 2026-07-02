@@ -1,0 +1,197 @@
+# CHANGELOG — Personalised Website Builder
+> All notable changes, additions, and decisions are documented here.
+> Format: `[version] YYYY-MM-DD — Summary`
+
+---
+
+## [0.6.0] 2026-07-02 — Builder Admin UX Overhaul (v4)
+
+> All work in this release is in `Admin Panel/website-builder-admin-v4.html` and the four `Live/` renderers (`apex`, `heritage`, `nova`, `zenith`).
+
+### Added — Step 1 "Choose your design and colours"
+- **Live design thumbnails**: each design card now embeds the real `Live/` site in a desktop-width iframe scaled down to fit, replacing the four identical wireframe skeletons.
+- **Hover Preview**: hovering a card reveals a "Preview" button that opens the in-app preview overlay for that design on the same page (no new tab). `openPreview()` now accepts a design key so any card can be previewed without changing the current selection.
+- **Live colour reflection**: choosing a colour theme now recolours the selected design's thumbnail in place, via a colour-only postMessage to the iframe.
+
+### Added — Admin guidance and validation
+- Reusable educational info callouts (`.f-note`) explaining what a section does and where it appears.
+- **"How We Work" step validation**: minimum 3, maximum 5 steps. Add button disables at 5, delete buttons disable at 3, with a live "N of 5 steps" counter and toast messages.
+- Hero Images field is now shown **only when the Nova design is selected** (Nova is the only photo-hero design); hidden for Apex, Heritage, Zenith.
+
+### Changed — Admin visual polish
+- Form-card header icons upgraded from flat tint squares to gradient badges with depth.
+- Form cards, inputs, upload zones, and the Publish "globe" illustration refined (hover states, gradients, solid gold globe).
+- Left sidebar footer redesigned into a contained progress panel with a gradient bar.
+- Row delete (trash) button redesigned: neutral ghost by default, delete-red on hover, crisper icon.
+- Removed the design-card badge pills ("Most Popular / Advocates / Modern / Corporate") that were covering the website hero, and the new-tab "Open sample" link.
+- Removed em dashes from all user-facing admin copy (per content style rule).
+
+### Changed — Live templates ("How We Work" alignment)
+- `apex`, `nova`, `heritage`: process grid converted to a centered flex layout so partial rows (3, 4, or 5 steps) stay centered instead of left-aligned with a gap. Card widths preserved.
+- `zenith`: no change needed (vertical, already-centered timeline).
+
+### Fixed
+- Step-1 thumbnails were reading a stale shared `kdk_wb_config` from `localStorage`, causing all four to show the same (line-break-flattened) headline. `pushConfig()` no longer writes `localStorage`, and stale render-config keys are cleared on load so each thumbnail shows its own pristine default. The user's saved draft (`kdk_wb_draft`) is left untouched.
+
+### Note — Documentation drift
+- Docs still describe the earlier 3-template lineup (Prestige / Clarity / Heritage) and the `designs/website-builder-admin.html` path. Current work uses 4 designs (Apex / Heritage / Nova / Zenith) under `New Design/` + `Live/`, with the admin at `Admin Panel/website-builder-admin-v4.html`. CLAUDE.md and the PRD have not yet been reconciled to this.
+
+---
+
+## [0.5.0] 2026-06-23 — Universal Template Content (Content Audit Fix)
+
+### Changed — Heritage (Advocate) template
+- Hero badge: removed "Chennai" city name
+- Hero paragraph: "Tamil Nadu" → "across India"
+- About story: removed Madras High Court, Tamil Nadu, state-specific references
+- About badges: specific bar council reg number removed; "Madras High Court" → "High Court Enrolled"
+- Team section: removed "Bar Council TN · Reg. TN/XXXX" state-coded registration numbers
+- Testimonials: removed suburb/city name "Adyar", removed "in Chennai"
+- **Credentials section**: replaced all 5 hardcoded Tamil Nadu cards with universal advocate credentials (High Court Enrolled, Bar Council Member, AIBE Certified, Pan-India Practice, Years of Practice)
+- Footer: removed state bar council number and "Madras High Court"; removed specific Chennai address
+
+### Changed — Clarity (Tax Consultant) template
+- Hero badge: removed "Mumbai"
+- Hero/about: removed all "Maharashtra" references → "India"
+- About credentials: removed specific ICAI M.No. and FRN numbers → generic labels
+- Contact: specific Mumbai/Andheri address → placeholder; state-coded GST number removed
+- Footer: specific membership numbers removed → profession descriptors
+
+### Changed — Prestige (CA) template
+- Hero eyebrow: removed "New Delhi"
+- About: removed "Delhi NCR, Maharashtra" → "across India"
+- About credentials: specific ICAI/FRN numbers → "ICAI Member", "ICAI Registered Firm"
+- Contact: removed specific Connaught Place address → placeholder
+- Footer: specific numbers removed → "ICAI Member · Firm Registered with ICAI"
+
+### Principle Added
+Universal defaults only. City, address, registration numbers, founding year, and state-specific credentials must come from the admin builder, not the template. See DEV-LOG 2026-06-23 for the full decision table.
+
+---
+
+## [0.4.0] 2026-06-23 — Project Docs & Logging Infrastructure
+
+### Added
+- `CLAUDE.md` — project context file for AI-assisted development; covers structure, tech stack, design rules, scope boundaries
+- `docs/CHANGELOG.md` — this file; tracks all versions and changes
+- `docs/DEV-LOG.md` — daily development log with decisions, blockers, and next steps
+- `INDEX.html` now links to all docs (already referenced in the UI)
+
+### Notes
+- Project structure is now fully documented
+- All future changes must be logged here and in DEV-LOG.md
+
+---
+
+## [0.3.0] 2025-06-22 — Backend Specification Complete
+
+### Added
+- `backend/api-spec.md` — 12 REST endpoints for Golang backend
+  - GET my-website
+  - POST create (step 1: profession)
+  - PUT update-info (step 3: business details)
+  - PUT update-services (step 4: services toggle)
+  - PUT update-theme (step 5: colour/template)
+  - POST publish (step 6: go live)
+  - GET check-subdomain (availability check)
+  - GET leads
+  - GET analytics
+  - DELETE website
+  - GET preview
+  - GET list-professions
+- `backend/database-schema.sql` — MySQL schema with 5 tables and full seed data for all 6 professions
+
+### Tech Decisions
+- Backend language confirmed: **Golang**
+- Database confirmed: **MySQL**
+- Auth: JWT passed from KDK main app — no separate auth system in website builder
+- Subdomains: `name.kdksites.in` pattern
+
+---
+
+## [0.2.0] 2025-06-21 — All Three Templates Built
+
+### Added
+- `designs/website-published-prestige.html`
+  - Dark navy (`#0D1E35`) + saffron gold (`#C4830A`)
+  - Target: Chartered Accountants, Senior Advocates
+  - Canvas: balance scale + ledger grid texture illustration
+- `designs/website-published-clarity.html`
+  - White + deep emerald (`#0F6B45`)
+  - Target: Tax Consultants, GST Practitioners
+  - Canvas: compliance dashboard card visual
+- `designs/website-published-heritage.html`
+  - Warm parchment (`#F9F4EC`) + cognac brown (`#6B3A1F`)
+  - Target: Advocates, Company Secretaries
+  - Canvas: ornate scales of justice illustration
+
+### Design Decisions
+- All templates share identical HTML structure — only CSS variables differ
+- 9 page sections per template: Nav, Hero, Stats Bar, Services, About, Why Us, Testimonials, Contact, Footer
+- WhatsApp floating button on all templates
+- All icons are inline SVG — no emoji, no external libraries
+- Sticky navigation with blur backdrop on scroll
+
+---
+
+## [0.1.0] 2025-06-20 — Builder Admin UI + PRD
+
+### Added
+- `designs/website-builder-admin.html` — fully interactive 6-step wizard prototype
+  - Step 1: Profession picker (6 cards)
+  - Step 2: Template chooser (3 options with live preview)
+  - Step 3: Business info form (firm name, tagline, contact, about)
+  - Step 4: Services toggle (pre-populated per profession)
+  - Step 5: Colour theme picker (6 palettes)
+  - Step 6: Subdomain selector + publish button
+  - Sidebar live preview that updates as user fills the form
+- `docs/PRD - Website Builder.md` — full product requirements document
+  - Problem statement
+  - 6 target professions + pre-loaded services
+  - Phase 1 scope (in/out)
+  - 6-step wizard breakdown
+  - Template descriptions
+  - Lead capture flow
+  - Design system spec
+  - Tech stack
+  - Business model options
+  - Success metrics
+
+### Product Decisions
+- Build time target: **< 10 minutes** end-to-end
+- Wizard completion target: **> 70%** of users finish all 6 steps
+- Phase 1 launch target: **100+ websites published** in first month
+- Business model: TBD (add-on subscription / one-time / freemium / bundled)
+
+---
+
+## [0.0.1] 2025-06-19 — Project Init
+
+### Added
+- `INDEX.html` — project dashboard showing all files, progress stats, template previews
+- Project folder created at `App Development/Personalised Website Builder/`
+- Folder structure defined: `/designs/`, `/docs/`, `/backend/`
+
+### Context
+- Product idea scoped and approved internally at KDK Software
+- Phase 1 prioritised: design + prototype before any backend work
+- Goal: show stakeholders a clickable prototype first
+
+---
+
+## Upcoming (Planned)
+
+### [0.5.0] — Phase 1 Handoff
+- [ ] Final design review of all 3 templates
+- [ ] API spec review with Golang backend team
+- [ ] Database schema review
+- [ ] Stakeholder sign-off on PRD
+- [ ] Confirm business model
+
+### [1.0.0] — Phase 1 Development Start
+- [ ] React + Vite setup for builder admin
+- [ ] Golang API implementation
+- [ ] MySQL setup + migrations
+- [ ] Subdomain provisioning infrastructure
+- [ ] Lead email notification system
+- [ ] Internal beta with 10 KDK customers

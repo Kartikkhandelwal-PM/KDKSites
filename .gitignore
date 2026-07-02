@@ -1,0 +1,10 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Local editor / tooling config
+.claude/
+.vscode/
+
+# Working duplicates (not for publishing)
+New Design copy/

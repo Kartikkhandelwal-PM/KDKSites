@@ -1,0 +1,1345 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vikram Sharma &amp; Associates | Tax &amp; Financial Consultants, New Delhi</title>
+<link rel="icon" type="image/png" href="../../CA%20India%20Logo.png">
+<style>
+:root {
+  --blue:    #1D4ED8;
+  --blue-dk: #1A44C0;
+  --blue-lt: #EFF4FF;
+  --gold:    #C4830A;
+  --emerald: #0F6B45;
+  --off:     #F8FAFC;
+  --text:    #0F1729;
+  --text2:   #4B5563;
+  --bdr:     #E2E8F0;
+  --muted:   #6B7280;
+  --t: .22s cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
+html { scroll-behavior:smooth }
+body { font-family:'Segoe UI',system-ui,-apple-system,sans-serif; color:var(--text); background:#fff; font-size:15px; line-height:1.6 }
+a { color:inherit; text-decoration:none }
+button { cursor:pointer; font-family:inherit }
+
+@keyframes fadeUp  { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:none} }
+@keyframes floatA  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-20px)} }
+@keyframes floatB  { 0%,100%{transform:translateY(-8px)} 50%{transform:translateY(14px)} }
+@keyframes shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
+
+.reveal { opacity:0; transform:translateY(26px); transition:opacity .65s ease,transform .65s ease }
+.reveal.vis { opacity:1; transform:none }
+.d1{transition-delay:.1s} .d2{transition-delay:.2s} .d3{transition-delay:.3s}
+.d4{transition-delay:.4s} .d5{transition-delay:.5s}
+
+/* ── NAV ── */
+.nav {
+  position:fixed; top:0; left:0; right:0; z-index:200; height:68px;
+  display:flex; align-items:center; padding:0 6%;
+  transition:background .3s,box-shadow .3s,border-color .3s;
+  border-bottom:1px solid transparent;
+}
+.nav.sticky { background:rgba(255,255,255,.97); backdrop-filter:blur(14px); box-shadow:0 1px 0 var(--bdr); border-color:var(--bdr) }
+.nav-logo { display:flex; align-items:center; gap:12px; flex-shrink:0 }
+.nav-mono {
+  width:38px; height:38px; background:var(--blue); border-radius:9px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:800; color:#fff; letter-spacing:.03em;
+}
+/* Uploaded firm logo — shown in a white chip so it stays crisp on both the
+   dark hero nav and the white sticky nav; hidden until a logo is provided. */
+.nav-logo-img { box-sizing:border-box; display:none; height:40px; width:auto; max-width:180px; object-fit:contain; background:#fff; border:1px solid rgba(15,23,42,.08); border-radius:8px; padding:4px 8px; box-shadow:0 2px 8px rgba(0,0,0,.12); flex-shrink:0 }
+.foot-logo-img { box-sizing:border-box; display:none; height:40px; width:auto; max-width:170px; object-fit:contain; background:#fff; border-radius:8px; padding:4px 8px; flex-shrink:0 }
+/* A long firm name shrinks to an ellipsis instead of overflowing the header;
+   the logo/monogram stays intact. */
+.nav-logo { flex-shrink:1; min-width:0 }
+.nav-mono, .nav-logo-img { flex-shrink:0 }
+.nav-logo > div { min-width:0 }
+.nav-nm, .nav-sub { white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+@media(max-width:600px){ .nav-logo-img { height:34px; max-width:130px } }
+.nav-nm  { font-size:14px; font-weight:700; color:#fff; line-height:1.2; transition:color .3s }
+.nav-sub { font-size:10px; color:rgba(255,255,255,.5); letter-spacing:.07em; text-transform:uppercase; transition:color .3s }
+.nav.sticky .nav-nm  { color:var(--text) }
+.nav.sticky .nav-sub { color:var(--muted) }
+.nav-space { flex:1 }
+.nav-links { display:flex; align-items:center; gap:28px }
+.nav-link  { font-size:13px; font-weight:500; color:rgba(255,255,255,.75); transition:color var(--t) }
+.nav-link:hover { color:#fff }
+.nav.sticky .nav-link  { color:var(--text2) }
+.nav.sticky .nav-link:hover { color:var(--text) }
+.nav-cta {
+  background:var(--blue); color:#fff; padding:9px 20px; border-radius:7px;
+  font-size:13px; font-weight:600; transition:all var(--t);
+}
+.nav-cta:hover { background:var(--blue-dk); transform:translateY(-1px); box-shadow:0 4px 14px rgba(29,78,216,.4) }
+
+/* ── HERO ── */
+.hero {
+  min-height:100vh;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 20%, rgba(67,56,202,.30) 0%, transparent 55%),
+    radial-gradient(ellipse 55% 55% at 8%  82%, rgba(29,78,216,.22) 0%, transparent 55%),
+    radial-gradient(ellipse 45% 45% at 92% 80%, rgba(196,131,10,.06) 0%, transparent 55%),
+    linear-gradient(155deg,#030919 0%,#0B1840 40%,#07122C 68%,#020710 100%);
+  display:flex; flex-direction:column; align-items:stretch;
+  position:relative; overflow:hidden;
+}
+.hero::before {
+  content:''; position:absolute; inset:0; z-index:0; pointer-events:none;
+  background-image:radial-gradient(circle,rgba(255,255,255,.04) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+.hero-orb { position:absolute; border-radius:50%; pointer-events:none; z-index:0 }
+.hero-orb-1 { width:720px; height:720px; right:-160px; top:-200px; background:radial-gradient(circle,rgba(99,102,241,.13) 0%,transparent 65%); animation:floatA 14s ease-in-out infinite }
+.hero-orb-2 { width:420px; height:420px; left:8%;  bottom:-100px; background:radial-gradient(circle,rgba(29,78,216,.16) 0%,transparent 65%); animation:floatB 11s ease-in-out infinite }
+.hero-orb-3 { width:260px; height:260px; left:2%;  top:18%;       background:radial-gradient(circle,rgba(196,131,10,.08) 0%,transparent 65%); animation:floatA 9s ease-in-out infinite 1s }
+/* floating illustration elements */
+.hi { position:absolute; pointer-events:none; z-index:0; line-height:0 }
+.hi-1 { top:8%;  left:3.5%; animation:floatA 13s ease-in-out infinite }
+.hi-2 { top:7%;  right:4%;  animation:floatB 11s ease-in-out infinite .5s }
+.hi-3 { bottom:26%; left:4%;  animation:floatA 10s ease-in-out infinite 1s }
+.hi-4 { bottom:24%; right:5%; animation:floatB 12s ease-in-out infinite .3s }
+.hi-5 { top:50%; left:1.5%; animation:floatA 9s  ease-in-out infinite 2s }
+.hi-6 { top:42%; right:2%;  animation:floatB 15s ease-in-out infinite .8s }
+/* hero inner body */
+.hero-body {
+  flex:1; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; text-align:center; padding:140px 6% 56px;
+  position:relative; z-index:1;
+}
+.hero-eye {
+  display:inline-flex; align-items:center; gap:9px;
+  font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
+  color:rgba(255,255,255,.72);
+  background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.13);
+  padding:7px 18px; border-radius:100px; margin-bottom:28px;
+  animation:fadeUp .75s .05s ease both;
+}
+.hero-eye::before {
+  content:''; width:7px; height:7px; border-radius:50%; flex-shrink:0;
+  background:#4ADE80; box-shadow:0 0 8px rgba(74,222,128,.8);
+}
+.hero-h1 {
+  font-size:clamp(44px,6vw,78px); font-weight:900; line-height:1.03;
+  letter-spacing:-.045em; color:#fff; margin-bottom:0;
+  animation:fadeUp .75s .12s ease both;
+}
+.hero-h1 .hl {
+  background:linear-gradient(135deg,#93C5FD 0%,#818CF8 55%,#C4B5FD 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.hero-rule {
+  width:52px; height:3px; border-radius:2px;
+  background:linear-gradient(90deg,#60A5FA,#818CF8);
+  margin:26px auto 28px; animation:fadeUp .75s .18s ease both;
+}
+.hero-para {
+  font-size:17px; color:rgba(255,255,255,.55); line-height:1.78; max-width:600px;
+  margin-bottom:28px; animation:fadeUp .75s .22s ease both;
+}
+.hero-types {
+  display:flex; flex-wrap:wrap; gap:8px; justify-content:center;
+  margin-bottom:36px; animation:fadeUp .75s .28s ease both;
+}
+.ht {
+  display:inline-flex; align-items:center; gap:7px;
+  font-size:12px; font-weight:600; padding:6px 14px; border-radius:100px;
+  background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12);
+  color:rgba(255,255,255,.75); transition:all var(--t);
+}
+.ht:hover { background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.24) }
+.ht::before { content:''; width:5px; height:5px; border-radius:50%; flex-shrink:0 }
+.ht-sal::before { background:#60A5FA }
+.ht-biz::before { background:#34D399 }
+.ht-nri::before { background:#FCD34D }
+.ht-fre::before { background:#F472B6 }
+.ht-sta::before { background:#A78BFA }
+.hero-acts { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; animation:fadeUp .75s .34s ease both }
+.btn-p {
+  background:var(--blue); color:#fff; padding:14px 30px; border-radius:10px;
+  font-size:14px; font-weight:700; display:inline-block; transition:all var(--t);
+  box-shadow:0 4px 24px rgba(29,78,216,.55);
+}
+.btn-p:hover { background:var(--blue-dk); transform:translateY(-2px); box-shadow:0 12px 32px rgba(29,78,216,.65) }
+.btn-s {
+  background:rgba(255,255,255,.07); border:1.5px solid rgba(255,255,255,.2);
+  color:#fff; padding:14px 30px; border-radius:10px; font-size:14px; font-weight:600;
+  display:inline-block; transition:all var(--t);
+}
+.btn-s:hover { background:rgba(255,255,255,.14); border-color:rgba(255,255,255,.36) }
+/* stats bar pinned to hero bottom */
+.hero-sbar {
+  width:100%; padding:22px 6%; position:relative; z-index:1;
+  background:rgba(255,255,255,.035); border-top:1px solid rgba(255,255,255,.07);
+  display:flex; justify-content:center; animation:fadeUp .75s .5s ease both;
+}
+.hs-item {
+  flex:1; max-width:220px; text-align:center; padding:2px 20px;
+  border-right:1px solid rgba(255,255,255,.07);
+}
+.hs-item:last-child { border-right:none }
+.hs-num { font-size:30px; font-weight:900; color:#fff; letter-spacing:-.04em; line-height:1 }
+.hs-num em { font-style:normal; font-size:16px; font-weight:700; color:#93C5FD }
+.hs-lbl { font-size:10px; color:rgba(255,255,255,.36); font-weight:600; letter-spacing:.07em; text-transform:uppercase; margin-top:5px }
+
+/* ── STATS STRIP ── */
+.stats-strip {
+  background:linear-gradient(135deg,#1539B8 0%,var(--blue) 50%,#1840C0 100%);
+  padding:32px 6%; display:flex; justify-content:center;
+  box-shadow:0 6px 28px rgba(29,78,216,.35);
+}
+.stat-item { flex:1; max-width:240px; text-align:center; padding:0 20px; position:relative }
+.stat-item+.stat-item::before {
+  content:''; position:absolute; left:0; top:50%; transform:translateY(-50%);
+  width:1px; height:36px; background:rgba(255,255,255,.2);
+}
+.stat-num { font-size:36px; font-weight:900; color:#fff; letter-spacing:-.04em; line-height:1 }
+.stat-lbl { font-size:11px; font-weight:600; color:rgba(255,255,255,.55); letter-spacing:.07em; text-transform:uppercase; margin-top:7px }
+
+/* ── SECTIONS ── */
+.sec { padding:96px 6% }
+.sec-eye  { font-size:10px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--blue); margin-bottom:10px }
+.sec-h2   { font-size:clamp(24px,3.5vw,38px); font-weight:800; color:var(--text); letter-spacing:-.03em; line-height:1.15; margin-bottom:12px }
+.sec-lead { font-size:15px; color:var(--text2); line-height:1.75; max-width:500px; margin-bottom:52px }
+
+/* ── SERVICES ── */
+.svc-sec  { background:var(--off) }
+.svc-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:22px }
+.svc-card {
+  background:#fff; border:1px solid var(--bdr); border-radius:16px;
+  padding:28px 24px 26px; position:relative; overflow:hidden;
+  display:flex; flex-direction:column;
+  transition:transform var(--t),box-shadow var(--t),border-color var(--t);
+}
+.svc-card::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; border-radius:16px 16px 0 0 }
+.svc-card::after  { content:''; position:absolute; width:200px; height:200px; border-radius:50%; right:-55px; bottom:-70px; pointer-events:none; opacity:.055 }
+.svc-card:hover { transform:translateY(-5px) }
+.svc-c1::before{background:linear-gradient(90deg,#1A44C0,#60A5FA)} .svc-c1::after{background:#1D4ED8} .svc-c1:hover{box-shadow:0 18px 44px rgba(29,78,216,.16);border-color:rgba(29,78,216,.22)}
+.svc-c2::before{background:linear-gradient(90deg,#3730A3,#818CF8)} .svc-c2::after{background:#4338CA} .svc-c2:hover{box-shadow:0 18px 44px rgba(67,56,202,.16);border-color:rgba(67,56,202,.22)}
+.svc-c3::before{background:linear-gradient(90deg,#0C6B85,#22D3EE)} .svc-c3::after{background:#0891B2} .svc-c3:hover{box-shadow:0 18px 44px rgba(8,145,178,.16);border-color:rgba(8,145,178,.22)}
+.svc-c4::before{background:linear-gradient(90deg,#B45309,#FCD34D)} .svc-c4::after{background:#D97706} .svc-c4:hover{box-shadow:0 18px 44px rgba(217,119,6,.16);border-color:rgba(217,119,6,.22)}
+.svc-c5::before{background:linear-gradient(90deg,#5B21B6,#A78BFA)} .svc-c5::after{background:#7C3AED} .svc-c5:hover{box-shadow:0 18px 44px rgba(124,58,237,.16);border-color:rgba(124,58,237,.22)}
+.svc-c6::before{background:linear-gradient(90deg,#065F38,#34D399)} .svc-c6::after{background:#0F6B45} .svc-c6:hover{box-shadow:0 18px 44px rgba(15,107,69,.16);border-color:rgba(15,107,69,.22)}
+.svc-bar { width:36px; height:4px; border-radius:2px; margin-bottom:20px; margin-top:4px }
+.svc-c1 .svc-bar{background:linear-gradient(90deg,#1A44C0,#60A5FA)}
+.svc-c2 .svc-bar{background:linear-gradient(90deg,#3730A3,#818CF8)}
+.svc-c3 .svc-bar{background:linear-gradient(90deg,#0C6B85,#22D3EE)}
+.svc-c4 .svc-bar{background:linear-gradient(90deg,#B45309,#FCD34D)}
+.svc-c5 .svc-bar{background:linear-gradient(90deg,#5B21B6,#A78BFA)}
+.svc-c6 .svc-bar{background:linear-gradient(90deg,#065F38,#34D399)}
+.svc-name { font-size:16px; font-weight:700; color:var(--text); margin-bottom:10px; letter-spacing:-.02em; line-height:1.3 }
+.svc-desc { font-size:13px; color:var(--text2); line-height:1.72; flex:1 }
+.svc-enq  { display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:700; margin-top:20px; letter-spacing:.01em; transition:gap var(--t) }
+.svc-enq:hover { gap:9px }
+.svc-c1 .svc-enq{color:#1A44C0} .svc-c2 .svc-enq{color:#3730A3} .svc-c3 .svc-enq{color:#0C6B85}
+.svc-c4 .svc-enq{color:#B45309} .svc-c5 .svc-enq{color:#5B21B6} .svc-c6 .svc-enq{color:#065F38}
+
+/* ── ABOUT ── */
+.about-grid { display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:start }
+.ab-highs { display:flex; flex-direction:column; gap:16px; margin-top:30px }
+.ab-item  { display:flex; gap:14px; align-items:flex-start }
+.ab-icon  {
+  width:40px; height:40px; border-radius:10px; flex-shrink:0; margin-top:2px;
+  background:linear-gradient(135deg,rgba(29,78,216,.12),rgba(29,78,216,.04));
+  border:1px solid rgba(29,78,216,.18);
+  display:flex; align-items:center; justify-content:center;
+}
+.ab-t { font-size:14px; font-weight:700; color:var(--text); margin-bottom:3px }
+.ab-d { font-size:13px; color:var(--text2); line-height:1.6 }
+.pc-card {
+  background:#fff; border:1px solid var(--bdr); border-radius:20px; padding:32px;
+  box-shadow:0 8px 36px rgba(15,23,41,.08); position:relative; overflow:hidden;
+}
+.pc-card::after {
+  content:''; position:absolute; top:-50px; right:-50px; width:180px; height:180px; border-radius:50%;
+  background:radial-gradient(circle,rgba(29,78,216,.07) 0%,transparent 70%); pointer-events:none;
+}
+.pc-mono {
+  width:72px; height:72px; border-radius:16px; margin-bottom:20px;
+  background:linear-gradient(135deg,var(--blue),#818CF8);
+  display:flex; align-items:center; justify-content:center;
+  font-size:24px; font-weight:900; color:#fff; letter-spacing:-.02em;
+  box-shadow:0 8px 24px rgba(29,78,216,.32);
+}
+.pc-name { font-size:20px; font-weight:800; color:var(--text); letter-spacing:-.02em; margin-bottom:4px }
+.pc-role { font-size:12px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:var(--blue); margin-bottom:18px }
+.pc-bio  { font-size:14px; color:var(--text2); line-height:1.75; margin-bottom:24px }
+.pc-quals { display:flex; flex-direction:column; gap:9px }
+.pc-q { display:flex; align-items:center; gap:10px; font-size:13px; font-weight:500; color:var(--text2) }
+.pc-q::before { content:''; width:6px; height:6px; border-radius:50%; flex-shrink:0; background:linear-gradient(135deg,var(--blue),#818CF8) }
+
+/* ── PROCESS ── */
+.process-sec {
+  background:linear-gradient(140deg,#050C20 0%,#0A163A 50%,#06101E 100%);
+  position:relative; overflow:hidden;
+}
+.porb { position:absolute; border-radius:50%; pointer-events:none }
+.porb-1 { width:450px; height:450px; right:-60px; top:-120px; background:radial-gradient(circle,rgba(67,56,202,.18) 0%,transparent 65%); animation:floatA 11s ease-in-out infinite }
+.porb-2 { width:300px; height:300px; left:5%; bottom:-60px; background:radial-gradient(circle,rgba(29,78,216,.15) 0%,transparent 65%); animation:floatB 9s ease-in-out infinite }
+.process-sec .sec-eye  { color:#FCD34D }
+.process-sec .sec-h2   { color:#fff }
+.process-sec .sec-lead { color:rgba(255,255,255,.45) }
+.proc-inner { position:relative; z-index:1 }
+.proc-grid  { display:flex; flex-wrap:wrap; justify-content:center; gap:24px }
+.proc-grid > .proc-card { flex:0 1 calc((100% - 48px) / 3) } /* 3 per row; partial rows stay centered */
+.proc-card  {
+  background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08);
+  border-radius:16px; padding:34px 28px; position:relative;
+  transition:background var(--t),border-color var(--t),transform var(--t);
+}
+.proc-card:hover { background:rgba(255,255,255,.07); border-color:rgba(255,255,255,.16); transform:translateY(-2px) }
+.proc-n {
+  font-size:64px; font-weight:900; letter-spacing:-.04em; line-height:1; margin-bottom:20px;
+  background:linear-gradient(135deg,rgba(129,140,248,.4),rgba(29,78,216,.25));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.proc-t { font-size:16px; font-weight:700; color:#fff; margin-bottom:10px }
+.proc-d { font-size:13px; color:rgba(255,255,255,.45); line-height:1.7 }
+.proc-arr {
+  position:absolute; top:38px; right:-15px; z-index:2;
+  width:30px; height:30px; border-radius:50%;
+  background:linear-gradient(135deg,var(--blue),#818CF8);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 4px 14px rgba(29,78,216,.45);
+}
+.proc-card:last-child .proc-arr { display:none }
+
+/* ── TESTIMONIALS ── */
+.testi-sec { background:var(--off) }
+.testi-carousel { position:relative; overflow:hidden }
+.testi-track { display:flex; gap:20px; transition:transform .5s cubic-bezier(.4,0,.2,1); will-change:transform }
+.tc {
+  flex:0 0 calc((100% - 40px)/3); background:#fff; border:1px solid var(--bdr);
+  border-radius:16px; padding:28px; display:flex; flex-direction:column; position:relative; overflow:hidden;
+  transition:box-shadow var(--t),transform var(--t);
+}
+.tc:hover { box-shadow:0 14px 40px rgba(15,23,41,.1) }
+.tc::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--blue),#818CF8) }
+.tc-qm   { font-size:64px; font-weight:900; color:rgba(29,78,216,.07); line-height:.75; margin-bottom:6px; font-family:Georgia,serif; user-select:none }
+.tc-stars { display:flex; gap:3px; margin-bottom:14px }
+.tc-star  { width:13px; height:13px; background:var(--gold); clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%) }
+.tc-q  { font-size:14px; color:var(--text); line-height:1.75; font-style:italic; flex:1; margin-bottom:20px }
+.tc-au { display:flex; align-items:center; gap:10px }
+.tc-av { width:48px; height:48px; border-radius:50%; overflow:hidden; flex-shrink:0; display:flex }
+.tc-nm { font-size:13px; font-weight:700; color:var(--text) }
+.tc-rl { font-size:11px; color:var(--muted) }
+.testi-outer { position:relative }
+.testi-arrow {
+  width:36px; height:36px; border-radius:50%; border:1px solid var(--bdr); background:#fff;
+  display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0;
+  transition:all var(--t); color:var(--text2);
+}
+.testi-arrow:hover { background:var(--blue); border-color:var(--blue); color:#fff; box-shadow:0 4px 16px rgba(29,78,216,.25) }
+.testi-nav  { display:flex; align-items:center; justify-content:center; gap:14px; margin-top:22px }
+.testi-dots { display:flex; gap:6px; align-items:center }
+.testi-dot  { width:7px; height:7px; border-radius:50%; background:var(--bdr); cursor:pointer; transition:all .3s }
+.testi-dot.act { background:var(--blue); width:22px; border-radius:4px }
+
+/* ── CONTACT ── */
+.contact-grid { display:grid; grid-template-columns:1fr 1.4fr; gap:56px; align-items:start }
+.ct-list  { display:flex; flex-direction:column; gap:14px }
+.ct-item  {
+  display:flex; gap:14px; background:var(--off); border:1px solid var(--bdr);
+  border-radius:12px; padding:16px 18px; transition:border-color var(--t),box-shadow var(--t);
+}
+.ct-item:hover { border-color:rgba(29,78,216,.22); box-shadow:0 4px 16px rgba(29,78,216,.07) }
+.ct-ic {
+  width:40px; height:40px; border-radius:10px; flex-shrink:0;
+  background:linear-gradient(135deg,rgba(29,78,216,.12),rgba(29,78,216,.05));
+  border:1px solid rgba(29,78,216,.18);
+  display:flex; align-items:center; justify-content:center;
+}
+.ct-l { font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:3px }
+.ct-v { font-size:14px; font-weight:600; color:var(--text) }
+.ct-s { font-size:12px; color:var(--muted); margin-top:2px }
+.form-card {
+  background:#fff; border:1px solid var(--bdr); border-radius:20px;
+  padding:36px; box-shadow:0 8px 36px rgba(15,23,41,.08); position:relative; overflow:hidden;
+}
+.form-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:4px;
+  background:linear-gradient(90deg,var(--blue),#818CF8 50%,var(--blue) 100%);
+  background-size:200% 100%; animation:shimmer 4s linear infinite;
+}
+.form-t { font-size:18px; font-weight:800; color:var(--text); letter-spacing:-.02em; margin-bottom:4px }
+.form-s { font-size:13px; color:var(--text2); margin-bottom:24px }
+.f-row  { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px }
+.fg  { display:flex; flex-direction:column; gap:5px; margin-bottom:14px }
+.fl  { font-size:11px; font-weight:600; color:var(--text) }
+.fi,.fta,.fsel {
+  border:1.5px solid var(--bdr); border-radius:9px; padding:11px 13px;
+  font-size:14px; font-family:inherit; color:var(--text); background:var(--off);
+  transition:border-color var(--t),box-shadow var(--t); outline:none; width:100%;
+}
+.fi:focus,.fta:focus,.fsel:focus { border-color:var(--blue); background:#fff; box-shadow:0 0 0 3px rgba(29,78,216,.09) }
+.fta { min-height:96px; resize:vertical; line-height:1.6 }
+.btn-submit {
+  width:100%; background:linear-gradient(135deg,var(--blue),#4338CA); color:#fff;
+  padding:14px; border:none; border-radius:10px; font-size:15px; font-weight:700;
+  transition:all var(--t); box-shadow:0 6px 22px rgba(29,78,216,.32); font-family:inherit;
+}
+.btn-submit:hover { background:linear-gradient(135deg,var(--blue-dk),#3730A3); transform:translateY(-1px); box-shadow:0 10px 30px rgba(29,78,216,.42) }
+.btn-wa {
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  width:100%; margin-top:10px; background:#25D366; color:#fff; padding:12px;
+  border:none; border-radius:10px; font-size:14px; font-weight:600;
+  transition:all var(--t); font-family:inherit;
+}
+.btn-wa:hover { background:#1ebe59; transform:translateY(-1px); box-shadow:0 6px 20px rgba(37,211,102,.3) }
+
+/* ── FOOTER ── */
+footer {
+  background:linear-gradient(140deg,#040B22 0%,#0C1840 55%,#050C20 100%);
+  padding:56px 6% 28px; position:relative; overflow:hidden;
+}
+footer::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background-image:radial-gradient(circle,rgba(255,255,255,.04) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+.foot-grid {
+  display:grid; grid-template-columns:2fr 1fr 1fr; gap:44px;
+  padding-bottom:40px; border-bottom:1px solid rgba(255,255,255,.07);
+  margin-bottom:26px; position:relative; z-index:1;
+}
+.foot-logo-row { display:flex; align-items:center; gap:12px }
+.foot-mono {
+  width:36px; height:36px; border-radius:7px; flex-shrink:0;
+  background:linear-gradient(135deg,var(--blue),#818CF8);
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:800; color:#fff;
+}
+.foot-nm   { font-size:14px; font-weight:700; color:#fff }
+.foot-sub  { font-size:10px; color:rgba(255,255,255,.35); letter-spacing:.06em; text-transform:uppercase }
+.foot-desc { font-size:13px; color:rgba(255,255,255,.38); line-height:1.8; max-width:260px; margin-top:14px }
+.foot-ct   { font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.28); margin-bottom:14px }
+.foot-lnk  { display:block; font-size:13px; color:rgba(255,255,255,.48); margin-bottom:9px; transition:color var(--t) }
+.foot-lnk:hover { color:#fff }
+.foot-bot  { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; position:relative; z-index:1 }
+.foot-copy { font-size:12px; color:rgba(255,255,255,.22) }
+.foot-pow  { font-size:11px; color:rgba(255,255,255,.2) }
+.foot-pow a { color:rgba(99,102,241,.75) }
+.foot-social { display:flex; gap:9px; margin-top:20px; flex-wrap:wrap }
+.foot-soc-a {
+  width:34px; height:34px; border-radius:8px; flex-shrink:0;
+  border:1px solid rgba(29,78,216,.3); background:rgba(29,78,216,.1);
+  display:flex; align-items:center; justify-content:center;
+  color:rgba(255,255,255,.55); transition:all var(--t);
+}
+.foot-soc-a:hover { background:rgba(29,78,216,.22); border-color:rgba(29,78,216,.5); color:#fff; transform:translateY(-2px) }
+
+.wa-float {
+  position:fixed; bottom:28px; right:28px; z-index:999;
+  width:54px; height:54px; background:#25D366; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 4px 20px rgba(37,211,102,.5); transition:all var(--t); border:none;
+}
+.wa-float:hover { transform:scale(1.12); box-shadow:0 8px 32px rgba(37,211,102,.65) }
+
+/* ── HAMBURGER NAV ── */
+.nav-hamburger {
+  display:none; flex-direction:column; justify-content:center; gap:5px;
+  background:none; border:none; padding:8px; cursor:pointer; width:40px; height:40px; flex-shrink:0;
+}
+.nav-hamburger span {
+  display:block; width:22px; height:2px; border-radius:2px; background:#fff;
+  transition:transform .25s ease,opacity .2s ease;
+}
+.nav.sticky .nav-hamburger span { background:var(--text) }
+.nav-hamburger.open span:nth-child(1) { transform:rotate(45deg) translate(5px,5px) }
+.nav-hamburger.open span:nth-child(2) { opacity:0 }
+.nav-hamburger.open span:nth-child(3) { transform:rotate(-45deg) translate(5px,-5px) }
+.nav-mob {
+  display:none; position:fixed; top:68px; left:0; right:0; z-index:199;
+  background:#fff; border-bottom:1px solid var(--bdr); flex-direction:column;
+  padding:8px 6% 24px; box-shadow:0 16px 40px rgba(15,23,41,.14);
+}
+.nav-mob.open { display:flex }
+.nm-link {
+  display:block; font-size:16px; font-weight:500; color:var(--text);
+  padding:15px 0; border-bottom:1px solid var(--bdr); transition:color var(--t);
+}
+.nm-link:hover { color:var(--blue) }
+.nm-cta {
+  display:block; margin-top:16px; background:var(--blue); color:#fff;
+  padding:14px; border-radius:10px; text-align:center;
+  font-size:15px; font-weight:700; transition:background var(--t);
+}
+.nm-cta:hover { background:var(--blue-dk) }
+
+/* ── RESPONSIVE ── */
+@media(max-width:960px){
+  .hi-1,.hi-2,.hi-3,.hi-4,.hi-5,.hi-6 { display:none }
+  .sec          { padding:72px 5% }
+  .hero-body    { padding:110px 5% 48px }
+  .hero-sbar    { flex-wrap:wrap }
+  .hs-item      { min-width:50%; border-right:none; border-bottom:1px solid rgba(255,255,255,.07) }
+  .about-grid   { grid-template-columns:1fr; gap:40px }
+  .proc-grid > .proc-card { flex-basis:100% }
+  .proc-arr     { display:none }
+  .tc           { flex:0 0 100% }
+  .testi-track  { gap:14px }
+  .contact-grid { grid-template-columns:1fr; gap:40px }
+  .foot-grid    { grid-template-columns:1fr }
+}
+@media(max-width:600px){
+  .nav           { padding:0 5%; height:62px }
+  .nav-links     { display:none }
+  .nav-hamburger { display:flex }
+  .nav-mob       { top:62px }
+  .hero-body     { padding:88px 5% 34px }
+  .hero-eye      { font-size:10px; padding:6px 14px; margin-bottom:22px }
+  .hero-h1       { font-size:clamp(34px,10vw,44px); letter-spacing:-.03em }
+  .hero-rule     { margin:20px auto 22px }
+  .hero-para     { font-size:15px; line-height:1.7; margin-bottom:24px }
+  .hero-types    { gap:6px; margin-bottom:30px }
+  .hero-acts     { flex-direction:column; align-items:center; width:100% }
+  .hero-acts .btn-p,
+  .hero-acts .btn-s { width:100%; max-width:320px; text-align:center }
+  .hero-sbar     { padding:18px 5% }
+  .hs-item       { padding:4px 8px }
+  .hs-num        { font-size:24px }
+  /* SECTIONS */
+  .sec           { padding:56px 5% }
+  .sec-lead      { margin-bottom:36px }
+  /* SERVICES */
+  .svc-grid      { grid-template-columns:1fr; gap:16px }
+  .svc-card      { padding:24px 20px 22px; border-radius:14px }
+  /* ABOUT / FOUNDER */
+  .about-grid    { gap:36px }
+  .ab-highs      { gap:14px; margin-top:24px }
+  .pc-card       { padding:26px 22px; border-radius:16px }
+  .pc-mono       { width:60px; height:60px; border-radius:14px; font-size:20px; margin-bottom:16px }
+  .pc-name       { font-size:18px }
+  /* PROCESS */
+  .proc-card     { padding:26px 22px }
+  .proc-n        { font-size:52px; margin-bottom:14px }
+  /* CONTACT */
+  .contact-grid  { gap:32px }
+  .form-card     { padding:26px 20px; border-radius:16px }
+  .ct-item       { padding:14px 15px }
+  .tc            { padding:22px 18px; border-radius:14px }
+  .tc-qm         { font-size:44px; margin-bottom:2px }
+  .tc-stars      { margin-bottom:10px }
+  .tc-q          { font-size:13.5px; line-height:1.62; margin-bottom:16px }
+  .tc-av         { width:44px; height:44px }
+  .testi-arrow   { width:34px; height:34px }
+  .f-row         { grid-template-columns:1fr }
+  /* FOOTER */
+  footer         { padding:44px 5% 24px }
+  .foot-grid     { gap:28px; padding-bottom:32px }
+  .foot-desc     { max-width:none }
+  .foot-bot      { justify-content:center; text-align:center }
+  /* WHATSAPP FLOAT */
+  .wa-float      { bottom:18px; right:18px; width:50px; height:50px }
+}
+@media(max-width:380px){
+  .hero-types .ht { font-size:11px; padding:4px 10px }
+  .hs-item        { min-width:50% }
+  .hs-num         { font-size:22px }
+  .nav-nm         { font-size:13px }
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after { transition:none !important; animation:none !important }
+  .reveal { opacity:1 !important; transform:none !important }
+}
+</style>
+
+<!-- NAV -->
+<nav class="nav" id="mainNav">
+  <div class="nav-logo">
+    <div class="nav-mono">VS</div>
+    <img class="nav-logo-img" alt="">
+    <div>
+      <div class="nav-nm">Vikram Sharma &amp; Associates</div>
+      <div class="nav-sub">Tax &amp; Financial Consultants</div>
+    </div>
+  </div>
+  <div class="nav-space"></div>
+  <button class="nav-hamburger" id="navHamburger" aria-label="Open menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="nav-links">
+    <a class="nav-link" href="#services">Services</a>
+    <a class="nav-link" href="#about">About</a>
+    <a class="nav-link" href="#contact">Contact</a>
+    <a class="nav-cta" href="#contact">Free Consultation</a>
+  </div>
+</nav>
+<div class="nav-mob" id="navMob">
+  <a class="nm-link" href="#services">Services</a>
+  <a class="nm-link" href="#about">About</a>
+  <a class="nm-link" href="#contact">Contact</a>
+  <a class="nm-cta" href="#contact">Book Free Consultation</a>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="hero-orb hero-orb-3"></div>
+
+  <!-- Floating illustrations -->
+  <div class="hi hi-1">
+    <svg width="80" height="100" viewBox="0 0 80 100" fill="none" opacity=".11">
+      <rect x="1" y="1" width="78" height="98" rx="8" stroke="white" stroke-width="1.8"/>
+      <rect x="1" y="1" width="78" height="20" rx="8" fill="rgba(255,255,255,.12)"/>
+      <path d="M14 10h28" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M14 32h52M14 46h52M14 60h52M14 74h36" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <div class="hi hi-2">
+    <svg width="70" height="82" viewBox="0 0 70 82" fill="none" opacity=".10">
+      <path d="M35 3L5 15v20c0 23 13 41 30 47 17-6 30-24 30-47V15L35 3z" stroke="white" stroke-width="1.8"/>
+      <polyline points="20,42 31,53 50,29" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <div class="hi hi-3">
+    <svg width="84" height="70" viewBox="0 0 84 70" fill="none" opacity=".09">
+      <rect x="2" y="46" width="15" height="22" rx="2" stroke="white" stroke-width="1.6"/>
+      <rect x="22" y="30" width="15" height="38" rx="2" stroke="white" stroke-width="1.6"/>
+      <rect x="42" y="14" width="15" height="54" rx="2" stroke="white" stroke-width="1.6"/>
+      <rect x="62" y="22" width="15" height="46" rx="2" stroke="white" stroke-width="1.6"/>
+      <line x1="0" y1="68" x2="84" y2="68" stroke="white" stroke-width="1.6"/>
+      <polyline points="9,46 29,30 49,14 69,22" stroke="rgba(255,255,255,.45)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4 2"/>
+    </svg>
+  </div>
+  <div class="hi hi-4">
+    <svg width="70" height="74" viewBox="0 0 70 74" fill="none" opacity=".10">
+      <rect x="1" y="8" width="68" height="64" rx="7" stroke="white" stroke-width="1.8"/>
+      <rect x="1" y="8" width="68" height="20" rx="7" fill="rgba(255,255,255,.1)"/>
+      <line x1="18" y1="1" x2="18" y2="18" stroke="white" stroke-width="2" stroke-linecap="round"/>
+      <line x1="52" y1="1" x2="52" y2="18" stroke="white" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="18" cy="40" r="3" fill="white" opacity=".6"/>
+      <circle cx="35" cy="40" r="3" fill="white" opacity=".6"/>
+      <circle cx="52" cy="40" r="3" fill="white" opacity=".6"/>
+      <circle cx="18" cy="57" r="3" fill="white" opacity=".6"/>
+      <circle cx="35" cy="57" r="3" fill="white" opacity=".6"/>
+      <circle cx="52" cy="57" r="3" fill="white" opacity=".6"/>
+      <circle cx="18" cy="40" r="6" stroke="rgba(255,255,255,.4)" stroke-width="1.2"/>
+    </svg>
+  </div>
+  <div class="hi hi-5">
+    <svg width="60" height="60" viewBox="0 0 60 60" fill="none" opacity=".09">
+      <circle cx="30" cy="30" r="27" stroke="rgba(255,255,255,.35)" stroke-width="1.5"/>
+      <circle cx="30" cy="30" r="27" stroke="white" stroke-width="8"
+              stroke-dasharray="85 85" stroke-dashoffset="0" transform="rotate(-90 30 30)"/>
+      <circle cx="30" cy="30" r="16" stroke="white" stroke-width="1.5"/>
+      <line x1="30" y1="3" x2="30" y2="14" stroke="white" stroke-width="1.5"/>
+    </svg>
+  </div>
+  <div class="hi hi-6">
+    <svg width="64" height="64" viewBox="0 0 64 64" fill="none" opacity=".10">
+      <circle cx="32" cy="32" r="30" stroke="white" stroke-width="1.8"/>
+      <circle cx="32" cy="32" r="20" stroke="rgba(255,255,255,.4)" stroke-width="1.4"/>
+      <text x="32" y="40" text-anchor="middle" font-size="22" font-weight="700" fill="white" font-family="'Segoe UI',Arial,sans-serif">&#8377;</text>
+    </svg>
+  </div>
+
+  <!-- Main content -->
+  <div class="hero-body">
+    <div class="hero-eye">Accepting new clients for FY 2025-26</div>
+    <h1 class="hero-h1">Your taxes.<br><span class="hl">Handled right.</span><br>Every year.</h1>
+    <div class="hero-rule"></div>
+    <p class="hero-para">Whether you are salaried, running a business, an NRI, or a freelancer — complete tax, compliance, and financial advisory from a New Delhi firm that gets it done.</p>
+    <div class="hero-types">
+      <span class="ht ht-sal">Salaried Individuals</span>
+      <span class="ht ht-biz">Business Owners</span>
+      <span class="ht ht-nri">NRI Clients</span>
+      <span class="ht ht-fre">Freelancers</span>
+      <span class="ht ht-sta">Startups &amp; MSMEs</span>
+    </div>
+    <div class="hero-acts">
+      <a class="btn-p" href="#contact">Book Free Consultation</a>
+      <a class="btn-s" href="#services">View All Services</a>
+    </div>
+  </div>
+
+  <!-- Stats pinned to hero bottom -->
+  <div class="hero-sbar">
+    <div class="hs-item">
+      <div class="hs-num">20<em>+</em></div>
+      <div class="hs-lbl">Years of Practice</div>
+    </div>
+    <div class="hs-item">
+      <div class="hs-num">400<em>+</em></div>
+      <div class="hs-lbl">Clients Served</div>
+    </div>
+    <div class="hs-item">
+      <div class="hs-num">&#8377;0</div>
+      <div class="hs-lbl">Penalty Record</div>
+    </div>
+    <div class="hs-item">
+      <div class="hs-num">4.9<em>&#9733;</em></div>
+      <div class="hs-lbl">Client Rating</div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="sec svc-sec" id="services">
+  <div class="reveal"><div class="sec-eye">What We Do</div></div>
+  <div class="reveal d1"><h2 class="sec-h2">Tax, compliance, and advisory services</h2></div>
+  <div class="reveal d2"><p class="sec-lead">From your first ITR to a full statutory audit, handled with precision by experienced professionals. No missed deadlines, no exceptions.</p></div>
+  <div class="svc-grid">
+
+    <div class="svc-card svc-c1 reveal">
+      <div class="svc-bar"></div>
+      <div class="svc-name">Tax Planning</div>
+      <div class="svc-desc">Year-round tax planning to legally reduce your liability. We review your income structure, investments, and deductions before filing season, not during it.</div>
+      <a class="svc-enq" href="#contact">Enquire &#8594;</a>
+    </div>
+
+    <div class="svc-card svc-c2 reveal d1">
+      <div class="svc-bar"></div>
+      <div class="svc-name">ITR Filing</div>
+      <div class="svc-desc">Accurate income tax returns for salaried individuals, freelancers, business owners, and NRIs. All ITR forms covered, filed well ahead of every deadline.</div>
+      <a class="svc-enq" href="#contact">Enquire &#8594;</a>
+    </div>
+
+    <div class="svc-card svc-c3 reveal d2">
+      <div class="svc-bar"></div>
+      <div class="svc-name">GST Compliance</div>
+      <div class="svc-desc">GST registration, monthly GSTR-1 and GSTR-3B filing, annual GSTR-9 reconciliation, and department notice responses. Complete coverage, no gaps.</div>
+      <a class="svc-enq" href="#contact">Enquire &#8594;</a>
+    </div>
+
+    <div class="svc-card svc-c4 reveal">
+      <div class="svc-bar"></div>
+      <div class="svc-name">TDS Management</div>
+      <div class="svc-desc">TDS computation, challan payment, quarterly 24Q and 26Q return filing, and Form 16 and 16A issuance. Your TDS compliance stays clean throughout the year.</div>
+      <a class="svc-enq" href="#contact">Enquire &#8594;</a>
+    </div>
+
+    <div class="svc-card svc-c5 reveal d1">
+      <div class="svc-bar"></div>
+      <div class="svc-name">Audit Services</div>
+      <div class="svc-desc">Statutory tax audit under Section 44AB, internal audits, and bank audits. Complete 3CA and 3CB documentation, filed on time and with full accuracy.</div>
+      <a class="svc-enq" href="#contact">Enquire &#8594;</a>
+    </div>
+
+    <div class="svc-card svc-c6 reveal d2">
+      <div class="svc-bar"></div>
+      <div class="svc-name">Business Advisory</div>
+      <div class="svc-desc">Cash flow analysis, MIS reporting, business valuation, and financial projections for founders and MSMEs managing growth, restructuring, or expansion decisions.</div>
+      <a class="svc-enq" href="#contact">Enquire &#8594;</a>
+    </div>
+
+    <div class="svc-card svc-c1 reveal">
+      <div class="svc-bar"></div>
+      <div class="svc-name">Company Registration</div>
+      <div class="svc-desc">Private limited, LLP, OPC, and partnership registration with complete post-incorporation compliance: PAN, TAN, GSTIN, bank account, and statutory records.</div>
+      <a class="svc-enq" href="#contact">Enquire &#8594;</a>
+    </div>
+
+    <div class="svc-card svc-c2 reveal d1">
+      <div class="svc-bar"></div>
+      <div class="svc-name">Payroll Management</div>
+      <div class="svc-desc">Monthly payroll processing, PF and ESI computation, Form 16 generation, and TDS on salary. Your team gets paid correctly while your compliance stays spotless.</div>
+      <a class="svc-enq" href="#contact">Enquire &#8594;</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="sec" id="about">
+  <div class="about-grid">
+    <div>
+      <div class="reveal"><div class="sec-eye">About the Firm</div></div>
+      <div class="reveal d1"><h2 class="sec-h2">Two decades of practice. One standard of work.</h2></div>
+      <div class="reveal d2">
+        <p style="font-size:15px;color:var(--text2);line-height:1.75;margin-bottom:10px">Vikram Sharma &amp; Associates was established in 2004 in Connaught Place, New Delhi. What started as a solo tax practice has grown into a seven-member team handling everything from individual ITR filing to complex corporate audits and MSME financial advisory.</p>
+        <p style="font-size:15px;color:var(--text2);line-height:1.75;margin-bottom:32px">Compliance should never be the thing that slows your business down. Our job is to make sure it is not.</p>
+      </div>
+      <div class="ab-highs">
+        <div class="ab-item reveal d1">
+          <div class="ab-icon">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9l4.5 4.5 7.5-7.5" stroke="#1D4ED8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <div class="ab-t">Qualified, current, and certified</div>
+            <div class="ab-d">Regular CPE certification and updated on every Finance Act change and GST council circular. You benefit from current knowledge without tracking it yourself.</div>
+          </div>
+        </div>
+        <div class="ab-item reveal d2">
+          <div class="ab-icon">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9l4.5 4.5 7.5-7.5" stroke="#1D4ED8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <div class="ab-t">Zero missed deadlines in 20 years</div>
+            <div class="ab-d">Internal calendars flag your compliance 45 days in advance. Not a single statutory due date has been missed since the firm was founded.</div>
+          </div>
+        </div>
+        <div class="ab-item reveal d3">
+          <div class="ab-icon">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9l4.5 4.5 7.5-7.5" stroke="#1D4ED8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <div class="ab-t">Direct access, every time you call</div>
+            <div class="ab-d">Your queries are handled by trained professional staff. You will never chase someone who is seeing your file for the first time.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="reveal d2">
+      <div class="pc-card">
+        <div class="pc-mono">VS</div>
+        <div class="pc-name">Vikram Sharma</div>
+        <div class="pc-role">Founder &amp; Principal Consultant</div>
+        <p class="pc-bio">Vikram qualified with distinction and spent six years at a national practice before founding his own firm in New Delhi. He specialises in direct taxation, corporate restructuring, and financial advisory for growing businesses and NRI clients. He is known for explaining complex positions in language clients can act on.</p>
+        <div class="pc-quals">
+          <div class="pc-q">Fellow Member, professional tax body</div>
+          <div class="pc-q">Certified Tax and Financial Consultant</div>
+          <div class="pc-q">Registered GST Practitioner</div>
+          <div class="pc-q">20 years of public practice, New Delhi</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="sec process-sec">
+  <div class="porb porb-1"></div>
+  <div class="porb porb-2"></div>
+  <div class="proc-inner">
+    <div class="reveal"><div class="sec-eye">How We Work</div></div>
+    <div class="reveal d1"><h2 class="sec-h2">First call to filed return: three steps</h2></div>
+    <div class="reveal d2"><p class="sec-lead">No paperwork before we speak. No fees before we understand your situation.</p></div>
+    <div class="proc-grid">
+
+      <div class="proc-card reveal d1">
+        <div class="proc-arr">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M3 6h6M7 4l2 2-2 2" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="proc-n">01</div>
+        <div class="proc-t">Free 30-minute consultation</div>
+        <div class="proc-d">We understand your situation fully: income type, compliance gaps, past filings. No fee, no obligation. Just clarity on what you need and what it will cost.</div>
+      </div>
+
+      <div class="proc-card reveal d2">
+        <div class="proc-arr">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M3 6h6M7 4l2 2-2 2" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="proc-n">02</div>
+        <div class="proc-t">Document review and gap analysis</div>
+        <div class="proc-d">Share documents via WhatsApp or email. We check for inconsistencies, missed deductions, and compliance gaps before touching any filing or return.</div>
+      </div>
+
+      <div class="proc-card reveal d3">
+        <div class="proc-n">03</div>
+        <div class="proc-t">Filing, confirmation, and archive</div>
+        <div class="proc-d">We file accurately, send the acknowledgement within the hour, and archive everything. You will never chase us for a receipt or a status update.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="sec testi-sec">
+  <div class="reveal"><div class="sec-eye">Client Feedback</div></div>
+  <div class="reveal d1"><h2 class="sec-h2">Trusted by 400+ clients across India</h2></div>
+  <div class="reveal d2"><p class="sec-lead">Individuals, business owners, startups, and NRIs. The feedback is consistent.</p></div>
+  <div class="testi-outer">
+    <div class="testi-carousel reveal d2">
+      <div class="testi-track" id="testiTrack">
+
+        <div class="tc">
+          <div class="tc-qm">&ldquo;</div>
+          <div class="tc-stars"><div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div></div>
+          <p class="tc-q">"Vikram Sharma &amp; Associates has handled our GST returns and ITR for three years. In that time we have not received a single department notice. That is exactly the peace of mind I was looking for."</p>
+          <div class="tc-au">
+            <div class="tc-av"><img src="https://randomuser.me/api/portraits/men/22.jpg" alt="Rajan Kapoor" width="96" height="96" style="width:100%;height:100%;object-fit:cover"/></div>
+            <div><div class="tc-nm">Rajan Kapoor</div><div class="tc-rl">Director, Kapoor Industries Pvt. Ltd.</div></div>
+          </div>
+        </div>
+
+        <div class="tc">
+          <div class="tc-qm">&ldquo;</div>
+          <div class="tc-stars"><div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div></div>
+          <p class="tc-q">"As a freelancer my taxes were always confusing. This team explained every deduction clearly, filed everything on time, and charged exactly what they quoted. No surprises, no stress."</p>
+          <div class="tc-au">
+            <div class="tc-av"><img src="https://randomuser.me/api/portraits/women/28.jpg" alt="Neha Srivastava" width="96" height="96" style="width:100%;height:100%;object-fit:cover"/></div>
+            <div><div class="tc-nm">Neha Srivastava</div><div class="tc-rl">Independent Architect, Gurugram</div></div>
+          </div>
+        </div>
+
+        <div class="tc">
+          <div class="tc-qm">&ldquo;</div>
+          <div class="tc-stars"><div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div></div>
+          <p class="tc-q">"We switched after missing a compliance deadline with our previous consultant. Three years with this firm and we have not missed a single date. Should have made the move much earlier."</p>
+          <div class="tc-au">
+            <div class="tc-av"><img src="https://randomuser.me/api/portraits/men/55.jpg" alt="Mahesh Tiwari" width="96" height="96" style="width:100%;height:100%;object-fit:cover"/></div>
+            <div><div class="tc-nm">Mahesh Tiwari</div><div class="tc-rl">Proprietor, Tiwari Export House</div></div>
+          </div>
+        </div>
+
+        <div class="tc">
+          <div class="tc-qm">&ldquo;</div>
+          <div class="tc-stars"><div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div></div>
+          <p class="tc-q">"My startup's first year was overwhelming: GST, TDS, advance tax, payroll. The team handled all of it on time. I could focus on the business completely. That is a real advantage in the early stage."</p>
+          <div class="tc-au">
+            <div class="tc-av"><img src="https://randomuser.me/api/portraits/women/33.jpg" alt="Kavya Reddy" width="96" height="96" style="width:100%;height:100%;object-fit:cover"/></div>
+            <div><div class="tc-nm">Kavya Reddy</div><div class="tc-rl">Founder, Reddy Digital Agency</div></div>
+          </div>
+        </div>
+
+        <div class="tc">
+          <div class="tc-qm">&ldquo;</div>
+          <div class="tc-stars"><div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div></div>
+          <p class="tc-q">"Received a tax scrutiny notice and was genuinely worried. Vikram's team responded calmly, organised every document, and resolved it with zero penalty. Cannot recommend them highly enough."</p>
+          <div class="tc-au">
+            <div class="tc-av"><img src="https://randomuser.me/api/portraits/men/68.jpg" alt="Suresh Patel" width="96" height="96" style="width:100%;height:100%;object-fit:cover"/></div>
+            <div><div class="tc-nm">Suresh Patel</div><div class="tc-rl">Managing Director, Patel Textiles Ltd.</div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <div class="testi-nav">
+    <button class="testi-arrow" id="testiPrev" aria-label="Previous testimonials">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="testi-dots" id="testiDots"></div>
+    <button class="testi-arrow" id="testiNext" aria-label="Next testimonials">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="sec" id="contact" style="background:var(--off)">
+  <div class="contact-grid">
+    <div>
+      <div class="reveal"><div class="sec-eye">Get in Touch</div></div>
+      <div class="reveal d1"><h2 class="sec-h2">Let's start with a conversation</h2></div>
+      <div class="reveal d2"><p style="font-size:15px;color:var(--text2);line-height:1.75;margin-bottom:28px">No charges for the first consultation. Tell us your situation and we will tell you exactly what you need and what it will cost.</p></div>
+      <div class="ct-list">
+        <div class="ct-item reveal d1">
+          <div class="ct-ic">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <rect x="2" y="4" width="14" height="10" rx="2" stroke="#1D4ED8" stroke-width="1.5" fill="none"/>
+              <path d="M2 6l7 5 7-5" stroke="#1D4ED8" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div><div class="ct-l">Email</div><div class="ct-v">info@vikramsharmaassociates.in</div><div class="ct-s">Replies within 4 hours on working days</div></div>
+        </div>
+        <div class="ct-item reveal d2">
+          <div class="ct-ic">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M3.5 3a1 1 0 011-1h2.6l1.2 3.4-1.6 1a10 10 0 004.9 4.9l1-1.6 3.4 1.2V13a1 1 0 01-1 1C7 14 3 9.5 3.5 3z" stroke="#1D4ED8" stroke-width="1.5" fill="none" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div><div class="ct-l">Phone &amp; WhatsApp</div><div class="ct-v">+91 98100 43210</div><div class="ct-s">Available on WhatsApp</div></div>
+        </div>
+        <div class="ct-item reveal d3">
+          <div class="ct-ic">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M9 2a4 4 0 100 8A4 4 0 009 2z" stroke="#1D4ED8" stroke-width="1.5" fill="none"/>
+              <path d="M2.5 16c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" stroke="#1D4ED8" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+            </svg>
+          </div>
+          <div><div class="ct-l">Office Address</div><div class="ct-v">302, Barakhamba House, Connaught Place</div><div class="ct-s">New Delhi, 110001</div></div>
+        </div>
+        <div class="ct-item reveal d4">
+          <div class="ct-ic">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <circle cx="9" cy="9" r="7" stroke="#1D4ED8" stroke-width="1.5" fill="none"/>
+              <path d="M9 5v4l2.5 2.5" stroke="#1D4ED8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div><div class="ct-l">Office Hours</div><div class="ct-v">Mon to Sat: 10:00 AM to 7:00 PM</div><div class="ct-s">Sunday appointments on request</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="reveal d2">
+      <div class="form-card">
+        <div class="form-t">Request a Free Consultation</div>
+        <div class="form-s">We will call you back within 2 hours on working days.</div>
+        <div class="f-row">
+          <div class="fg" style="margin-bottom:0"><label class="fl">Full Name</label><input class="fi" type="text" placeholder="Your full name"></div>
+          <div class="fg" style="margin-bottom:0"><label class="fl">Mobile Number</label><input class="fi" type="tel" placeholder="+91 98100 43210"></div>
+        </div>
+        <div class="fg" style="margin-top:14px">
+          <label class="fl">Email Address</label>
+          <input class="fi" type="email" placeholder="you@email.com">
+        </div>
+        <div class="fg">
+          <label class="fl">Service Required</label>
+          <select class="fsel">
+            <option value="">Select a service</option>
+            <option>Tax Planning</option>
+            <option>ITR Filing</option>
+            <option>GST Compliance</option>
+            <option>TDS Management</option>
+            <option>Audit Services</option>
+            <option>Business Advisory</option>
+            <option>Company Registration</option>
+            <option>Payroll Management</option>
+            <option>Other / Not sure yet</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label class="fl">Brief Description (optional)</label>
+          <textarea class="fta" placeholder="A few lines about your situation saves time on the call."></textarea>
+        </div>
+        <button class="btn-submit" type="button">Send Enquiry</button>
+        <button class="btn-wa" type="button">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+          </svg>
+          Chat on WhatsApp
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-grid">
+    <div>
+      <div class="foot-logo-row">
+        <div class="foot-mono">VS</div>
+        <img class="foot-logo-img" alt="">
+        <div><div class="foot-nm">Vikram Sharma &amp; Associates</div><div class="foot-sub">Tax &amp; Financial Consultants</div></div>
+      </div>
+      <p class="foot-desc">Established 2004, Connaught Place, New Delhi. Serving individuals, businesses, startups, and NRI clients across India with accuracy, accountability, and zero missed deadlines.</p>
+      <div class="foot-ct" style="margin-top:22px">Follow Us</div>
+      <div class="foot-social">
+        <a class="foot-soc-a" href="#" target="_blank" rel="noopener" aria-label="LinkedIn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+          </svg>
+        </a>
+        <a class="foot-soc-a" href="#" target="_blank" rel="noopener" aria-label="Facebook">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+          </svg>
+        </a>
+        <a class="foot-soc-a" href="#" target="_blank" rel="noopener" aria-label="X">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L2.018 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+        </a>
+        <a class="foot-soc-a" href="#" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
+          </svg>
+        </a>
+        <a class="foot-soc-a" href="#" target="_blank" rel="noopener" aria-label="YouTube">
+          <svg width="17" height="13" viewBox="0 0 24 17" fill="currentColor">
+            <path d="M23.495 2.205a3.02 3.02 0 0 0-2.122-2.136C19.545 0 12 0 12 0S4.455 0 2.627.069A3.02 3.02 0 0 0 .505 2.205C0 4.04 0 8.5 0 8.5s0 4.46.505 6.295a3.02 3.02 0 0 0 2.122 2.136C4.455 17 12 17 12 17s7.545 0 9.373-.069a3.02 3.02 0 0 0 2.122-2.136C24 12.96 24 8.5 24 8.5s0-4.46-.505-6.295zM9.6 12.14V4.86L15.84 8.5 9.6 12.14z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+    <div>
+      <div class="foot-ct">Services</div>
+      <a class="foot-lnk" href="#services">Tax Planning</a>
+      <a class="foot-lnk" href="#services">ITR Filing</a>
+      <a class="foot-lnk" href="#services">GST Compliance</a>
+      <a class="foot-lnk" href="#services">Audit Services</a>
+      <a class="foot-lnk" href="#services">Business Advisory</a>
+      <a class="foot-lnk" href="#services">Company Registration</a>
+    </div>
+    <div>
+      <div class="foot-ct">Contact</div>
+      <a class="foot-lnk" href="tel:+919810043210">+91 98100 43210</a>
+      <a class="foot-lnk" href="mailto:info@vikramsharmaassociates.in">info@vikramsharmaassociates.in</a>
+      <span class="foot-lnk" style="cursor:default">Connaught Place, New Delhi 110001</span>
+      <div class="foot-ct" style="margin-top:20px">Hours</div>
+      <span class="foot-lnk" style="cursor:default">Mon to Sat: 10AM to 7PM</span>
+      <span class="foot-lnk" style="cursor:default">Sunday by appointment</span>
+    </div>
+  </div>
+  <div class="foot-bot">
+    <div class="foot-copy">&#169; 2025 Vikram Sharma &amp; Associates. All rights reserved.</div>
+    <div class="foot-pow">Powered by <a href="#">KDK Software</a></div>
+  </div>
+</footer>
+
+<!-- FLOATING WHATSAPP -->
+<button class="wa-float" onclick="window.open('https://wa.me/919810043210','_blank')" aria-label="Chat on WhatsApp">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
+    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+  </svg>
+</button>
+
+<script>
+const nav = document.getElementById('mainNav');
+window.addEventListener('scroll', function() { nav.classList.toggle('sticky', window.scrollY > 60) }, { passive:true });
+
+var ham = document.getElementById('navHamburger');
+var mob = document.getElementById('navMob');
+if (ham) {
+  ham.addEventListener('click', function() {
+    var open = mob.classList.toggle('open');
+    ham.classList.toggle('open', open);
+    ham.setAttribute('aria-expanded', open);
+  });
+  mob.querySelectorAll('a').forEach(function(a) {
+    a.addEventListener('click', function() {
+      mob.classList.remove('open');
+      ham.classList.remove('open');
+      ham.setAttribute('aria-expanded', 'false');
+    });
+  });
+}
+
+const observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) { if (e.isIntersecting) { e.target.classList.add('vis'); observer.unobserve(e.target) } });
+}, { threshold:0.12 });
+document.querySelectorAll('.reveal').forEach(function(el) { observer.observe(el) });
+
+function easeOut(t) { return 1 - Math.pow(1-t,3) }
+function countUp(el, target, dur) {
+  var start = performance.now(), suf = el.dataset.suffix||'';
+  (function step(now) {
+    var p = Math.min((now-start)/dur, 1);
+    el.textContent = Math.floor(easeOut(p)*target).toLocaleString('en-IN') + suf;
+    if (p < 1) requestAnimationFrame(step);
+    else el.textContent = target.toLocaleString('en-IN') + suf;
+  })(start);
+}
+var cObs = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
+    if (e.isIntersecting && e.target.dataset.count) { countUp(e.target, parseInt(e.target.dataset.count), 1600); cObs.unobserve(e.target) }
+  });
+}, { threshold:0.6 });
+document.querySelectorAll('[data-count]').forEach(function(el) { cObs.observe(el) });
+
+/* Simple, robust carousel: no clones (the clone/measure race was leaving the
+   first desktop view blank). Slides one card at a time, clamps to range, and
+   drives prev/next + dots from the bottom nav. Recomputes on resize. */
+function bootTesti() {
+  clearInterval(window.__testiTimer);
+  var track  = document.getElementById('testiTrack');
+  var dotsEl = document.getElementById('testiDots');
+  var prevB  = document.getElementById('testiPrev');
+  var nextB  = document.getElementById('testiNext');
+  if (!track) return;
+  var total = track.children.length;
+  if (!total) { if (dotsEl) dotsEl.innerHTML=''; return; }
+  var idx = 0;
+  function perView() { return window.innerWidth <= 960 ? 1 : Math.min(3, total); }
+  function maxIdx()  { return Math.max(0, total - perView()); }
+  function gap()     { var g = getComputedStyle(track).columnGap || getComputedStyle(track).gap || '0'; return parseFloat(g) || 0; }
+  function step()    { var c = track.children[0]; return c ? (c.getBoundingClientRect().width + gap()) : 0; }
+  function syncDots(){ if (dotsEl) Array.prototype.forEach.call(dotsEl.children,function(d,i){ d.classList.toggle('act', i===idx); }); }
+  function render(instant) {
+    if (idx > maxIdx()) idx = maxIdx();
+    if (idx < 0) idx = 0;
+    track.style.transition = instant ? 'none' : 'transform .5s cubic-bezier(.4,0,.2,1)';
+    track.style.transform  = 'translateX(-' + (idx * step()) + 'px)';
+    syncDots();
+    var single = maxIdx() === 0;   /* nothing to scroll: hide the controls */
+    if (prevB) prevB.style.display = single ? 'none' : '';
+    if (nextB) nextB.style.display = single ? 'none' : '';
+    if (dotsEl) dotsEl.style.display = single ? 'none' : '';
+  }
+  function buildDots() {
+    if (!dotsEl) return; dotsEl.innerHTML='';
+    for (var i=0; i<=maxIdx(); i++) {
+      (function(k){ var d=document.createElement('button'); d.className='testi-dot'+(k===idx?' act':''); d.setAttribute('aria-label','Slide '+(k+1));
+        d.addEventListener('click',function(){ idx=k; render(); resetTimer(); }); dotsEl.appendChild(d); })(i);
+    }
+  }
+  function move(delta) { idx += delta; if (idx > maxIdx()) idx = 0; if (idx < 0) idx = maxIdx(); render(); }
+  function resetTimer() { clearInterval(window.__testiTimer); if (maxIdx() > 0) window.__testiTimer = setInterval(function(){ move(1); }, 5000); }
+  if (nextB) nextB.onclick = function(){ move(1);  resetTimer(); };
+  if (prevB) prevB.onclick = function(){ move(-1); resetTimer(); };
+  if (window.__testiResizeFn) window.removeEventListener('resize', window.__testiResizeFn);
+  window.__testiResizeFn = function(){ clearTimeout(window.__testiResizeT); window.__testiResizeT = setTimeout(function(){ buildDots(); render(true); }, 150); };
+  window.addEventListener('resize', window.__testiResizeFn);
+  buildDots(); render(true);
+  requestAnimationFrame(function(){ render(true); });
+  resetTimer();
+}
+bootTesti();
+</script>
+
+<script>
+/* ============================================================
+   KDK Website Builder — config binding
+   Populates this design from the admin panel. Reads a config
+   object from localStorage on load and listens for live
+   postMessage updates from the builder's Preview.
+   ============================================================ */
+(function(){
+  function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function qs(s,r){return (r||document).querySelector(s);}
+  function qsa(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+  function initials(name){
+    var skip={'ca':1,'cs':1,'cma':1,'adv':1,'adv.':1,'dr':1,'dr.':1,'mr':1,'mrs':1,'ms':1,'shri':1,'smt':1,'m/s':1};
+    var parts=String(name||'').replace(/&/g,' ').split(/\s+/).filter(Boolean);
+    var words=parts.filter(function(w){return !skip[w.toLowerCase()];});
+    if(!words.length) words=parts;
+    return (((words[0]||'')[0]||'')+((words[1]||'')[0]||'')).toUpperCase()||'—';
+  }
+  function toHex(c){ if(/^#[0-9a-fA-F]{6}$/.test(c))return c; var m=String(c).match(/^#([0-9a-fA-F]{3})$/); if(m)return '#'+m[1].split('').map(function(x){return x+x;}).join(''); return null; }
+  function mix(hex,amt){ var h=toHex(hex); if(!h)return hex; h=h.slice(1);
+    var p=[0,2,4].map(function(i){return parseInt(h.slice(i,i+2),16);});
+    return '#'+p.map(function(x){x=Math.max(0,Math.min(255,Math.round(x+amt))); return ('0'+x.toString(16)).slice(-2);}).join(''); }
+  function tint(hex){ var h=toHex(hex); if(!h)return hex; h=h.slice(1);
+    var p=[0,2,4].map(function(i){return parseInt(h.slice(i,i+2),16);});
+    return '#'+p.map(function(x){x=Math.round(x+(255-x)*0.92); return ('0'+x.toString(16)).slice(-2);}).join(''); }
+  function splitStat(v){ v=String(v==null?'':v); var m=v.match(/^([₹$\d.,\s]+)(.*)$/); if(m&&m[1].trim())return{main:m[1].trim(),suf:m[2]}; return{main:v,suf:''}; }
+  /* one sentence per line; keep each sentence's trailing punctuation inside the highlight so it never strands */
+  function fmtHeadline(headline,hl,tag,cls,sty){
+    var open='<'+tag+(cls?' class="'+cls+'"':'')+(sty?' style="'+sty+'"':'')+'>', close='</'+tag+'>';
+    var lines=String(headline).split(/\r?\n/); // each new line the user typed becomes a line break
+    return lines.map(function(seg){ seg=seg.trim(); if(!seg) return '';
+      if(hl){ var i=seg.indexOf(hl); if(i>=0){ var end=i+hl.length; while(end<seg.length&&'.,!?:'.indexOf(seg.charAt(end))>=0)end++; return esc(seg.slice(0,i))+open+esc(seg.slice(i,end))+close+esc(seg.slice(end)); } }
+      return esc(seg);
+    }).filter(Boolean).join('<br>');
+  }
+
+  /* Swap the monogram/crest for an uploaded logo (or restore it when cleared). */
+  function applyLogo(cfg,navImgSel,navMarkSel,footImgSel,footMarkSel){
+    var url=cfg&&cfg.logo, name=(cfg&&cfg.firmName)||'';
+    var navImg=qs(navImgSel),navMark=qs(navMarkSel),footImg=qs(footImgSel),footMark=qs(footMarkSel);
+    if(url){
+      if(navImg){ navImg.src=url; navImg.alt=name+' logo'; navImg.style.display='block'; }
+      if(navMark) navMark.style.display='none';
+      if(footImg){ footImg.src=url; footImg.alt=name+' logo'; footImg.style.display='block'; }
+      if(footMark) footMark.style.display='none';
+    } else {
+      if(navImg) navImg.style.display='none';
+      if(navMark) navMark.style.display='';
+      if(footImg) footImg.style.display='none';
+      if(footMark) footMark.style.display='';
+    }
+  }
+  function applyConfig(cfg){
+    if(!cfg||typeof cfg!=='object') return;
+    var ini=initials(cfg.firmName);
+
+    /* identity */
+    var nm=qs('.nav-mono'); if(nm)nm.textContent=ini;
+    var fm=qs('.foot-mono'); if(fm)fm.textContent=ini;
+    if(cfg.firmName){ var a1=qs('.nav-nm'),a2=qs('.foot-nm'); if(a1)a1.textContent=cfg.firmName; if(a2)a2.textContent=cfg.firmName; }
+    if(cfg.tagline){ var b1=qs('.nav-sub'),b2=qs('.foot-sub'); if(b1)b1.textContent=cfg.tagline; if(b2)b2.textContent=cfg.tagline; }
+    applyLogo(cfg,'.nav-logo-img','.nav-mono','.foot-logo-img','.foot-mono');
+
+    /* hero */
+    var h=cfg.hero||{};
+    if(cfg.hero){ var eye=qs('.hero-eye'); if(eye){ if(h.badge){ eye.textContent=h.badge; eye.style.display=''; } else eye.style.display='none'; } }
+    if(h.headline){ var h1=qs('.hero-h1'); if(h1) h1.innerHTML=fmtHeadline(h.headline,h.highlight,'span','hl'); }
+    if(h.sub){ var hp=qs('.hero-para'); if(hp)hp.textContent=h.sub; }
+    if(h.cta1){ var p1=qs('.hero-acts .btn-p'); if(p1)p1.textContent=h.cta1; }
+    if(h.cta2){ var p2=qs('.hero-acts .btn-s'); if(p2)p2.textContent=h.cta2; }
+    if(h.tags&&h.tags.length){ var ht=qs('.hero-types'); if(ht){ var cl=['ht-sal','ht-biz','ht-nri','ht-fre','ht-sta'];
+      ht.innerHTML=h.tags.map(function(t,i){return '<span class="ht '+cl[i%cl.length]+'">'+esc(t)+'</span>';}).join(''); } }
+
+    /* stats */
+    if(cfg.stats&&cfg.stats.length){ var sb=qs('.hero-sbar'); if(sb) sb.innerHTML=cfg.stats.map(function(st){ var sp=splitStat(st.v);
+      return '<div class="hs-item"><div class="hs-num">'+esc(sp.main)+(sp.suf?'<em>'+esc(sp.suf)+'</em>':'')+'</div><div class="hs-lbl">'+esc(st.l)+'</div></div>'; }).join(''); }
+
+    /* services + form dropdown + footer services */
+    if(cfg.services&&cfg.services.length){
+      var g=qs('.svc-grid'); if(g) g.innerHTML=cfg.services.map(function(sv,i){
+        return '<div class="svc-card svc-c'+((i%6)+1)+'"><div class="svc-bar"></div><div class="svc-name">'+esc(sv.name)+'</div><div class="svc-desc">'+esc(sv.desc||'')+'</div><a class="svc-enq" href="#contact">Enquire &#8594;</a></div>'; }).join('');
+      var sel=qs('.form-card select.fsel'); if(sel) sel.innerHTML='<option value="">Select a service</option>'+cfg.services.map(function(sv){return '<option>'+esc(sv.name)+'</option>';}).join('')+'<option>Other / Not sure yet</option>';
+      var fc=qsa('.foot-grid > div'); if(fc[1]) fc[1].innerHTML='<div class="foot-ct">Services</div>'+cfg.services.slice(0,6).map(function(sv){return '<a class="foot-lnk" href="#services">'+esc(sv.name)+'</a>';}).join('');
+    }
+
+    /* about text */
+    if(cfg.about){ var ab=qs('#about .about-grid'); if(ab){ var ps=qsa('p',ab).filter(function(p){return !p.classList.contains('pc-bio');}); if(ps[0])ps[0].textContent=cfg.about; if(ps[1])ps[1].style.display='none'; } }
+
+    /* highlights */
+    if(cfg.highlights&&cfg.highlights.length){ var ah=qs('.ab-highs'); if(ah) ah.innerHTML=cfg.highlights.map(function(x){
+      return '<div class="ab-item"><div class="ab-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9l4.5 4.5 7.5-7.5" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div class="ab-t">'+esc(x.t)+'</div><div class="ab-d">'+esc(x.d||'')+'</div></div></div>'; }).join(''); }
+
+    /* founder */
+    var pc=qs('.pc-card');
+    if(pc){
+      if(cfg.founderName){ var pn=qs('.pc-name',pc); if(pn)pn.textContent=cfg.founderName; }
+      if(cfg.founderRole){ var pr=qs('.pc-role',pc); if(pr)pr.textContent=cfg.founderRole; }
+      if(cfg.founderBio){ var pb=qs('.pc-bio',pc); if(pb)pb.textContent=cfg.founderBio; }
+      var mo=qs('.pc-mono',pc); if(mo){ if(cfg.founderPhoto){ mo.innerHTML='<img src="'+cfg.founderPhoto+'" alt="'+esc(cfg.founderName||'')+'" style="width:100%;height:100%;object-fit:cover;border-radius:16px">'; mo.style.background='none'; } else { mo.textContent=initials(cfg.founderName); } }
+      if(cfg.credentials&&cfg.credentials.length){ var pq=qs('.pc-quals',pc); if(pq)pq.innerHTML=cfg.credentials.map(function(c){return '<div class="pc-q">'+esc(c)+'</div>';}).join(''); }
+    }
+
+    /* process */
+    if(cfg.process&&cfg.process.length){ var pg=qs('.proc-grid'); if(pg){ var last=cfg.process.length-1,
+      arr='<div class="proc-arr"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 6h6M7 4l2 2-2 2" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
+      pg.innerHTML=cfg.process.map(function(p,i){ return '<div class="proc-card">'+(i<last?arr:'')+'<div class="proc-n">'+('0'+(i+1)).slice(-2)+'</div><div class="proc-t">'+esc(p.t)+'</div><div class="proc-d">'+esc(p.d||'')+'</div></div>'; }).join(''); } }
+
+    /* testimonials */
+    if(cfg.testimonials&&cfg.testimonials.length){ var tk=qs('#testiTrack'); if(tk){
+      tk.innerHTML=cfg.testimonials.map(function(t){ var r=Math.max(0,Math.min(5,t.s||5)),st=''; for(var i=0;i<r;i++)st+='<div class="tc-star"></div>';
+        return '<div class="tc"><div class="tc-qm">&ldquo;</div><div class="tc-stars">'+st+'</div><p class="tc-q">'+esc(t.q)+'</p><div class="tc-au">'+(t.img?'<div class="tc-av"><img src="'+t.img+'" alt="'+esc(t.n)+'" style="width:100%;height:100%;object-fit:cover"></div>':'<div class="tc-av" style="background:var(--blue-lt);color:var(--blue);align-items:center;justify-content:center;font-weight:700;font-size:15px">'+esc(initials(t.n))+'</div>')+'<div><div class="tc-nm">'+esc(t.n)+'</div><div class="tc-rl">'+esc(t.r||'')+'</div></div></div></div>'; }).join('');
+      if(typeof bootTesti==='function'){ bootTesti(); setTimeout(bootTesti,140); setTimeout(bootTesti,420); }
+    } }
+
+    /* contact */
+    var ci=qsa('.ct-list .ct-item');
+    if(ci[0]&&cfg.email){ var e0=qs('.ct-v',ci[0]); if(e0)e0.textContent=cfg.email; }
+    if(ci[1]&&cfg.phone){ var e1=qs('.ct-v',ci[1]); if(e1)e1.textContent=cfg.phone; }
+    if(ci[2]&&cfg.address){ var e2=qs('.ct-v',ci[2]); if(e2)e2.textContent=cfg.address; var e2s=qs('.ct-s',ci[2]); if(e2s)e2s.textContent=cfg.city||''; }
+    if(ci[3]&&cfg.hours){ var e3=qs('.ct-v',ci[3]); if(e3)e3.textContent=cfg.hours; }
+
+    /* footer desc + copyright + contact col */
+    if(cfg.footerBlurb){ var fd=qs('.foot-desc'); if(fd)fd.textContent=cfg.footerBlurb; }
+    if(cfg.copyright){ var cp=qs('.foot-copy'); if(cp)cp.textContent=cfg.copyright; }
+    var fc2=qsa('.foot-grid > div');
+    if(fc2[2]&&(cfg.phone||cfg.email||cfg.address||cfg.hours)) fc2[2].innerHTML='<div class="foot-ct">Contact</div>'+
+      (cfg.phone?'<a class="foot-lnk" href="tel:'+String(cfg.phone).replace(/\s/g,'')+'">'+esc(cfg.phone)+'</a>':'')+
+      (cfg.email?'<a class="foot-lnk" href="mailto:'+esc(cfg.email)+'">'+esc(cfg.email)+'</a>':'')+
+      (cfg.address?'<span class="foot-lnk" style="cursor:default">'+esc(cfg.address)+'</span>':'')+
+      (cfg.hours?'<div class="foot-ct" style="margin-top:20px">Hours</div><span class="foot-lnk" style="cursor:default">'+esc(cfg.hours)+'</span>':'');
+    /* footer services list comes from the chosen services, not a fixed list */
+    if(fc2[1]&&cfg.services&&cfg.services.length) fc2[1].innerHTML='<div class="foot-ct">Services</div>'+cfg.services.slice(0,6).map(function(sv){return '<a class="foot-lnk" href="#services">'+esc(sv.name)+'</a>';}).join('');
+
+    /* social */
+    if(cfg.social){
+      var sm=[cfg.social.linkedin, cfg.social.facebook, null, cfg.social.instagram, cfg.social.youtube], shown=0;
+      qsa('.foot-social .foot-soc-a').forEach(function(a,i){ if(sm[i]){ a.href=sm[i]; a.style.display=''; shown++; } else a.style.display='none'; });
+      // No links: hide the whole social row and its "Follow Us" heading.
+      var fsoc=qs('.foot-social'); if(fsoc){ fsoc.style.display=shown?'':'none'; var flbl=fsoc.previousElementSibling; if(flbl&&flbl.classList&&flbl.classList.contains('foot-ct')) flbl.style.display=shown?'':'none'; }
+    }
+
+    /* whatsapp */
+    if(cfg.whatsapp){ var dg=String(cfg.whatsapp).replace(/\D/g,''); var wf=qs('.wa-float'); if(wf)wf.setAttribute('onclick',"window.open('https://wa.me/"+dg+"','_blank')"); }
+
+    /* title */
+    if(cfg.firmName) document.title=cfg.firmName+(cfg.tagline?(' | '+cfg.tagline):'');
+
+    /* colours */
+    var pri=toHex(cfg.primaryColor), acc=toHex(cfg.accentColor), root=document.documentElement;
+    var kst=document.getElementById('kdkTheme');
+    if(cfg.nativeTheme){ // theme 0 — leave the design exactly as designed
+      ['--blue','--blue-dk','--blue-lt','--gold'].forEach(function(v){root.style.removeProperty(v);});
+      if(kst) kst.textContent='';
+    } else {
+    if(pri){ root.style.setProperty('--blue',pri); root.style.setProperty('--blue-dk',mix(pri,-22)); root.style.setProperty('--blue-lt',tint(pri)); }
+    if(acc) root.style.setProperty('--gold',acc);
+    if(pri){ // Apex uses hardcoded gradients for its big areas — override them so the theme is visible
+      var ac=acc||pri, acL=mix(ac,60), rich=mix(pri,-18), mid=mix(pri,-58), dk=mix(pri,-104), dkr=mix(pri,-126);
+      // NOTE: use background-image (not the `background` shorthand) for .hl, or !important on
+      // the shorthand resets background-clip to border-box and the gradient fills the whole box.
+      var css='.hero{background:linear-gradient(155deg,'+rich+' 0%,'+mid+' 42%,'+dk+' 74%,'+dkr+' 100%)!important}'
+       +'.hero-h1 .hl{background-image:linear-gradient(135deg,'+acL+','+ac+')!important;-webkit-background-clip:text!important;background-clip:text!important;-webkit-text-fill-color:transparent!important;color:transparent!important}'
+       +'.stats-strip{background:linear-gradient(135deg,'+mix(pri,-28)+','+pri+','+mix(pri,14)+')!important}'
+       +'.process-sec{background:linear-gradient(140deg,'+dk+','+mix(pri,-72)+','+dkr+')!important}'
+       +'footer{background:linear-gradient(140deg,'+dkr+','+dk+')!important}'
+       +'.svc-card .svc-bar,.svc-card::before{background:linear-gradient(90deg,'+pri+','+ac+')!important}';
+      if(!kst){ kst=document.createElement('style'); kst.id='kdkTheme'; document.head.appendChild(kst); }
+      kst.textContent=css;
+    }
+    }
+  }
+
+  try{ var raw=localStorage.getItem('kdk_apex_config')||localStorage.getItem('kdk_wb_config'); if(raw) applyConfig(JSON.parse(raw)); }catch(e){}
+  window.addEventListener('message',function(e){ var d=e&&e.data; if(d&&d.type==='kdk-wb-config'&&d.config) applyConfig(d.config); });
+  window.__applyConfig=applyConfig;
+})();
+</script>

@@ -1,0 +1,1839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iyer &amp; Iyer | Advocates &amp; Legal Consultants, Chennai</title>
+<link rel="icon" type="image/png" href="../../CA%20India%20Logo.png">
+<style>
+/* ─────────────────────────────────────────
+   DESIGN TOKENS
+───────────────────────────────────────── */
+:root {
+  --brown:    #6B3A1F;
+  --brown-dk: #4A2510;
+  --brown-lt: #8B4A24;
+  --cream:    #F9F4EC;
+  --cream2:   #F3EAD8;
+  --parch:    #EDE0CC;
+  --gold:     #C4830A;
+  --gold2:    #E09B20;
+  --gold3:    #F2B84B;
+  --white:    #FFFFFF;
+  --off:      #FAF6EF;
+  --gold-rgb:  196,131,10;  /* accent channels — crosshatch, rings, borders, accents */
+  --brown-rgb: 107,58,31;   /* primary channels */
+  --text:     #2C1A0E;
+  --text2:    #7A6152;
+  --muted:    #A08470;
+  --border:   #DDD0B8;
+  --border2:  rgba(var(--gold-rgb),.22);
+
+  --g-hero:   linear-gradient(145deg,#1C0A04 0%,#3D1D0C 38%,#2C1208 65%,#130500 100%);
+  --g-brown:  linear-gradient(135deg,#4A2510 0%,#6B3A1F 50%,#8B4A24 100%);
+  --g-gold:   linear-gradient(135deg,#C4830A,#E09B20);
+  --g-proc:   linear-gradient(145deg,#130500 0%,#2C1208 50%,#130500 100%);
+  --g-card:   linear-gradient(155deg,#FFFFFF 0%,#FAF6EF 100%);
+  --g-footer: linear-gradient(180deg,#1A2533 0%,#0D1720 100%);
+
+  --sh-xs:  0 1px 4px rgba(var(--brown-rgb),.07);
+  --sh-sm:  0 3px 12px rgba(var(--brown-rgb),.1);
+  --sh-md:  0 8px 28px rgba(var(--brown-rgb),.14);
+  --sh-lg:  0 20px 56px rgba(var(--brown-rgb),.18);
+  --sh-gld: 0 4px 18px rgba(var(--gold-rgb),.3);
+
+  --t: .26s cubic-bezier(.4,0,.2,1);
+  --r: 14px;
+}
+
+/* ─────────────────────────────────────────
+   RESET & BASE
+───────────────────────────────────────── */
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
+html { scroll-behavior:smooth; font-size:15px }
+body {
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  background:var(--cream); color:var(--text);
+  line-height:1.65; overflow-x:hidden;
+}
+img { max-width:100%; display:block }
+a   { text-decoration:none; color:inherit }
+button { cursor:pointer; font-family:inherit; border:none; background:none }
+
+/* ─────────────────────────────────────────
+   ANIMATIONS
+───────────────────────────────────────── */
+@keyframes fadeUp  { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:none} }
+@keyframes floatA  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-18px)} }
+@keyframes floatB  { 0%,100%{transform:translateY(-8px)} 50%{transform:translateY(14px)} }
+@keyframes spinRing{ to{transform:rotate(360deg)} }
+@keyframes shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
+
+/* ─────────────────────────────────────────
+   NAV
+───────────────────────────────────────── */
+.nav {
+  position:fixed; top:0; left:0; right:0; z-index:300; height:68px;
+  display:flex; align-items:center; padding:0 6%;
+  transition:background var(--t),box-shadow var(--t),border-color var(--t);
+  border-bottom:1px solid transparent;
+}
+.nav.scrolled {
+  background:rgba(249,244,236,.97);
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  box-shadow:0 2px 20px rgba(var(--brown-rgb),.1);
+  border-bottom-color:var(--border);
+}
+.nav-logo { display:flex; align-items:center; gap:11px; flex-shrink:0 }
+.nav-crest {
+  width:38px; height:38px; border-radius:50%;
+  background:var(--g-brown); border:2px solid rgba(var(--gold-rgb),.4);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+/* Uploaded firm logo — white chip keeps it crisp on any nav/footer background. */
+.nav-logo-img { box-sizing:border-box; display:none; height:40px; width:auto; max-width:180px; object-fit:contain; background:#fff; border:1px solid rgba(15,23,42,.08); border-radius:8px; padding:4px 8px; box-shadow:0 2px 8px rgba(0,0,0,.12); flex-shrink:0 }
+.foot-logo-img { box-sizing:border-box; display:none; height:40px; width:auto; max-width:170px; object-fit:contain; background:#fff; border-radius:8px; padding:4px 8px; flex-shrink:0 }
+/* A long firm name shrinks to an ellipsis instead of overflowing the header;
+   the crest/logo stays intact. */
+.nav-logo { flex-shrink:1; min-width:0 }
+.nav-crest, .nav-logo-img { flex-shrink:0 }
+.nav-logo > div { min-width:0 }
+.nav-nm, .nav-sub { white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+@media(max-width:600px){ .nav-logo-img { height:34px; max-width:130px } }
+.nav-nm  {
+  font-family:Georgia,'Times New Roman',serif;
+  font-size:14px; font-weight:700; color:#fff; line-height:1.2;
+  transition:color var(--t);
+}
+.nav-sub { font-size:10px; color:rgba(255,255,255,.5); letter-spacing:.08em; text-transform:uppercase; transition:color var(--t) }
+.nav.scrolled .nav-nm  { color:var(--text) }
+.nav.scrolled .nav-sub { color:var(--text2) }
+.nav-space { flex:1 }
+.nav-links { display:flex; align-items:center; gap:26px }
+.nav-link  {
+  font-size:13px; font-weight:500; color:rgba(255,255,255,.75);
+  position:relative; transition:color var(--t);
+}
+.nav-link::after {
+  content:''; position:absolute; bottom:-3px; left:0; right:100%;
+  height:1.5px; background:var(--gold); border-radius:1px; transition:right var(--t);
+}
+.nav-link:hover { color:#fff }
+.nav-link:hover::after { right:0 }
+.nav.scrolled .nav-link { color:var(--text2) }
+.nav.scrolled .nav-link:hover { color:var(--text) }
+.nav-cta {
+  background:var(--g-gold); color:#fff; padding:9px 20px; border-radius:7px;
+  font-size:13px; font-weight:600; letter-spacing:.02em;
+  box-shadow:var(--sh-gld); transition:all var(--t);
+}
+.nav-cta:hover { transform:translateY(-1px); box-shadow:0 6px 24px rgba(var(--gold-rgb),.42) }
+.nav-ham {
+  display:none; flex-direction:column; justify-content:center; gap:5px;
+  padding:8px; width:40px; height:40px; flex-shrink:0;
+}
+.nav-ham span {
+  display:block; width:22px; height:2px; border-radius:2px; background:#fff;
+  transition:transform .25s,opacity .2s;
+}
+.nav.scrolled .nav-ham span { background:var(--text) }
+.nav-ham.open span:nth-child(1) { transform:rotate(45deg) translate(5px,5px) }
+.nav-ham.open span:nth-child(2) { opacity:0 }
+.nav-ham.open span:nth-child(3) { transform:rotate(-45deg) translate(5px,-5px) }
+
+/* ─────────────────────────────────────────
+   MOBILE DRAWER
+───────────────────────────────────────── */
+.nav-mob {
+  display:none; position:fixed; top:68px; left:0; right:0; z-index:299;
+  background:var(--white); border-bottom:1px solid var(--border);
+  flex-direction:column; padding:8px 6% 24px;
+  box-shadow:0 16px 40px rgba(44,26,14,.14);
+}
+.nav-mob.open { display:flex }
+.nm-link {
+  display:block; font-size:16px; font-weight:500; color:var(--text);
+  padding:14px 0; border-bottom:1px solid var(--border); transition:color var(--t);
+}
+.nm-link:hover { color:var(--brown) }
+.nm-cta {
+  display:block; margin-top:16px; background:var(--g-gold); color:#fff;
+  padding:14px; border-radius:9px; text-align:center;
+  font-size:15px; font-weight:600; box-shadow:var(--sh-gld); transition:all var(--t);
+}
+.nm-cta:hover { transform:translateY(-1px) }
+
+/* ─────────────────────────────────────────
+   HERO
+───────────────────────────────────────── */
+.hero {
+  min-height:100vh; background:var(--g-hero);
+  display:flex; flex-direction:column; align-items:stretch;
+  position:relative; overflow:hidden;
+}
+.hero::before {
+  content:''; position:absolute; inset:0; z-index:0; pointer-events:none;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      rgba(var(--gold-rgb),.045) 0px, rgba(var(--gold-rgb),.045) 1px,
+      transparent 1px, transparent 32px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(255,255,255,.018) 0px, rgba(255,255,255,.018) 1px,
+      transparent 1px, transparent 32px
+    );
+}
+.hero-ring {
+  position:absolute; width:600px; height:600px; border-radius:50%;
+  right:-150px; top:-180px; pointer-events:none; z-index:0;
+  border:1px solid rgba(var(--gold-rgb),.07);
+  animation:spinRing 60s linear infinite;
+}
+.hero-ring2 {
+  position:absolute; width:420px; height:420px; border-radius:50%;
+  left:-100px; bottom:-140px; pointer-events:none; z-index:0;
+  border:1px solid rgba(var(--gold-rgb),.06);
+  animation:spinRing 80s linear infinite reverse;
+}
+
+.hero-body {
+  flex:1; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; text-align:center; padding:140px 6% 56px;
+  position:relative; z-index:1;
+}
+.hero-badge {
+  display:inline-flex; align-items:center; gap:9px;
+  font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase;
+  color:rgba(255,255,255,.72);
+  background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.14);
+  padding:7px 18px; border-radius:100px; margin-bottom:28px;
+  animation:fadeUp .75s .05s ease both;
+}
+.hero-badge-dot {
+  width:7px; height:7px; border-radius:50%; flex-shrink:0;
+  background:var(--gold2); box-shadow:0 0 8px rgba(var(--gold-rgb),.8);
+}
+.hero-h1 {
+  font-family:Georgia,'Times New Roman',serif;
+  font-size:clamp(40px,6vw,74px); font-weight:700; line-height:1.08;
+  letter-spacing:-.03em; color:#fff; margin-bottom:0;
+  animation:fadeUp .75s .12s ease both;
+}
+.hero-h1 em { font-style:italic; color:var(--gold2) }
+.hero-rule {
+  width:48px; height:2.5px; border-radius:2px;
+  background:var(--g-gold); margin:26px auto 28px;
+  animation:fadeUp .75s .18s ease both;
+}
+.hero-para {
+  font-size:17px; color:rgba(255,255,255,.52); line-height:1.8; max-width:580px;
+  margin-bottom:34px; animation:fadeUp .75s .22s ease both;
+}
+.hero-tags {
+  display:flex; flex-wrap:wrap; gap:8px; justify-content:center;
+  margin-bottom:36px; animation:fadeUp .75s .27s ease both;
+}
+.hero-tag {
+  display:inline-flex; align-items:center; gap:7px;
+  font-size:12px; font-weight:600; padding:6px 14px; border-radius:100px;
+  background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12);
+  color:rgba(255,255,255,.72); transition:all var(--t);
+}
+.hero-tag:hover { background:rgba(var(--gold-rgb),.14); border-color:rgba(var(--gold-rgb),.36) }
+.hero-tag::before { content:''; width:5px; height:5px; border-radius:50%; flex-shrink:0; background:var(--gold2) }
+.hero-acts { display:flex; gap:13px; flex-wrap:wrap; justify-content:center; animation:fadeUp .75s .33s ease both }
+.btn-p {
+  background:var(--g-gold); color:#fff; padding:14px 30px; border-radius:9px;
+  font-size:14px; font-weight:700; display:inline-block;
+  box-shadow:var(--sh-gld); transition:all var(--t);
+}
+.btn-p:hover { transform:translateY(-2px); box-shadow:0 10px 30px rgba(var(--gold-rgb),.45) }
+.btn-s {
+  background:rgba(255,255,255,.07); border:1.5px solid rgba(255,255,255,.2);
+  color:#fff; padding:14px 30px; border-radius:9px; font-size:14px; font-weight:600;
+  display:inline-block; transition:all var(--t);
+}
+.btn-s:hover { background:rgba(255,255,255,.14); border-color:rgba(255,255,255,.36) }
+
+/* Stats bar pinned to hero bottom */
+.hero-sbar {
+  width:100%; padding:22px 6%; position:relative; z-index:1;
+  background:rgba(255,255,255,.03); border-top:1px solid rgba(255,255,255,.07);
+  display:flex; justify-content:center; animation:fadeUp .75s .48s ease both;
+}
+.hs-item {
+  flex:1; max-width:220px; text-align:center; padding:2px 20px;
+  border-right:1px solid rgba(255,255,255,.07);
+}
+.hs-item:last-child { border-right:none }
+.hs-num {
+  font-family:Georgia,'Times New Roman',serif;
+  font-size:30px; font-weight:700; color:#fff; letter-spacing:-.04em; line-height:1;
+}
+.hs-num em { font-style:normal; font-size:16px; font-weight:600; color:var(--gold2) }
+.hs-lbl {
+  font-size:10px; color:rgba(255,255,255,.36); font-weight:600;
+  letter-spacing:.08em; text-transform:uppercase; margin-top:5px;
+}
+
+/* ─────────────────────────────────────────
+   SECTION COMMONS
+───────────────────────────────────────── */
+.sec { padding:96px 6% }
+.s-eye {
+  display:flex; align-items:center; gap:10px;
+  font-size:10px; font-weight:700; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--gold); margin-bottom:10px;
+}
+.s-eye::before { content:''; width:22px; height:1.5px; background:var(--gold); border-radius:1px }
+.s-h2 {
+  font-family:Georgia,'Times New Roman',serif;
+  font-size:clamp(24px,3.5vw,40px); font-weight:700; color:var(--text);
+  letter-spacing:-.02em; line-height:1.15; margin-bottom:10px;
+}
+.s-lead { font-size:15px; color:var(--text2); line-height:1.8; max-width:520px; margin-bottom:52px }
+.divider { width:40px; height:2.5px; background:var(--g-gold); border-radius:2px; margin:14px 0 10px }
+
+/* ─────────────────────────────────────────
+   PRACTICE AREAS
+───────────────────────────────────────── */
+.prac-sec { background:var(--white) }
+.prac-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:22px }
+.prac-card {
+  background:var(--g-card); border:1px solid var(--border); border-radius:var(--r);
+  padding:28px 24px 24px; position:relative; overflow:hidden;
+  display:flex; flex-direction:column;
+  transition:transform var(--t),box-shadow var(--t),border-color var(--t);
+  box-shadow:var(--sh-xs);
+}
+.prac-card::before {
+  content:''; position:absolute; top:0; left:0; right:0;
+  height:4px; border-radius:var(--r) var(--r) 0 0;
+}
+.prac-card:hover { transform:translateY(-5px) }
+.pc-1::before{background:linear-gradient(90deg,#4A2510,#8B4A24)}
+.pc-1:hover{box-shadow:0 18px 44px rgba(var(--brown-rgb),.16);border-color:rgba(var(--brown-rgb),.3)}
+.pc-2::before{background:linear-gradient(90deg,#C4830A,#E09B20)}
+.pc-2:hover{box-shadow:0 18px 44px rgba(var(--gold-rgb),.2);border-color:rgba(var(--gold-rgb),.4)}
+.pc-3::before{background:linear-gradient(90deg,#8B4A24,#B5622E)}
+.pc-3:hover{box-shadow:0 18px 44px rgba(var(--brown-rgb),.16);border-color:rgba(var(--brown-rgb),.3)}
+.pc-4::before{background:linear-gradient(90deg,#5C3217,#8B4A24)}
+.pc-4:hover{box-shadow:0 18px 44px rgba(var(--brown-rgb),.16);border-color:rgba(var(--brown-rgb),.3)}
+.pc-5::before{background:linear-gradient(90deg,#A0600A,#C4830A)}
+.pc-5:hover{box-shadow:0 18px 44px rgba(var(--gold-rgb),.2);border-color:rgba(var(--gold-rgb),.35)}
+.pc-6::before{background:linear-gradient(90deg,#6B3A1F,#A0600A)}
+.pc-6:hover{box-shadow:0 18px 44px rgba(var(--brown-rgb),.16);border-color:rgba(var(--brown-rgb),.3)}
+.prac-bar { width:36px; height:4px; border-radius:2px; margin-bottom:20px; margin-top:4px }
+.pc-1 .prac-bar{background:linear-gradient(90deg,#4A2510,#8B4A24)}
+.pc-2 .prac-bar{background:linear-gradient(90deg,#C4830A,#E09B20)}
+.pc-3 .prac-bar{background:linear-gradient(90deg,#8B4A24,#B5622E)}
+.pc-4 .prac-bar{background:linear-gradient(90deg,#5C3217,#8B4A24)}
+.pc-5 .prac-bar{background:linear-gradient(90deg,#A0600A,#C4830A)}
+.pc-6 .prac-bar{background:linear-gradient(90deg,#6B3A1F,#A0600A)}
+.prac-name {
+  font-family:Georgia,'Times New Roman',serif;
+  font-size:16px; font-weight:700; color:var(--text); margin-bottom:10px;
+  letter-spacing:-.01em; line-height:1.3;
+}
+.prac-desc { font-size:13px; color:var(--text2); line-height:1.72; flex:1 }
+.prac-enq {
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:12px; font-weight:700; margin-top:20px; color:var(--brown);
+  letter-spacing:.01em; transition:gap var(--t);
+}
+.prac-enq:hover { gap:9px }
+
+/* ─────────────────────────────────────────
+   ABOUT
+───────────────────────────────────────── */
+.about-sec { background:var(--cream) }
+.about-grid { display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:start }
+.ab-highs  { display:flex; flex-direction:column; gap:16px; margin-top:28px }
+.ab-item   { display:flex; gap:14px; align-items:flex-start }
+.ab-icon   {
+  width:40px; height:40px; border-radius:10px; flex-shrink:0; margin-top:2px;
+  background:linear-gradient(135deg,rgba(var(--brown-rgb),.12),rgba(var(--brown-rgb),.04));
+  border:1px solid rgba(var(--brown-rgb),.18);
+  display:flex; align-items:center; justify-content:center;
+}
+.ab-t { font-size:14px; font-weight:700; color:var(--text); margin-bottom:3px }
+.ab-d { font-size:13px; color:var(--text2); line-height:1.65 }
+.ab-badges { display:flex; flex-wrap:wrap; gap:10px; margin-top:24px }
+.ab-badge  {
+  display:flex; align-items:center; gap:8px;
+  background:var(--white); border:1px solid var(--border);
+  border-radius:10px; padding:9px 14px;
+  transition:border-color var(--t),box-shadow var(--t);
+}
+.ab-badge:hover { border-color:var(--border2); box-shadow:var(--sh-xs) }
+.ab-dot  { width:7px; height:7px; background:var(--g-gold); border-radius:50%; flex-shrink:0 }
+.ab-text { font-size:13px; font-weight:500; color:var(--text) }
+
+/* Founder card */
+.founder-card {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:20px; overflow:hidden; box-shadow:var(--sh-lg);
+}
+.founder-head {
+  background:var(--g-brown); padding:28px; position:relative; overflow:hidden;
+}
+.founder-head::before {
+  content:''; position:absolute; top:-40px; right:-40px;
+  width:180px; height:180px; border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.06) 0%,transparent 70%);
+  pointer-events:none;
+}
+.founder-head::after {
+  content:''; position:absolute; bottom:-30px; left:-30px;
+  width:120px; height:120px; border-radius:50%;
+  background:radial-gradient(circle,rgba(var(--gold-rgb),.12) 0%,transparent 70%);
+  pointer-events:none;
+}
+.founder-photo-wrap {
+  width:88px; height:88px; border-radius:50%;
+  background:rgba(255,255,255,.12); border:2.5px solid rgba(var(--gold-rgb),.4);
+  margin-bottom:14px; overflow:hidden;
+  display:flex; align-items:center; justify-content:center;
+  position:relative; flex-shrink:0;
+}
+.founder-initials {
+  font-family:Georgia,'Times New Roman',serif; font-size:30px;
+  font-weight:700; color:rgba(255,255,255,.72);
+}
+/* When an actual image is set via admin */
+.founder-photo-img {
+  position:absolute; inset:0; width:100%; height:100%;
+  object-fit:cover; display:none;
+}
+.founder-nm   { font-family:Georgia,'Times New Roman',serif; font-size:18px; font-weight:700; color:#fff; margin-bottom:2px; position:relative; z-index:1 }
+.founder-role { font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--gold2); position:relative; z-index:1 }
+.founder-body { padding:24px 28px 28px }
+.founder-bio  { font-size:14px; color:var(--text2); line-height:1.78; margin-bottom:20px }
+.founder-quals { display:flex; flex-direction:column; gap:9px }
+.founder-q {
+  display:flex; align-items:center; gap:10px;
+  font-size:13px; font-weight:500; color:var(--text2);
+}
+.founder-q::before {
+  content:''; width:6px; height:6px; border-radius:50%;
+  flex-shrink:0; background:var(--g-gold);
+}
+
+/* ─────────────────────────────────────────
+   PROCESS (dark)
+───────────────────────────────────────── */
+.proc-sec { background:var(--g-proc); position:relative; overflow:hidden }
+.proc-orb { position:absolute; border-radius:50%; pointer-events:none }
+.proc-orb-1 {
+  width:500px; height:500px; right:-80px; top:-140px;
+  background:radial-gradient(circle,rgba(var(--gold-rgb),.1) 0%,transparent 65%);
+  animation:floatA 12s ease-in-out infinite;
+}
+.proc-orb-2 {
+  width:340px; height:340px; left:5%; bottom:-60px;
+  background:radial-gradient(circle,rgba(var(--brown-rgb),.2) 0%,transparent 65%);
+  animation:floatB 10s ease-in-out infinite;
+}
+.proc-sec .s-eye  { color:var(--gold2) }
+.proc-sec .s-h2   { color:#fff }
+.proc-sec .s-lead { color:rgba(255,255,255,.42); margin-bottom:52px }
+.proc-inner { position:relative; z-index:1 }
+.proc-grid  { display:flex; flex-wrap:wrap; justify-content:center; gap:20px }
+.proc-grid > .proc-card { flex:0 1 calc((100% - 60px) / 4) } /* 4 per row; partial rows stay centered */
+.proc-card  {
+  background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08);
+  border-radius:16px; padding:32px 24px; position:relative;
+  transition:background var(--t),border-color var(--t),transform var(--t);
+}
+.proc-card:hover {
+  background:rgba(var(--gold-rgb),.07); border-color:rgba(var(--gold-rgb),.22);
+  transform:translateY(-2px);
+}
+.proc-n {
+  font-family:Georgia,'Times New Roman',serif;
+  font-size:56px; font-weight:700; letter-spacing:-.04em; line-height:1; margin-bottom:18px;
+  background:linear-gradient(135deg,rgba(var(--gold-rgb),.45),rgba(var(--gold-rgb),.25));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.proc-t { font-family:Georgia,'Times New Roman',serif; font-size:16px; font-weight:600; color:#fff; margin-bottom:9px }
+.proc-d { font-size:13px; color:rgba(255,255,255,.42); line-height:1.72 }
+.proc-arr {
+  position:absolute; top:34px; right:-13px; z-index:2;
+  width:26px; height:26px; border-radius:50%; background:var(--g-gold);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:var(--sh-gld);
+}
+.proc-card:last-child .proc-arr { display:none }
+
+/* ─────────────────────────────────────────
+   WHY US
+───────────────────────────────────────── */
+.why-sec { background:var(--cream2) }
+.why-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:18px }
+.why-card {
+  background:var(--white); border:1px solid var(--border); border-radius:var(--r);
+  padding:28px 24px; display:flex; gap:16px;
+  transition:all var(--t); box-shadow:var(--sh-xs);
+}
+.why-card:hover { box-shadow:var(--sh-md); border-color:var(--border2); transform:translateY(-2px) }
+.why-icon {
+  width:48px; height:48px; border-radius:12px; flex-shrink:0;
+  background:linear-gradient(145deg,rgba(var(--gold-rgb),.1),rgba(var(--gold-rgb),.04));
+  border:1px solid rgba(var(--gold-rgb),.2);
+  display:flex; align-items:center; justify-content:center;
+}
+.why-title { font-family:Georgia,'Times New Roman',serif; font-size:16px; font-weight:600; color:var(--text); margin-bottom:7px }
+.why-desc  { font-size:13px; color:var(--text2); line-height:1.7 }
+
+/* ─────────────────────────────────────────
+   TESTIMONIALS
+───────────────────────────────────────── */
+.testi-sec { background:var(--off); position:relative; overflow:hidden }
+.testi-wm  {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  font-family:Georgia,'Times New Roman',serif;
+  font-size:clamp(80px,12vw,160px); font-weight:700;
+  color:var(--brown); opacity:.03; white-space:nowrap;
+  user-select:none; pointer-events:none;
+}
+.testi-outer {
+  position:relative;
+}
+.testi-arrow {
+  width:40px; height:40px; border-radius:50%; flex-shrink:0;
+  border:1px solid var(--border); background:var(--white);
+  display:flex; align-items:center; justify-content:center;
+  transition:all var(--t); color:var(--text2);
+}
+.testi-arrow:hover { background:var(--brown); border-color:var(--brown); color:#fff; box-shadow:var(--sh-md) }
+.testi-carousel { overflow:hidden }
+.testi-track    { display:flex; gap:20px; transition:transform .5s cubic-bezier(.4,0,.2,1); will-change:transform }
+.tc {
+  flex:0 0 calc(33.333% - 13.333px);
+  background:var(--white); border:1px solid var(--border); border-radius:var(--r);
+  padding:28px; display:flex; flex-direction:column;
+  position:relative; overflow:hidden;
+  transition:box-shadow var(--t),transform var(--t);
+}
+.tc:hover { box-shadow:var(--sh-md); transform:translateY(-3px) }
+.tc::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--g-gold) }
+.tc-qm {
+  font-family:Georgia,'Times New Roman',serif;
+  font-size:60px; font-weight:700; color:rgba(var(--gold-rgb),.1);
+  line-height:.75; margin-bottom:8px; user-select:none;
+}
+.tc-stars { display:flex; gap:3px; margin-bottom:14px }
+.tc-star  {
+  width:13px; height:13px; background:var(--gold);
+  clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+}
+.tc-q  { font-size:14px; color:var(--text); line-height:1.78; font-style:italic; flex:1; margin-bottom:20px }
+.tc-sep { width:30px; height:1.5px; background:var(--g-gold); border-radius:1px; margin-bottom:16px }
+.tc-au { display:flex; align-items:center; gap:10px }
+.tc-av {
+  width:42px; height:42px; border-radius:50%; flex-shrink:0;
+  background:var(--g-brown); display:flex; align-items:center; justify-content:center;
+  font-family:Georgia,'Times New Roman',serif; font-size:14px; font-weight:700; color:rgba(255,255,255,.8);
+}
+.tc-nm { font-size:13px; font-weight:700; color:var(--text) }
+.tc-rl { font-size:11px; color:var(--muted) }
+.testi-nav  { display:flex; align-items:center; justify-content:center; gap:14px; margin-top:24px }
+.testi-dots { display:flex; gap:6px; align-items:center }
+.testi-dot  {
+  width:7px; height:7px; border-radius:50%; background:var(--border);
+  cursor:pointer; transition:all .3s; border:none; padding:0;
+}
+.testi-dot.act { background:var(--gold); width:22px; border-radius:4px }
+
+/* ─────────────────────────────────────────
+   CONTACT
+───────────────────────────────────────── */
+.contact-sec { background:var(--parch) }
+.contact-grid { display:grid; grid-template-columns:1fr 1.45fr; gap:56px; align-items:start }
+.ct-list  { display:flex; flex-direction:column; gap:14px }
+.ct-item  {
+  display:flex; gap:14px; background:var(--white); border:1px solid var(--border);
+  border-radius:12px; padding:16px 18px;
+  transition:border-color var(--t),box-shadow var(--t); box-shadow:var(--sh-xs);
+}
+.ct-item:hover { border-color:var(--border2); box-shadow:var(--sh-sm) }
+.ct-ic {
+  width:40px; height:40px; border-radius:10px; flex-shrink:0;
+  background:linear-gradient(135deg,rgba(var(--gold-rgb),.1),rgba(var(--gold-rgb),.04));
+  border:1px solid rgba(var(--gold-rgb),.18);
+  display:flex; align-items:center; justify-content:center;
+}
+.ct-l { font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:3px }
+.ct-v { font-size:14px; font-weight:600; color:var(--text) }
+.ct-s { font-size:12px; color:var(--muted); margin-top:2px }
+.form-card {
+  background:var(--white); border:1px solid var(--border); border-radius:18px;
+  padding:36px; box-shadow:var(--sh-lg); position:relative; overflow:hidden;
+}
+.form-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:4px;
+  background:var(--g-gold); background-size:200% 100%;
+  animation:shimmer 4s linear infinite;
+}
+.form-t {
+  font-family:Georgia,'Times New Roman',serif;
+  font-size:19px; font-weight:700; color:var(--text); margin-bottom:4px;
+}
+.form-s  { font-size:13px; color:var(--text2); margin-bottom:24px }
+.f-row   { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px }
+.fg      { display:flex; flex-direction:column; gap:5px; margin-bottom:14px }
+.fl      { font-size:11px; font-weight:600; color:var(--text); letter-spacing:.02em }
+.fi,.fta,.fsel {
+  border:1.5px solid var(--border); border-radius:9px; padding:11px 13px;
+  font-size:14px; font-family:inherit; color:var(--text); background:var(--cream);
+  transition:border-color var(--t),box-shadow var(--t);
+  outline:none; width:100%; -webkit-appearance:none; appearance:none;
+}
+.fi::placeholder,.fta::placeholder { color:var(--muted) }
+.fi:focus,.fta:focus,.fsel:focus {
+  border-color:var(--brown); background:var(--white);
+  box-shadow:0 0 0 3px rgba(var(--brown-rgb),.07);
+}
+.fta { min-height:96px; resize:vertical; line-height:1.6 }
+.fsel option { background:var(--white); color:var(--text) }
+.btn-submit {
+  width:100%; background:var(--g-gold); color:#fff;
+  padding:14px; border-radius:10px; font-size:15px; font-weight:700;
+  box-shadow:var(--sh-gld); transition:all var(--t); font-family:inherit; letter-spacing:.02em;
+}
+.btn-submit:hover { transform:translateY(-1px); box-shadow:0 10px 30px rgba(var(--gold-rgb),.44) }
+.btn-submit:disabled { background:var(--muted); box-shadow:none; transform:none; cursor:default }
+.btn-wa {
+  display:flex; align-items:center; justify-content:center; gap:9px;
+  width:100%; margin-top:10px; background:#25D366; color:#fff;
+  padding:12px; border-radius:10px; font-size:14px; font-weight:600;
+  transition:all var(--t); font-family:inherit;
+}
+.btn-wa:hover { background:#1ebe59; transform:translateY(-1px); box-shadow:0 6px 20px rgba(37,211,102,.3) }
+
+/* ─────────────────────────────────────────
+   FOOTER
+───────────────────────────────────────── */
+footer {
+  background:var(--g-footer); padding:56px 6% 28px;
+  position:relative; overflow:hidden;
+}
+footer::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg,transparent,rgba(var(--gold-rgb),.3),transparent);
+}
+.foot-grid {
+  display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:40px;
+  padding-bottom:40px; border-bottom:1px solid rgba(255,255,255,.07); margin-bottom:24px;
+}
+.foot-crest {
+  width:36px; height:36px; border-radius:50%; flex-shrink:0;
+  background:var(--g-brown); border:1.5px solid rgba(var(--gold-rgb),.4);
+  display:flex; align-items:center; justify-content:center;
+}
+.foot-logo-row { display:flex; align-items:center; gap:11px }
+.foot-nm  { font-family:Georgia,'Times New Roman',serif; font-size:16px; font-weight:700; color:#fff; margin-bottom:1px }
+.foot-sub { font-size:10px; color:rgba(255,255,255,.32); letter-spacing:.08em; text-transform:uppercase }
+.foot-desc { font-size:13px; color:rgba(255,255,255,.36); line-height:1.8; max-width:260px; margin-top:14px }
+.foot-reg  { font-size:11px; color:rgba(255,255,255,.18); margin-top:10px }
+.foot-ct   { font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:rgba(255,255,255,.28); margin-bottom:14px }
+.foot-lnk  { display:block; font-size:13px; color:rgba(255,255,255,.44); margin-bottom:9px; transition:color var(--t) }
+.foot-lnk:hover { color:#fff }
+.foot-bot  { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px }
+.foot-copy { font-size:12px; color:rgba(255,255,255,.2) }
+.foot-pow  { font-size:11px; color:rgba(255,255,255,.18) }
+.foot-pow a { color:rgba(var(--gold-rgb),.5) }
+.foot-social { display:flex; gap:9px; margin-top:20px; flex-wrap:wrap }
+.foot-soc-a {
+  width:34px; height:34px; border-radius:8px; flex-shrink:0;
+  border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04);
+  display:flex; align-items:center; justify-content:center;
+  color:rgba(255,255,255,.38); transition:all var(--t);
+}
+.foot-soc-a:hover {
+  background:rgba(var(--gold-rgb),.14); border-color:rgba(var(--gold-rgb),.38);
+  color:#E09B20; transform:translateY(-2px);
+}
+
+/* ─────────────────────────────────────────
+   WHATSAPP FLOAT
+───────────────────────────────────────── */
+.wa-float {
+  position:fixed; bottom:28px; right:28px; z-index:999;
+  width:54px; height:54px; background:#25D366; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 4px 20px rgba(37,211,102,.45); transition:all var(--t);
+}
+.wa-float:hover { transform:scale(1.1); box-shadow:0 6px 28px rgba(37,211,102,.6) }
+
+/* ─────────────────────────────────────────
+   SCROLL REVEAL
+───────────────────────────────────────── */
+.rv {
+  opacity:0; transform:translateY(20px);
+  transition:opacity .65s ease var(--rv-d,0s),transform .65s ease var(--rv-d,0s);
+}
+.rv.vis { opacity:1; transform:none }
+
+/* ─────────────────────────────────────────
+   RESPONSIVE — TABLET
+───────────────────────────────────────── */
+@media(max-width:1024px){
+  .proc-grid { row-gap:28px }
+  .proc-grid > .proc-card { flex-basis:calc((100% - 20px) / 2) } /* 2 per row on tablet */
+  .proc-arr  { display:none }
+}
+@media(max-width:900px){
+  .nav-links { display:none }
+  .nav-ham   { display:flex }
+  .sec         { padding:80px 6% }
+  .prac-grid   { gap:18px }
+  .about-grid  { grid-template-columns:1fr; gap:40px }
+  .about-grid .founder-card { max-width:480px }
+  .why-grid    { grid-template-columns:1fr }
+  .contact-grid{ grid-template-columns:1fr; gap:36px }
+  .foot-grid   { grid-template-columns:1fr 1fr; gap:28px }
+  .tc { flex:0 0 calc(50% - 10px) }
+}
+
+/* ─────────────────────────────────────────
+   RESPONSIVE — MOBILE
+───────────────────────────────────────── */
+@media(max-width:600px){
+  .sec       { padding:60px 5% }
+  .nav       { padding:0 5% }
+  .s-lead    { margin-bottom:40px }
+  .hero-body { padding:100px 5% 44px }
+  .hero-para { font-size:15px; line-height:1.7; margin-bottom:28px }
+  .hero-tags { margin-bottom:30px }
+  .hero-sbar { padding:16px 5%; flex-wrap:wrap }
+  .hs-item   {
+    min-width:50%; border-right:none;
+    border-bottom:1px solid rgba(255,255,255,.07); padding:10px 8px;
+  }
+  .hs-item:nth-child(even)  { border-right:none }
+  .hs-item:nth-last-child(-n+2) { border-bottom:none }
+  .hs-num    { font-size:26px }
+  .hero-h1   { letter-spacing:-.025em }
+  .hero-acts { flex-direction:column; align-items:center }
+  .hero-acts .btn-p,
+  .hero-acts .btn-s { width:100%; max-width:320px; text-align:center }
+  .prac-grid { grid-template-columns:1fr; gap:16px }
+  .proc-grid > .proc-card { flex-basis:100% }
+  .proc-card { padding:26px 22px }
+  .why-card  { padding:24px 20px }
+  .founder-head { padding:24px }
+  .founder-body { padding:22px 24px 24px }
+  .form-card { padding:26px 22px }
+  .ct-item   { padding:14px 16px }
+  .f-row     { grid-template-columns:1fr }
+  .foot-grid { grid-template-columns:1fr; gap:24px }
+  .foot-desc { max-width:none }
+  .tc        { flex:0 0 100%; padding:24px 22px }
+  .tc-qm     { font-size:46px; margin-bottom:4px }
+  .tc-q      { font-size:13.5px; line-height:1.7; margin-bottom:16px }
+  .tc-av     { width:40px; height:40px }
+  .testi-arrow { width:38px; height:38px }
+  .testi-wm  { font-size:clamp(60px,20vw,110px) }
+  .wa-float  { bottom:20px; right:20px; width:50px; height:50px }
+}
+@media(max-width:380px){
+  .hero-tag { font-size:11px; padding:5px 10px }
+  .hs-num   { font-size:22px }
+  .hs-item  { padding:8px 6px }
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after { transition:none !important; animation:none !important }
+  .rv { opacity:1 !important; transform:none !important }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     NAV
+═══════════════════════════════════════ -->
+<nav class="nav" id="mainNav">
+  <div class="nav-logo">
+    <div class="nav-crest">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <path d="M9 1.5L3 4.5v4.2c0 3.8 2.4 6.5 6 7.8 3.6-1.3 6-4 6-7.8V4.5L9 1.5z"
+          stroke="#E09B20" stroke-width="1.4" stroke-linejoin="round"/>
+        <path d="M6.5 9.5l1.8 1.8 3.2-3.5" stroke="rgba(255,255,255,.75)"
+          stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <img class="nav-logo-img" alt="">
+    <div>
+      <div class="nav-nm" id="navName">Iyer &amp; Iyer</div>
+      <div class="nav-sub">Advocates &amp; Legal Consultants</div>
+    </div>
+  </div>
+  <div class="nav-space"></div>
+  <button class="nav-ham" id="navHam" aria-label="Open menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="nav-links">
+    <a class="nav-link" href="#practice">Practice Areas</a>
+    <a class="nav-link" href="#about">About</a>
+    <a class="nav-link" href="#process">How We Work</a>
+    <a class="nav-link" href="#contact">Contact</a>
+    <a class="nav-cta" href="#contact">Free Consultation</a>
+  </div>
+</nav>
+
+<!-- Mobile Drawer -->
+<div class="nav-mob" id="navMob">
+  <a class="nm-link" href="#practice" id="nm1">Practice Areas</a>
+  <a class="nm-link" href="#about"    id="nm2">About</a>
+  <a class="nm-link" href="#process"  id="nm3">How We Work</a>
+  <a class="nm-link" href="#contact"  id="nm4">Contact</a>
+  <a class="nm-cta"  href="#contact"  id="nm5">Book Free Consultation</a>
+</div>
+
+<!-- ═══════════════════════════════════════
+     HERO
+═══════════════════════════════════════ -->
+<section class="hero" id="home">
+  <div class="hero-ring"></div>
+  <div class="hero-ring2"></div>
+
+  <!-- Hero Content -->
+  <div class="hero-body">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      Advocates &amp; Legal Consultants &mdash; Chennai
+    </div>
+
+    <h1 class="hero-h1">Principled counsel.<br><em>Proven</em> results.</h1>
+    <div class="hero-rule"></div>
+
+    <p class="hero-para">
+      Decades of dedicated legal practice in corporate, civil, tax, and family law.
+      Trusted by individuals, businesses, and institutions across India.
+    </p>
+
+    <div class="hero-tags">
+      <span class="hero-tag">Civil Litigation</span>
+      <span class="hero-tag">Corporate Law</span>
+      <span class="hero-tag">Tax Litigation</span>
+      <span class="hero-tag">Property Matters</span>
+      <span class="hero-tag">Family Law</span>
+      <span class="hero-tag">Arbitration</span>
+    </div>
+
+    <div class="hero-acts">
+      <a class="btn-p" href="#contact">Book a Consultation</a>
+      <a class="btn-s" href="#practice">Explore Practice Areas</a>
+    </div>
+  </div>
+
+  <!-- Stats pinned to hero bottom -->
+  <div class="hero-sbar">
+    <div class="hs-item">
+      <div class="hs-num">30<em>+</em></div>
+      <div class="hs-lbl">Years in Practice</div>
+    </div>
+    <div class="hs-item">
+      <div class="hs-num">800<em>+</em></div>
+      <div class="hs-lbl">Matters Resolved</div>
+    </div>
+    <div class="hs-item">
+      <div class="hs-num">3</div>
+      <div class="hs-lbl">Senior Advocates</div>
+    </div>
+    <div class="hs-item">
+      <div class="hs-num" style="font-size:22px;letter-spacing:-.01em">HC</div>
+      <div class="hs-lbl">High Court Enrolled</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     PRACTICE AREAS
+═══════════════════════════════════════ -->
+<section class="sec prac-sec" id="practice">
+  <div class="rv">
+    <div class="s-eye">What We Do</div>
+    <h2 class="s-h2">Our practice areas</h2>
+    <div class="divider"></div>
+    <p class="s-lead">
+      Three decades of specialisation across corporate, tax, civil, and family law
+      &mdash; one trusted firm for all your legal needs.
+    </p>
+  </div>
+
+  <div class="prac-grid">
+
+    <div class="prac-card pc-1 rv" style="--rv-d:.05s">
+      <div class="prac-bar"></div>
+      <div class="prac-name">Civil Litigation</div>
+      <div class="prac-desc">
+        Property disputes, breach of contract, injunctions, and recovery matters
+        before civil courts, District Courts, and High Court.
+      </div>
+      <a class="prac-enq" href="#contact">Enquire &#8594;</a>
+    </div>
+
+    <div class="prac-card pc-2 rv" style="--rv-d:.1s">
+      <div class="prac-bar"></div>
+      <div class="prac-name">Corporate &amp; Company Law</div>
+      <div class="prac-desc">
+        Company formation, shareholder disputes, due diligence, M&amp;A advisory,
+        and regulatory compliance under the Companies Act.
+      </div>
+      <a class="prac-enq" href="#contact">Enquire &#8594;</a>
+    </div>
+
+    <div class="prac-card pc-3 rv" style="--rv-d:.15s">
+      <div class="prac-bar"></div>
+      <div class="prac-name">Tax Litigation</div>
+      <div class="prac-desc">
+        Representation before Income Tax Appellate Tribunals, CIT(A),
+        and High Courts in direct and indirect tax disputes.
+      </div>
+      <a class="prac-enq" href="#contact">Enquire &#8594;</a>
+    </div>
+
+    <div class="prac-card pc-4 rv" style="--rv-d:.2s">
+      <div class="prac-bar"></div>
+      <div class="prac-name">Property &amp; Real Estate</div>
+      <div class="prac-desc">
+        Sale deeds, title verification, encumbrance certificates,
+        partition suits, and landlord-tenant disputes across Tamil Nadu.
+      </div>
+      <a class="prac-enq" href="#contact">Enquire &#8594;</a>
+    </div>
+
+    <div class="prac-card pc-5 rv" style="--rv-d:.25s">
+      <div class="prac-bar"></div>
+      <div class="prac-name">Family &amp; Matrimonial</div>
+      <div class="prac-desc">
+        Divorce, maintenance, child custody, adoption, and succession matters
+        handled with sensitivity, discretion, and dignity.
+      </div>
+      <a class="prac-enq" href="#contact">Enquire &#8594;</a>
+    </div>
+
+    <div class="prac-card pc-6 rv" style="--rv-d:.3s">
+      <div class="prac-bar"></div>
+      <div class="prac-name">Consumer &amp; Arbitration</div>
+      <div class="prac-desc">
+        Consumer forum cases, arbitration proceedings, mediation,
+        and alternative dispute resolution across all forums and jurisdictions.
+      </div>
+      <a class="prac-enq" href="#contact">Enquire &#8594;</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     ABOUT
+═══════════════════════════════════════ -->
+<section class="sec about-sec" id="about">
+  <div class="about-grid">
+
+    <!-- Left: text -->
+    <div>
+      <div class="rv">
+        <div class="s-eye">Our Legacy</div>
+        <h2 class="s-h2">Three generations,<br>one commitment</h2>
+        <div class="divider"></div>
+      </div>
+      <div class="rv" style="--rv-d:.1s">
+        <p style="font-size:15px;color:var(--text2);line-height:1.85;margin-bottom:14px">
+          Iyer &amp; Iyer was founded by Adv. Krishnaswamy Iyer, a first-generation advocate
+          enrolled with the Madras High Court. Over the decades the firm has grown into a
+          respected full-service practice known for principled representation and client-first ethics.
+        </p>
+        <p style="font-size:15px;color:var(--text2);line-height:1.85;margin-bottom:28px">
+          Our founding partner is joined by a team of experienced advocates covering corporate law,
+          civil litigation, family matters, and tax disputes &mdash; serving clients across India
+          from our chambers in Egmore, Chennai.
+        </p>
+      </div>
+      <div class="ab-highs rv" style="--rv-d:.18s">
+        <div class="ab-item">
+          <div class="ab-icon">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M3 9l4 4 8-8" stroke="#C4830A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="ab-t">Senior advocate on every case</div>
+            <div class="ab-d">No junior-first assignments. Every matter is briefed directly to a senior advocate from the first consultation.</div>
+          </div>
+        </div>
+        <div class="ab-item">
+          <div class="ab-icon">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M3 9l4 4 8-8" stroke="#C4830A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="ab-t">Full-service coverage</div>
+            <div class="ab-d">Civil, corporate, tax, family, property &mdash; one firm for all your legal needs. No referrals to unknowns.</div>
+          </div>
+        </div>
+        <div class="ab-item">
+          <div class="ab-icon">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M3 9l4 4 8-8" stroke="#C4830A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="ab-t">Strictly confidential</div>
+            <div class="ab-d">Client privilege maintained to the highest standard of professional ethics. Your matter stays private, always.</div>
+          </div>
+        </div>
+      </div>
+      <div class="ab-badges rv" style="--rv-d:.24s">
+        <div class="ab-badge"><div class="ab-dot"></div><span class="ab-text">High Court Enrolled</span></div>
+        <div class="ab-badge"><div class="ab-dot"></div><span class="ab-text">State Bar Council Registered</span></div>
+        <div class="ab-badge"><div class="ab-dot"></div><span class="ab-text">AIBE Qualified</span></div>
+        <div class="ab-badge"><div class="ab-dot"></div><span class="ab-text">30+ Years Continuous Practice</span></div>
+      </div>
+    </div>
+
+    <!-- Right: founder card -->
+    <div class="rv" style="--rv-d:.14s">
+      <div class="founder-card">
+        <div class="founder-head">
+          <div class="founder-photo-wrap" id="founderPhotoWrap">
+            <div class="founder-initials" id="founderInitials">KI</div>
+            <img class="founder-photo-img" id="founderPhoto" alt="Adv. Krishnaswamy Iyer">
+          </div>
+          <div class="founder-nm" id="founderName">Adv. Krishnaswamy Iyer</div>
+          <div class="founder-role">Founding Partner</div>
+        </div>
+        <div class="founder-body">
+          <p class="founder-bio" id="founderBio">
+            Adv. Krishnaswamy Iyer was enrolled with the Madras High Court and has built a
+            practice spanning civil, corporate, tax, and property law across three decades.
+            Known for thorough preparation and principled advocacy, he has represented
+            individuals, businesses, and institutions in complex matters at the highest levels.
+          </p>
+          <div class="founder-quals">
+            <div class="founder-q">High Court Enrolled &mdash; Madras High Court</div>
+            <div class="founder-q">State Bar Council Registered</div>
+            <div class="founder-q">AIBE Qualified</div>
+            <div class="founder-q">30+ years of uninterrupted practice</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     PROCESS
+═══════════════════════════════════════ -->
+<section class="sec proc-sec" id="process">
+  <div class="proc-orb proc-orb-1"></div>
+  <div class="proc-orb proc-orb-2"></div>
+  <div class="proc-inner">
+    <div class="rv">
+      <div class="s-eye">How We Work</div>
+      <h2 class="s-h2">Clear steps, no surprises</h2>
+      <div class="divider" style="background:var(--g-gold)"></div>
+      <p class="s-lead">No paperwork before we speak. No fees before we understand your matter.</p>
+    </div>
+    <div class="proc-grid">
+
+      <div class="proc-card rv" style="--rv-d:.06s">
+        <div class="proc-arr">
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+            <path d="M2 5.5h7M6 3l2.5 2.5L6 8" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="proc-n">01</div>
+        <div class="proc-t">Free Consultation</div>
+        <div class="proc-d">Share your legal matter. We listen, understand the full picture, and tell you how we can help &mdash; at no charge.</div>
+      </div>
+
+      <div class="proc-card rv" style="--rv-d:.14s">
+        <div class="proc-arr">
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+            <path d="M2 5.5h7M6 3l2.5 2.5L6 8" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="proc-n">02</div>
+        <div class="proc-t">Case Assessment</div>
+        <div class="proc-d">Our senior advocate evaluates the matter, researches precedents, and presents a clear strategy with full fee transparency.</div>
+      </div>
+
+      <div class="proc-card rv" style="--rv-d:.22s">
+        <div class="proc-arr">
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+            <path d="M2 5.5h7M6 3l2.5 2.5L6 8" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="proc-n">03</div>
+        <div class="proc-t">Active Representation</div>
+        <div class="proc-d">We appear before courts and tribunals on your behalf. Regular updates in plain language keep you informed at every stage.</div>
+      </div>
+
+      <div class="proc-card rv" style="--rv-d:.30s">
+        <div class="proc-n">04</div>
+        <div class="proc-t">Resolution</div>
+        <div class="proc-d">We see your matter through to the outcome &mdash; settlement, judgement, or appeal &mdash; with full post-case guidance.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     WHY CHOOSE US
+═══════════════════════════════════════ -->
+<section class="sec why-sec">
+  <div class="rv">
+    <div class="s-eye">Why Choose Us</div>
+    <h2 class="s-h2">The Iyer &amp; Iyer difference</h2>
+    <div class="divider"></div>
+    <p class="s-lead">Every client receives direct senior advocacy. No hand-offs, no surprises.</p>
+  </div>
+  <div class="why-grid">
+
+    <div class="why-card rv" style="--rv-d:.05s">
+      <div class="why-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M11 2l2 6h6l-5 4 2 6-5-4-5 4 2-6-5-4h6z"
+            stroke="#C4830A" stroke-width="1.7" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div>
+        <div class="why-title">Senior Advocate on Every Case</div>
+        <div class="why-desc">No junior-first assignments. Every matter is briefed to a senior advocate from the first consultation.</div>
+      </div>
+    </div>
+
+    <div class="why-card rv" style="--rv-d:.1s">
+      <div class="why-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="#C4830A" stroke-width="1.6"/>
+          <rect x="14" y="3" width="7" height="7" rx="1.5" stroke="#C4830A" stroke-width="1.6"/>
+          <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="#C4830A" stroke-width="1.6"/>
+          <rect x="14" y="14" width="7" height="7" rx="1.5" stroke="#E09B20" stroke-width="1.6"/>
+        </svg>
+      </div>
+      <div>
+        <div class="why-title">Full-Service Legal Coverage</div>
+        <div class="why-desc">Civil, corporate, tax, family, property &mdash; one firm for all your legal needs, no referrals to unknowns.</div>
+      </div>
+    </div>
+
+    <div class="why-card rv" style="--rv-d:.15s">
+      <div class="why-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M4 2h4l2 4-2.5 1.5a9 9 0 0 0 4 4L13 9l4 2v3a2 2 0 0 1-2 2A15 15 0 0 1 2 4a2 2 0 0 1 2-2z"
+            stroke="#C4830A" stroke-width="1.6" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div>
+        <div class="why-title">Transparent Communication</div>
+        <div class="why-desc">Regular updates in plain language. You will always know exactly where your matter stands and what comes next.</div>
+      </div>
+    </div>
+
+    <div class="why-card rv" style="--rv-d:.2s">
+      <div class="why-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M11 2L4 6v5c0 5 3.5 9 7 10 3.5-1 7-5 7-10V6L11 2z"
+            stroke="#C4830A" stroke-width="1.6" stroke-linejoin="round"/>
+          <path d="M8 11l2 2 4-4" stroke="#C4830A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div>
+        <div class="why-title">Strictly Confidential</div>
+        <div class="why-desc">Client privilege maintained to the highest standard of professional ethics. Your matter stays private, always.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     TESTIMONIALS
+═══════════════════════════════════════ -->
+<section class="sec testi-sec">
+  <div class="testi-wm">HERITAGE</div>
+  <div class="rv" style="margin-bottom:48px">
+    <div class="s-eye">Client Testimonials</div>
+    <h2 class="s-h2">What our clients say</h2>
+    <div class="divider"></div>
+  </div>
+
+  <div class="testi-outer">
+    <div class="testi-carousel rv" style="--rv-d:.1s">
+      <div class="testi-track" id="tTrack">
+
+        <div class="tc">
+          <div class="tc-qm">&ldquo;</div>
+          <div class="tc-stars">
+            <div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div>
+            <div class="tc-star"></div><div class="tc-star"></div>
+          </div>
+          <p class="tc-q">Iyer &amp; Iyer handled our company&rsquo;s complex shareholder dispute with exceptional skill and discretion. Their knowledge of corporate law is truly unmatched in Chennai.</p>
+          <div class="tc-sep"></div>
+          <div class="tc-au">
+            <div class="tc-av">RK</div>
+            <div>
+              <div class="tc-nm">Ramesh Kumar</div>
+              <div class="tc-rl">MD, Kumaran Industries</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tc">
+          <div class="tc-qm">&ldquo;</div>
+          <div class="tc-stars">
+            <div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div>
+            <div class="tc-star"></div><div class="tc-star"></div>
+          </div>
+          <p class="tc-q">Our property title dispute had been stuck for three years with another firm. Adv. Krishnaswamy resolved it within eight months. I wish we had come here first.</p>
+          <div class="tc-sep"></div>
+          <div class="tc-au">
+            <div class="tc-av">SL</div>
+            <div>
+              <div class="tc-nm">Sujatha Lakshmi</div>
+              <div class="tc-rl">Property Owner, Chennai</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tc">
+          <div class="tc-qm">&ldquo;</div>
+          <div class="tc-stars">
+            <div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div>
+            <div class="tc-star"></div><div class="tc-star"></div>
+          </div>
+          <p class="tc-q">We faced a major Income Tax demand at the ITAT level. Adv. Suresh Iyer drafted our appeal brilliantly and the demand was substantially reduced. Highly recommended.</p>
+          <div class="tc-sep"></div>
+          <div class="tc-au">
+            <div class="tc-av">VP</div>
+            <div>
+              <div class="tc-nm">Vijay Prakash</div>
+              <div class="tc-rl">Director, VP Textiles</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tc">
+          <div class="tc-qm">&ldquo;</div>
+          <div class="tc-stars">
+            <div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div>
+            <div class="tc-star"></div><div class="tc-star"></div>
+          </div>
+          <p class="tc-q">My divorce and custody matter was handled with complete sensitivity. The team was patient, clear about every step, and achieved the best possible outcome for my children.</p>
+          <div class="tc-sep"></div>
+          <div class="tc-au">
+            <div class="tc-av">AN</div>
+            <div>
+              <div class="tc-nm">Anitha Nair</div>
+              <div class="tc-rl">Client, Family Law</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tc">
+          <div class="tc-qm">&ldquo;</div>
+          <div class="tc-stars">
+            <div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div>
+            <div class="tc-star"></div><div class="tc-star"></div>
+          </div>
+          <p class="tc-q">For our company&rsquo;s incorporation and first-year compliance, Iyer &amp; Iyer was thorough, prompt, and reasonably priced. We have retained them for all ongoing legal work.</p>
+          <div class="tc-sep"></div>
+          <div class="tc-au">
+            <div class="tc-av">MS</div>
+            <div>
+              <div class="tc-nm">Mohan Subramaniam</div>
+              <div class="tc-rl">Founder, Infragrow Pvt. Ltd.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="testi-nav">
+    <button class="testi-arrow" id="tPrev" aria-label="Previous testimonials">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+        <path d="M9 3L5 7.5 9 12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div class="testi-dots" id="tDots"></div>
+    <button class="testi-arrow" id="tNext" aria-label="Next testimonials">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+        <path d="M6 3l4 4.5-4 4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     CONTACT
+═══════════════════════════════════════ -->
+<section class="sec contact-sec" id="contact">
+  <div class="rv">
+    <div class="s-eye">Get in Touch</div>
+    <h2 class="s-h2">Schedule a consultation</h2>
+    <div class="divider"></div>
+    <p class="s-lead" style="margin-bottom:48px">
+      First consultation is at no charge. Tell us your matter and we&rsquo;ll advise on the best path forward.
+    </p>
+  </div>
+
+  <div class="contact-grid">
+
+    <!-- Contact info -->
+    <div>
+      <div class="ct-list">
+        <div class="ct-item rv">
+          <div class="ct-ic">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M3 2h3.5l1.8 3.8-2.1 1.3A8.8 8.8 0 0 0 10.9 11.8l1.3-2.1 3.8 1.8V15a1 1 0 0 1-1 1C7.5 16 1 9.5 1 3a1 1 0 0 1 1-1h1z"
+                stroke="#C4830A" stroke-width="1.5" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="ct-l">Phone / WhatsApp</div>
+            <div class="ct-v">+91 94443 21210</div>
+            <div class="ct-s">Mon &ndash; Sat &middot; 9 am to 6 pm</div>
+          </div>
+        </div>
+
+        <div class="ct-item rv" style="--rv-d:.07s">
+          <div class="ct-ic">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <rect x="2" y="4" width="14" height="10" rx="2" stroke="#C4830A" stroke-width="1.5"/>
+              <path d="M2 6l7 5 7-5" stroke="#C4830A" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="ct-l">Email</div>
+            <div class="ct-v">legal@iyerlaw.in</div>
+            <div class="ct-s">Reply within same business day</div>
+          </div>
+        </div>
+
+        <div class="ct-item rv" style="--rv-d:.14s">
+          <div class="ct-ic">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M9 2a5 5 0 0 1 5 5c0 3.8-5 10-5 10S4 10.8 4 7a5 5 0 0 1 5-5z"
+                stroke="#C4830A" stroke-width="1.5"/>
+              <circle cx="9" cy="7" r="2" stroke="#C4830A" stroke-width="1.4"/>
+            </svg>
+          </div>
+          <div>
+            <div class="ct-l">Chamber Address</div>
+            <div class="ct-v">12, Law Chambers Road</div>
+            <div class="ct-s">Egmore, Chennai &ndash; 600008</div>
+          </div>
+        </div>
+
+        <div class="ct-item rv" style="--rv-d:.21s">
+          <div class="ct-ic">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <circle cx="9" cy="9" r="7" stroke="#C4830A" stroke-width="1.5"/>
+              <path d="M9 5v4l2.5 2.5" stroke="#C4830A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="ct-l">Office Hours</div>
+            <div class="ct-v">Mon to Sat: 9:00 AM to 6:00 PM</div>
+            <div class="ct-s">Sunday appointments on request</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enquiry form -->
+    <div class="form-card rv" style="--rv-d:.12s">
+      <div class="form-t">Send an enquiry</div>
+      <div class="form-s">We respond within one business day. First consultation is at no charge.</div>
+
+      <div class="f-row">
+        <div class="fg" style="margin-bottom:0">
+          <label class="fl" for="fname">Your Name</label>
+          <input class="fi" id="fname" type="text" placeholder="Full name" autocomplete="name">
+        </div>
+        <div class="fg" style="margin-bottom:0">
+          <label class="fl" for="ftel">Mobile Number</label>
+          <input class="fi" id="ftel" type="tel" placeholder="+91 94443 21210" autocomplete="tel">
+        </div>
+      </div>
+
+      <div class="fg">
+        <label class="fl" for="femail">Email Address</label>
+        <input class="fi" id="femail" type="email" placeholder="you@email.com" autocomplete="email">
+      </div>
+
+      <div class="fg">
+        <label class="fl" for="farea">Area of Law</label>
+        <select class="fsel" id="farea">
+          <option value="">Select matter type&hellip;</option>
+          <option>Civil Litigation</option>
+          <option>Corporate / Company Law</option>
+          <option>Tax Litigation</option>
+          <option>Property / Real Estate</option>
+          <option>Family / Matrimonial</option>
+          <option>Consumer / Arbitration</option>
+          <option>Other / Not sure</option>
+        </select>
+      </div>
+
+      <div class="fg" style="margin-bottom:20px">
+        <label class="fl" for="fmsg">Brief Description of Matter</label>
+        <textarea class="fta" id="fmsg" placeholder="Describe your legal matter briefly&hellip;"></textarea>
+      </div>
+
+      <button class="btn-submit" id="btnSub" type="button">Send Enquiry</button>
+      <button class="btn-wa" type="button" onclick="window.open('https://wa.me/919444321210','_blank')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+          <path d="M12 0C5.373 0 0 5.373 0 12c0 2.11.549 4.09 1.508 5.813L0 24l6.335-1.656A11.95 11.95 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 0 1-5.015-1.373l-.36-.214-3.727.977.995-3.635-.235-.374A9.818 9.818 0 1 1 12 21.818z"/>
+        </svg>
+        Chat on WhatsApp
+      </button>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     FOOTER
+═══════════════════════════════════════ -->
+<footer>
+
+  <div class="foot-grid">
+    <div>
+      <div class="foot-logo-row">
+        <div class="foot-crest">
+          <svg width="15" height="15" viewBox="0 0 18 18" fill="none">
+            <path d="M9 1.5L3 4.5v4.2c0 3.8 2.4 6.5 6 7.8 3.6-1.3 6-4 6-7.8V4.5L9 1.5z"
+              stroke="#E09B20" stroke-width="1.4" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <img class="foot-logo-img" alt="">
+        <div>
+          <div class="foot-nm" id="footName">Iyer &amp; Iyer</div>
+          <div class="foot-sub">Advocates &amp; Legal Consultants</div>
+        </div>
+      </div>
+      <p class="foot-desc">
+        Principled legal representation in corporate, tax, civil, and family law.
+        Serving clients with integrity across India from our chambers in Egmore, Chennai.
+      </p>
+      <div class="foot-reg">State Bar Council Registered &nbsp;&middot;&nbsp; Madras High Court Enrolled</div>
+
+      <div class="foot-ct" style="margin-top:22px">Follow Us</div>
+      <div class="foot-social">
+        <!-- LinkedIn -->
+        <a class="foot-soc-a" href="#" target="_blank" rel="noopener" aria-label="LinkedIn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+          </svg>
+        </a>
+        <!-- Facebook -->
+        <a class="foot-soc-a" href="#" target="_blank" rel="noopener" aria-label="Facebook">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+          </svg>
+        </a>
+        <!-- X (Twitter) -->
+        <a class="foot-soc-a" href="#" target="_blank" rel="noopener" aria-label="X">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L2.018 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+        </a>
+        <!-- Instagram -->
+        <a class="foot-soc-a" href="#" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
+          </svg>
+        </a>
+        <!-- YouTube -->
+        <a class="foot-soc-a" href="#" target="_blank" rel="noopener" aria-label="YouTube">
+          <svg width="17" height="13" viewBox="0 0 24 17" fill="currentColor">
+            <path d="M23.495 2.205a3.02 3.02 0 0 0-2.122-2.136C19.545 0 12 0 12 0S4.455 0 2.627.069A3.02 3.02 0 0 0 .505 2.205C0 4.04 0 8.5 0 8.5s0 4.46.505 6.295a3.02 3.02 0 0 0 2.122 2.136C4.455 17 12 17 12 17s7.545 0 9.373-.069a3.02 3.02 0 0 0 2.122-2.136C24 12.96 24 8.5 24 8.5s0-4.46-.505-6.295zM9.6 12.14V4.86L15.84 8.5 9.6 12.14z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <div>
+      <div class="foot-ct">Practice Areas</div>
+      <a class="foot-lnk" href="#practice">Civil Litigation</a>
+      <a class="foot-lnk" href="#practice">Corporate Law</a>
+      <a class="foot-lnk" href="#practice">Tax Litigation</a>
+      <a class="foot-lnk" href="#practice">Property Matters</a>
+      <a class="foot-lnk" href="#practice">Family Law</a>
+      <a class="foot-lnk" href="#practice">Consumer &amp; Arbitration</a>
+    </div>
+
+    <div>
+      <div class="foot-ct">Quick Links</div>
+      <a class="foot-lnk" href="#about">About the Firm</a>
+      <a class="foot-lnk" href="#process">How We Work</a>
+      <a class="foot-lnk" href="#contact">Contact Us</a>
+      <a class="foot-lnk" href="#contact">Free Consultation</a>
+    </div>
+
+    <div>
+      <div class="foot-ct">Contact</div>
+      <a class="foot-lnk" href="tel:+919444321210">+91 94443 21210</a>
+      <a class="foot-lnk" href="mailto:legal@iyerlaw.in">legal@iyerlaw.in</a>
+      <span class="foot-lnk" style="cursor:default">12, Law Chambers Road</span>
+      <span class="foot-lnk" style="cursor:default">Egmore, Chennai &ndash; 600008</span>
+      <div class="foot-ct" style="margin-top:18px">Hours</div>
+      <span class="foot-lnk" style="cursor:default">Mon to Sat: 9 AM to 6 PM</span>
+    </div>
+  </div>
+
+  <div class="foot-bot">
+    <div class="foot-copy">&copy; 2025 Iyer &amp; Iyer. All rights reserved.</div>
+    <div class="foot-pow">Powered by <a href="#">KDK Software</a></div>
+  </div>
+</footer>
+
+<!-- WhatsApp Float -->
+<button class="wa-float" aria-label="Chat on WhatsApp"
+  onclick="window.open('https://wa.me/919444321210','_blank')">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+    <path d="M12 0C5.373 0 0 5.373 0 12c0 2.11.549 4.09 1.508 5.813L0 24l6.335-1.656A11.95 11.95 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 0 1-5.015-1.373l-.36-.214-3.727.977.995-3.635-.235-.374A9.818 9.818 0 1 1 12 21.818z"/>
+  </svg>
+</button>
+
+<!-- ═══════════════════════════════════════
+     SCRIPT
+═══════════════════════════════════════ -->
+<script>
+'use strict';
+
+/* ── 1. NAV STICKY ── */
+var nav = document.getElementById('mainNav');
+window.addEventListener('scroll', function () {
+  nav.classList.toggle('scrolled', window.scrollY > 50);
+}, { passive: true });
+
+/* ── 2. HAMBURGER ── */
+var ham = document.getElementById('navHam');
+var mob = document.getElementById('navMob');
+if (ham) {
+  ham.addEventListener('click', function () {
+    var open = mob.classList.toggle('open');
+    ham.classList.toggle('open', open);
+    ham.setAttribute('aria-expanded', String(open));
+  });
+  mob.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', function () {
+      mob.classList.remove('open');
+      ham.classList.remove('open');
+      ham.setAttribute('aria-expanded', 'false');
+    });
+  });
+}
+
+/* ── 3. SCROLL REVEAL ── */
+(function () {
+  var obs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('vis'); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.rv').forEach(function (el) { obs.observe(el); });
+})();
+
+/* ── 4. TESTIMONIAL CAROUSEL ──
+   Clone-free carousel (the clone/measure race left the first view blank).
+   Slides one card at a time, clamps to range, drives prev/next + dots from
+   the bottom nav, and hides the controls when there is nothing to scroll.
+   Uses the track's CSS gap so no per-card margins are needed. */
+function bootTestiH() {
+  clearInterval(window.__tHTimer);
+  var track  = document.getElementById('tTrack');
+  var dotsEl = document.getElementById('tDots');
+  var prevB  = document.getElementById('tPrev');
+  var nextB  = document.getElementById('tNext');
+  if (!track) return;
+  var total = track.children.length;
+  if (!total) { if (dotsEl) dotsEl.innerHTML = ''; return; }
+  var idx = 0;
+  function perView() { return window.innerWidth <= 600 ? 1 : window.innerWidth <= 900 ? 2 : Math.min(3, total); }
+  function maxIdx()  { return Math.max(0, total - perView()); }
+  function gap()     { var g = getComputedStyle(track).columnGap || getComputedStyle(track).gap || '0'; return parseFloat(g) || 0; }
+  function step()    { var c = track.children[0]; return c ? (c.getBoundingClientRect().width + gap()) : 0; }
+  function syncDots(){ if (dotsEl) Array.prototype.forEach.call(dotsEl.children, function (d, i) { d.classList.toggle('act', i === idx); }); }
+  function render(instant) {
+    if (idx > maxIdx()) idx = maxIdx();
+    if (idx < 0) idx = 0;
+    track.style.transition = instant ? 'none' : 'transform .5s cubic-bezier(.4,0,.2,1)';
+    track.style.transform  = 'translateX(-' + (idx * step()) + 'px)';
+    syncDots();
+    var single = maxIdx() === 0;   /* nothing to scroll: hide the controls */
+    if (prevB)  prevB.style.display  = single ? 'none' : '';
+    if (nextB)  nextB.style.display  = single ? 'none' : '';
+    if (dotsEl) dotsEl.style.display = single ? 'none' : '';
+  }
+  function buildDots() {
+    if (!dotsEl) return; dotsEl.innerHTML = '';
+    for (var i = 0; i <= maxIdx(); i++) {
+      (function (k) { var d = document.createElement('button'); d.className = 'testi-dot' + (k === idx ? ' act' : ''); d.setAttribute('aria-label', 'Slide ' + (k + 1));
+        d.addEventListener('click', function () { idx = k; render(); resetTimer(); }); dotsEl.appendChild(d); })(i);
+    }
+  }
+  function move(delta) { idx += delta; if (idx > maxIdx()) idx = 0; if (idx < 0) idx = maxIdx(); render(); }
+  function resetTimer() { clearInterval(window.__tHTimer); if (maxIdx() > 0) window.__tHTimer = setInterval(function () { move(1); }, 4800); }
+  if (nextB) nextB.onclick = function () { move(1);  resetTimer(); };
+  if (prevB) prevB.onclick = function () { move(-1); resetTimer(); };
+  if (window.__tHResizeFn) window.removeEventListener('resize', window.__tHResizeFn);
+  window.__tHResizeFn = function () { clearTimeout(window.__tHResizeT); window.__tHResizeT = setTimeout(function () { buildDots(); render(true); }, 150); };
+  window.addEventListener('resize', window.__tHResizeFn);
+  buildDots(); render(true);
+  requestAnimationFrame(function () { render(true); });
+  resetTimer();
+}
+bootTestiH();
+
+/* ── 5. FORM SUBMIT ── */
+(function () {
+  var btn = document.getElementById('btnSub');
+  if (!btn) return;
+  btn.addEventListener('click', function () {
+    var name  = document.getElementById('fname').value.trim();
+    var phone = document.getElementById('ftel').value.trim();
+    var area  = document.getElementById('farea').value;
+    if (!name || !phone) {
+      alert('Please enter your name and mobile number.');
+      return;
+    }
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    /* Simulate API call — replace with real endpoint */
+    setTimeout(function () {
+      btn.textContent = 'Enquiry Sent!';
+      btn.style.background = 'linear-gradient(135deg,#2e7d32,#388e3c)';
+      setTimeout(function () {
+        btn.disabled = false;
+        btn.textContent = 'Send Enquiry';
+        btn.style.background = '';
+        document.getElementById('fname').value = '';
+        document.getElementById('ftel').value  = '';
+        document.getElementById('femail').value = '';
+        document.getElementById('farea').value  = '';
+        document.getElementById('fmsg').value   = '';
+      }, 3000);
+    }, 1200);
+  });
+})();
+
+/* ── 6. ADMIN CONFIG (localStorage) ── */
+(function () {
+  var cfg = {};
+  try { var s = localStorage.getItem('kdk_heritage_v2_config'); if (s) cfg = JSON.parse(s); } catch (e) {}
+  if (!cfg || !Object.keys(cfg).length) return;
+
+  /* Firm name */
+  if (cfg.firmName) {
+    var targets = ['navName', 'footName'];
+    targets.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = cfg.firmName;
+    });
+  }
+  /* Founder name */
+  if (cfg.founderName) {
+    var fn = document.getElementById('founderName');
+    if (fn) fn.textContent = cfg.founderName;
+  }
+  /* Founder bio */
+  if (cfg.founderBio) {
+    var fb = document.getElementById('founderBio');
+    if (fb) fb.textContent = cfg.founderBio;
+  }
+  /* Founder initials — derived from name, skip honorifics */
+  var initEl = document.getElementById('founderInitials');
+  if (initEl) {
+    var honorifics = /^(adv|dr|mr|mrs|ms|prof|ca|cs|cma)\.?$/i;
+    var parts = (cfg.founderName || 'Krishnaswamy Iyer').split(/\s+/).filter(function(w){ return !honorifics.test(w); });
+    initEl.textContent = parts.slice(0,2).map(function(w){ return w[0].toUpperCase(); }).join('');
+  }
+  /* Founder photo */
+  if (cfg.founderPhoto) {
+    var img = document.getElementById('founderPhoto');
+    if (img) {
+      img.onload = function () {
+        img.style.display = 'block';
+        if (initEl) initEl.style.display = 'none';
+      };
+      img.onerror = function () { img.style.display = 'none'; };
+      img.src = cfg.founderPhoto;
+    }
+  }
+  /* Brand colors */
+  if (cfg.primaryColor) document.documentElement.style.setProperty('--brown', cfg.primaryColor);
+  if (cfg.accentColor)  document.documentElement.style.setProperty('--gold',  cfg.accentColor);
+})();
+</script>
+
+<script>
+/* ============================================================
+   KDK Website Builder — config binding (Heritage)
+   Pristine sample lives in New Design/heritage; this is the
+   live render copy. Reads config from localStorage on load and
+   listens for live postMessage updates from the builder Preview.
+   ============================================================ */
+(function(){
+  function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function qs(s,r){return (r||document).querySelector(s);}
+  function qsa(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+  function initials(name){
+    var skip={'ca':1,'cs':1,'cma':1,'adv':1,'adv.':1,'dr':1,'dr.':1,'mr':1,'mrs':1,'ms':1,'shri':1,'smt':1,'m/s':1};
+    var parts=String(name||'').replace(/&/g,' ').split(/\s+/).filter(Boolean);
+    var w=parts.filter(function(x){return !skip[x.toLowerCase()];}); if(!w.length)w=parts;
+    return (((w[0]||'')[0]||'')+((w[1]||'')[0]||'')).toUpperCase()||'—';
+  }
+  function toHex(c){ if(/^#[0-9a-fA-F]{6}$/.test(c))return c; var m=String(c).match(/^#([0-9a-fA-F]{3})$/); if(m)return '#'+m[1].split('').map(function(x){return x+x;}).join(''); return null; }
+  function mix(hex,amt){ var h=toHex(hex); if(!h)return hex; h=h.slice(1); var p=[0,2,4].map(function(i){return parseInt(h.slice(i,i+2),16);}); return '#'+p.map(function(x){x=Math.max(0,Math.min(255,Math.round(x+amt))); return ('0'+x.toString(16)).slice(-2);}).join(''); }
+  function rgbOf(hex){ var h=toHex(hex); if(!h)return null; h=h.slice(1); return parseInt(h.slice(0,2),16)+','+parseInt(h.slice(2,4),16)+','+parseInt(h.slice(4,6),16); }
+  /* scale toward black keeping hue — for the dark hero, preserving depth so the crosshatch shows */
+  function dk(hex,f){ var h=toHex(hex); if(!h)return hex; h=h.slice(1); return '#'+[0,2,4].map(function(i){var x=Math.max(0,Math.min(255,Math.round(parseInt(h.slice(i,i+2),16)*f))); return ('0'+x.toString(16)).slice(-2);}).join(''); }
+  function splitStat(v){ v=String(v==null?'':v); var m=v.match(/^([₹$\d.,\s]+)(.*)$/); if(m&&m[1].trim())return{main:m[1].trim(),suf:m[2]}; return{main:v,suf:''}; }
+  function setText(sel,val){ var el=qs(sel); if(el&&val!=null&&val!=='') el.textContent=val; }
+
+  function fmtHeadline(headline,hl,tag,cls,sty){
+    var open='<'+tag+(cls?' class="'+cls+'"':'')+(sty?' style="'+sty+'"':'')+'>', close='</'+tag+'>';
+    var lines=String(headline).split(/\r?\n/); // each new line the user typed becomes a line break
+    return lines.map(function(seg){ seg=seg.trim(); if(!seg) return '';
+      if(hl){ var i=seg.indexOf(hl); if(i>=0){ var end=i+hl.length; while(end<seg.length&&'.,!?:'.indexOf(seg.charAt(end))>=0)end++; return esc(seg.slice(0,i))+open+esc(seg.slice(i,end))+close+esc(seg.slice(end)); } }
+      return esc(seg);
+    }).filter(Boolean).join('<br>');
+  }
+  /* Swap the crest for an uploaded logo (or restore it when cleared). */
+  function applyLogo(cfg,navImgSel,navMarkSel,footImgSel,footMarkSel){
+    var url=cfg&&cfg.logo, name=(cfg&&cfg.firmName)||'';
+    var navImg=qs(navImgSel),navMark=qs(navMarkSel),footImg=qs(footImgSel),footMark=qs(footMarkSel);
+    if(url){
+      if(navImg){ navImg.src=url; navImg.alt=name+' logo'; navImg.style.display='block'; }
+      if(navMark) navMark.style.display='none';
+      if(footImg){ footImg.src=url; footImg.alt=name+' logo'; footImg.style.display='block'; }
+      if(footMark) footMark.style.display='none';
+    } else {
+      if(navImg) navImg.style.display='none';
+      if(navMark) navMark.style.display='';
+      if(footImg) footImg.style.display='none';
+      if(footMark) footMark.style.display='';
+    }
+  }
+  function applyConfig(cfg){
+    if(!cfg||typeof cfg!=='object') return;
+
+    /* identity */
+    setText('#navName',cfg.firmName); setText('#footName',cfg.firmName);
+    setText('.nav-sub',cfg.tagline); setText('.foot-sub',cfg.tagline);
+    applyLogo(cfg,'.nav-logo-img','.nav-crest','.foot-logo-img','.foot-crest');
+
+    /* hero */
+    var h=cfg.hero||{};
+    if(cfg.hero){ var _hb=qs('.hero-badge'); if(_hb){ if(h.badge){ _hb.textContent=h.badge; _hb.style.display=''; } else _hb.style.display='none'; } }
+    if(h.headline){ var h1=qs('.hero-h1'); if(h1) h1.innerHTML=fmtHeadline(h.headline,h.highlight,'em',''); }
+    setText('.hero-para',h.sub);
+    setText('.hero-acts .btn-p',h.cta1); setText('.hero-acts .btn-s',h.cta2);
+    if(h.tags&&h.tags.length){ var ht=qs('.hero-tags'); if(ht) ht.innerHTML=h.tags.map(function(t){return '<span class="hero-tag">'+esc(t)+'</span>';}).join(''); }
+
+    /* stats */
+    if(cfg.stats&&cfg.stats.length){ var sb=qs('.hero-sbar'); if(sb) sb.innerHTML=cfg.stats.map(function(st){ var sp=splitStat(st.v);
+      return '<div class="hs-item"><div class="hs-num">'+esc(sp.main)+(sp.suf?'<em>'+esc(sp.suf)+'</em>':'')+'</div><div class="hs-lbl">'+esc(st.l)+'</div></div>'; }).join(''); }
+
+    /* practice areas / services */
+    if(cfg.services&&cfg.services.length){ var g=qs('.prac-grid'); if(g) g.innerHTML=cfg.services.map(function(sv,i){
+      return '<div class="prac-card pc-'+((i%6)+1)+'"><div class="prac-bar"></div><div class="prac-name">'+esc(sv.name)+'</div><div class="prac-desc">'+esc(sv.desc||'')+'</div><a class="prac-enq" href="#contact">Enquire &#8594;</a></div>'; }).join(''); }
+
+    /* about text */
+    if(cfg.about){ var col=qs('.about-grid > div'); if(col){ var ps=qsa('p',col); if(ps[0])ps[0].textContent=cfg.about; for(var i=1;i<ps.length;i++)ps[i].style.display='none'; } }
+
+    /* highlights */
+    if(cfg.highlights&&cfg.highlights.length){ var ah=qs('.ab-highs'); if(ah){ var icon='<div class="ab-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9l4.5 4.5 7.5-7.5" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
+      ah.innerHTML=cfg.highlights.map(function(x){ return '<div class="ab-item">'+icon+'<div><div class="ab-t">'+esc(x.t)+'</div><div class="ab-d">'+esc(x.d||'')+'</div></div></div>'; }).join(''); } }
+
+    /* founder */
+    setText('#founderName',cfg.founderName); setText('.founder-role',cfg.founderRole); setText('#founderBio',cfg.founderBio);
+    var fi=qs('#founderInitials'); if(fi) fi.textContent=initials(cfg.founderName);
+    if(cfg.founderPhoto){ var fp=qs('#founderPhoto'); if(fp){ fp.src=cfg.founderPhoto; fp.style.display='block'; if(fi)fi.style.display='none'; } }
+    if(cfg.credentials&&cfg.credentials.length){ var fq=qs('.founder-quals'); if(fq) fq.innerHTML=cfg.credentials.map(function(c){return '<div class="founder-q">'+esc(c)+'</div>';}).join(''); }
+
+    /* process */
+    if(cfg.process&&cfg.process.length){ var pg=qs('.proc-grid'); if(pg){ var last=cfg.process.length-1,
+      arr='<div class="proc-arr"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 6h6M7 4l2 2-2 2" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
+      pg.innerHTML=cfg.process.map(function(p,i){ return '<div class="proc-card">'+(i<last?arr:'')+'<div class="proc-n">'+('0'+(i+1)).slice(-2)+'</div><div class="proc-t">'+esc(p.t)+'</div><div class="proc-d">'+esc(p.d||'')+'</div></div>'; }).join(''); } }
+
+    /* testimonials */
+    if(cfg.testimonials&&cfg.testimonials.length){ var tk=qs('#tTrack'); if(tk){
+      tk.innerHTML=cfg.testimonials.map(function(t){ var r=Math.max(0,Math.min(5,t.s||5)),st=''; for(var i=0;i<r;i++)st+='<div class="tc-star"></div>';
+        return '<div class="tc"><div class="tc-qm">&ldquo;</div><div class="tc-stars">'+st+'</div><p class="tc-q">'+esc(t.q)+'</p><div class="tc-sep"></div><div class="tc-au">'+(t.img?'<div class="tc-av" style="overflow:hidden"><img src="'+t.img+'" alt="'+esc(t.n)+'" style="width:100%;height:100%;object-fit:cover"></div>':'<div class="tc-av">'+esc(initials(t.n))+'</div>')+'<div><div class="tc-nm">'+esc(t.n)+'</div><div class="tc-rl">'+esc(t.r||'')+'</div></div></div></div>'; }).join('');
+      if(typeof bootTestiH==='function'){ bootTestiH(); setTimeout(bootTestiH,140); setTimeout(bootTestiH,420); }
+    } }
+
+    /* contact — order: phone, email, address, hours */
+    var ci=qsa('.ct-list .ct-item');
+    if(ci[0]&&cfg.phone){ var e0=qs('.ct-v',ci[0]); if(e0)e0.textContent=cfg.phone; }
+    if(ci[1]&&cfg.email){ var e1=qs('.ct-v',ci[1]); if(e1)e1.textContent=cfg.email; }
+    if(ci[2]&&cfg.address){ var e2=qs('.ct-v',ci[2]); if(e2)e2.textContent=cfg.address; var e2s=qs('.ct-s',ci[2]); if(e2s)e2s.textContent=cfg.city||''; }
+    if(ci[3]&&cfg.hours){ var e3=qs('.ct-v',ci[3]); if(e3)e3.textContent=cfg.hours; }
+
+    /* footer */
+    setText('.foot-desc',cfg.footerBlurb); setText('.foot-copy',cfg.copyright);
+    var fcols=qsa('.foot-grid > div');
+    if(fcols[1]&&cfg.services&&cfg.services.length) fcols[1].innerHTML='<div class="foot-ct">Practice Areas</div>'+cfg.services.slice(0,6).map(function(sv){return '<a class="foot-lnk" href="#services">'+esc(sv.name)+'</a>';}).join('');
+    if(fcols[3]&&(cfg.phone||cfg.email||cfg.address||cfg.hours)) fcols[3].innerHTML='<div class="foot-ct">Contact</div>'+
+      (cfg.phone?'<a class="foot-lnk" href="tel:'+String(cfg.phone).replace(/\s/g,'')+'">'+esc(cfg.phone)+'</a>':'')+
+      (cfg.email?'<a class="foot-lnk" href="mailto:'+esc(cfg.email)+'">'+esc(cfg.email)+'</a>':'')+
+      (cfg.address?'<span class="foot-lnk" style="cursor:default">'+esc(cfg.address)+'</span>':'')+
+      (cfg.hours?'<div class="foot-ct" style="margin-top:20px">Hours</div><span class="foot-lnk" style="cursor:default">'+esc(cfg.hours)+'</span>':'');
+
+    /* social */
+    if(cfg.social){
+      var sm=[cfg.social.linkedin, cfg.social.facebook, null, cfg.social.instagram, cfg.social.youtube], shown=0;
+      qsa('.foot-social .foot-soc-a').forEach(function(a,i){ if(sm[i]){ a.href=sm[i]; a.style.display=''; shown++; } else a.style.display='none'; });
+      // No links: hide the whole social row and its "Follow Us" heading.
+      var fsoc=qs('.foot-social'); if(fsoc){ fsoc.style.display=shown?'':'none'; var flbl=fsoc.previousElementSibling; if(flbl&&flbl.classList&&flbl.classList.contains('foot-ct')) flbl.style.display=shown?'':'none'; }
+    }
+
+    /* whatsapp */
+    if(cfg.whatsapp){ var dg=String(cfg.whatsapp).replace(/\D/g,''); qsa('.wa-float, .btn-wa').forEach(function(b){ b.setAttribute('onclick',"window.open('https://wa.me/"+dg+"','_blank')"); }); }
+
+    /* title */
+    if(cfg.firmName) document.title=cfg.firmName+(cfg.tagline?(' | '+cfg.tagline):'');
+
+    /* colours — Heritage uses gradient vars, so retint them from the palette */
+    var pri=toHex(cfg.primaryColor), acc=toHex(cfg.accentColor), root=document.documentElement;
+    if(cfg.nativeTheme){ // theme 0 — keep the original warm gradient, hero crosshatch and rings
+      ['--brown','--gold','--g-brown','--g-hero','--g-proc','--g-gold','--brown-rgb','--gold-rgb'].forEach(function(v){root.style.removeProperty(v);});
+    } else {
+      if(pri){ root.style.setProperty('--brown',pri);
+        root.style.setProperty('--g-brown','linear-gradient(135deg,'+mix(pri,-28)+' 0%,'+pri+' 50%,'+mix(pri,28)+' 100%)');
+        /* dk() keeps the hero dark but in the theme hue, with enough depth for the crosshatch/rings to show */
+        root.style.setProperty('--g-hero','linear-gradient(145deg,'+dk(pri,0.16)+' 0%,'+dk(pri,0.55)+' 38%,'+dk(pri,0.34)+' 65%,'+dk(pri,0.08)+' 100%)');
+        root.style.setProperty('--g-proc','linear-gradient(145deg,'+dk(pri,0.10)+' 0%,'+dk(pri,0.4)+' 50%,'+dk(pri,0.10)+' 100%)');
+        var prgb=rgbOf(pri); if(prgb) root.style.setProperty('--brown-rgb',prgb);
+      }
+      if(acc){ root.style.setProperty('--gold',acc); root.style.setProperty('--g-gold','linear-gradient(135deg,'+acc+','+mix(acc,45)+')');
+        var argb=rgbOf(acc); if(argb) root.style.setProperty('--gold-rgb',argb); }
+    }
+  }
+
+  try{ var raw=localStorage.getItem('kdk_heritage_config')||localStorage.getItem('kdk_wb_config'); if(raw) applyConfig(JSON.parse(raw)); }catch(e){}
+  window.addEventListener('message',function(e){ var d=e&&e.data; if(d&&d.type==='kdk-wb-config'&&d.config) applyConfig(d.config); });
+  window.__applyConfig=applyConfig;
+})();
+</script>
+
+</body>
+</html>
