@@ -6,18 +6,18 @@ This repository hosts the **Phase 1 prototype** as static HTML, served via GitHu
 
 ## Live prototype
 
-Once GitHub Pages is enabled, the prototype is available at:
+The prototype is live at:
 
 **https://kartikkhandelwal-pm.github.io/KDKSites/**
 
-- **Builder wizard:** `Admin Panel/website-builder-admin-v4.html`
+The site opens directly on the **6-step website builder** (it is the root `index.html`).
+
 - **Published templates:** `Live/apex`, `Live/nova`, `Live/heritage`, `Live/zenith`
 
 ## Repository structure
 
 ```
-index.html          Landing page (links to builder + templates + docs)
-Admin Panel/        6-step builder wizard prototype
+index.html          6-step website builder (the entry point)
 Live/               Published website templates (apex, nova, heritage, zenith)
 New Design/         Template design iterations
 backend/            API spec + database schema
