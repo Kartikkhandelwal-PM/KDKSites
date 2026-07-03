@@ -4,6 +4,40 @@
 
 ---
 
+## 2026-07-03 — Session 4 (GitHub hosting + persistence setup)
+
+### Session Summary
+- Put the prototype under Git, pushed to GitHub, and made it live on GitHub Pages. Made the builder the site entry point and set up docs so work is resumable from the repo alone (survives switching Claude accounts). Released as [0.7.0].
+
+### What Was Done
+- [x] `git init`, connected remote `https://github.com/Kartikkhandelwal-PM/KDKSites`, committed and pushed to `main`.
+- [x] Installed `gh` CLI (Homebrew); user authenticated via `gh auth login`; `gh auth setup-git` for HTTPS pushes.
+- [x] Enabled **GitHub Pages** via API (source: `main` / root). Live at https://kartikkhandelwal-pm.github.io/KDKSites/ and verified (builder + all 4 templates + logo return 200).
+- [x] Added `README.md` and `.gitignore` (excludes `.claude/`, `New Design copy/`, `.DS_Store`).
+- [x] **Made the builder the root:** moved `Admin Panel/website-builder-admin-v4.html` to `index.html` at repo root and rewrote its `../` asset paths to root-relative. Removed the intermediate dashboard so the root URL opens straight on the 6-step builder. Old long `/Admin Panel/...` URL now 404s (expected).
+- [x] Reconciled `CLAUDE.md` (Current State, Deployment, Session Handoff Protocol, corrected structure/tech/templates) and updated `CHANGELOG.md`.
+- [x] Trialled a header logo swap (`KDK Sites.png` in place of the text logo), previewed locally on `python3 -m http.server 8765`, then **rolled it back** at user request. No header change shipped.
+
+### Decisions Made
+- **Repo is the single source of truth.** Claude per-account memory does not move between accounts/machines, so every session must update DEV-LOG + CHANGELOG + CLAUDE "Current State" and push. Documented as the Session Handoff Protocol in CLAUDE.md.
+- **GitHub Pages is for the prototype only.** Its terms forbid commercial hosting; wildcard subdomains are painful. For production, favour **Supabase (Postgres) + Cloudflare Pages** (commercial-friendly, native `*.kdksites.in`), deploying from this same repo. Not committed yet.
+- Root entry file must be lowercase `index.html` (Pages requirement; macOS is case-insensitive so it looks identical to the old `INDEX.html` locally).
+
+### Blockers
+- None. (For an even shorter URL: add a custom domain like `builder.kdksites.in`, which needs access to `kdksites.in` DNS.)
+
+### Open Questions
+- Do we commit to Supabase + Cloudflare Pages for production, and when?
+- Custom domain for the prototype: who controls `kdksites.in` DNS?
+- Still open from Session 3: hide connector arrows on wrapped process rows; retire or sync the `New Design/` folder.
+
+### Next Session Goals
+- Decide production hosting (Supabase + Cloudflare Pages vs original Golang + MySQL).
+- Optionally set up a custom domain.
+- Reconcile the PRD to the 4-design lineup (CLAUDE.md is done; PRD still lists the older 3 templates).
+
+---
+
 ## 2026-07-02 — Session 3 (Builder Admin UX overhaul)
 
 ### Session Summary

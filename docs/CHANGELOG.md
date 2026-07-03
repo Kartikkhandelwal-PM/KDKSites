@@ -4,6 +4,29 @@
 
 ---
 
+## [0.7.0] 2026-07-03 — GitHub Pages hosting + repo restructure
+
+> The prototype is now version-controlled and hosted online. Live: https://kartikkhandelwal-pm.github.io/KDKSites/
+
+### Added
+- Git repository initialised and pushed to **https://github.com/Kartikkhandelwal-PM/KDKSites** (branch `main`).
+- **GitHub Pages** enabled (serves root of `main`). Site is live at https://kartikkhandelwal-pm.github.io/KDKSites/
+- `README.md` (repo readme with live URL and structure) and `.gitignore` (excludes `.claude/`, `New Design copy/`, OS files).
+- `gh` CLI installed (Homebrew) and authenticated as `Kartikkhandelwal-PM` for pushes and Pages API.
+
+### Changed — entry point is now the builder
+- The builder (`Admin Panel/website-builder-admin-v4.html`) was **moved to the repo root as `index.html`**, and its `../` asset paths were rewritten to root-relative. The site now opens **directly on the 6-step builder**; the old project dashboard was removed.
+- Docs reconciled to reality: `CLAUDE.md` structure, tech stack (current vs planned), template lineup (4 designs: Apex/Nova/Heritage/Zenith), and a new **Current State** + **Session Handoff Protocol** section so any session (any account/machine) can resume from the repo alone.
+
+### Decisions / open items
+- **Hosting is not finalised.** GitHub Pages is used for the prototype only. Its terms forbid commercial hosting of customer sites, and per-site wildcard subdomains are painful. For production we discussed **Supabase (Postgres)** for data plus **Cloudflare Pages** (commercial-friendly, native wildcard `*.kdksites.in`), deploying from this same repo. No decision committed.
+- Persistence rule established: Claude's per-account memory does not transfer, so the repo docs are the single source of truth and must be updated + pushed every session.
+
+### Reverted
+- A trial header change (swapping the text logo for `KDK Sites.png`) was previewed locally and rolled back at the user's request. No header change shipped.
+
+---
+
 ## [0.6.0] 2026-07-02 — Builder Admin UX Overhaul (v4)
 
 > All work in this release is in `Admin Panel/website-builder-admin-v4.html` and the four `Live/` renderers (`apex`, `heritage`, `nova`, `zenith`).
