@@ -1310,7 +1310,9 @@ function syncColorInputs(){
 
 /* ---------- STEP 7: publish ---------- */
 /* slug -> the real, working share URL (path-based on Netlify today) */
-function siteSlug(v){ return (v||'').toLowerCase().replace(/[^a-z0-9-]/g,'-').replace(/^-+|-+$/g,''); }
+/* firm name -> clean URL slug: collapse any run of non-alphanumerics into one
+   hyphen, no leading/trailing/doubled hyphens. "Kartik & Associates" -> "kartik-associates" */
+function siteSlug(v){ return (v||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,''); }
 function siteUrl(sub){ var base=(window.KDK_AI&&window.KDK_AI.publicBase)||'https://kdksites.netlify.app/s/'; return base+siteSlug(sub); }
 function prettyUrl(sub){ var dom=(window.KDK_AI&&window.KDK_AI.prettyDomain)||'kdksites.in'; return siteSlug(sub)+'.'+dom; }
 /* User typed their own address -> stop auto-mirroring the firm name.
