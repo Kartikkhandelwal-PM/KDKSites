@@ -2455,7 +2455,10 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closePrevi
     if(mode==='signup' && pass.length<6){ showErr('Password must be at least 6 characters.'); return; }
     setBusy(true);
     if(mode==='signup'){
-      authFetch('/auth/v1/signup',{method:'POST',body:JSON.stringify({email:email,password:pass,data:{full_name:name}})}).then(function(res){
+      // Send the email-confirmation link back to wherever the user signed up
+      // (deployed or local); must be in Supabase's redirect allow-list.
+      var redir=encodeURIComponent(window.location.origin);
+      authFetch('/auth/v1/signup?redirect_to='+redir,{method:'POST',body:JSON.stringify({email:email,password:pass,data:{full_name:name}})}).then(function(res){
         if(res.body && res.body.access_token){ onAuthed(saveSession(res.body)); }
         else if(res.ok){ setBusy(false); mode='confirm'; render(); }
         else { setBusy(false); showErr(res.body.error_description||res.body.msg||res.body.error||'Could not create the account.'); }
