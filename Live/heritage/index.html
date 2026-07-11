@@ -1161,7 +1161,7 @@ footer::before {
      TESTIMONIALS
 ═══════════════════════════════════════ -->
 <section class="sec testi-sec">
-  <div class="testi-wm">HERITAGE</div>
+  <div class="testi-wm">TESTIMONIALS</div>
   <div class="rv" style="margin-bottom:48px">
     <div class="s-eye">Client Testimonials</div>
     <h2 class="s-h2">What our clients say</h2>
@@ -1647,6 +1647,9 @@ bootTestiH();
       var el = document.getElementById(id);
       if (el) el.textContent = cfg.firmName;
     });
+    // decorative watermark behind the testimonials -> the firm's own name
+    var wm = document.querySelector('.testi-wm');
+    if (wm) wm.textContent = cfg.firmName.toUpperCase();
   }
   /* Founder name */
   if (cfg.founderName) {

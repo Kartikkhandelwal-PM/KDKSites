@@ -20,6 +20,7 @@ A **website builder product** embedded inside the KDK Software desktop/web app. 
 - The root **`index.html` IS the builder.** It was moved up from `Admin Panel/website-builder-admin-v4.html` on 2026-07-03, and its `../` asset paths were rewritten to be root-relative.
 - **Hosting:** GitHub Pages (static), serving the root of `main`. Every push triggers a Pages rebuild (typically 1 to 3 minutes) followed by a CDN cache refresh.
 - The four published website templates live in `Live/` (apex, nova, heritage, zenith). `New Design/` holds design iterations. `Admin Panel/` now holds only its notes file.
+- **AI Website Writer (prototype, on branch `feature/ai-website-writer`, not yet merged to `main`):** a floating button in the builder runs a short interview and an LLM drafts the whole site. It needs a **gitignored `local-ai-config.js`** holding an API key (OpenAI or Anthropic) and calls the LLM **directly from the browser — local demo only**. Production must move this server-side (never ship a key to the browser). See [docs/DEV-LOG.md](docs/DEV-LOG.md) 2026-07-11.
 
 ### Deploy a change
 ```

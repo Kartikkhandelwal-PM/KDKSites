@@ -4,6 +4,43 @@
 
 ---
 
+## 2026-07-11 — Session 5 (AI Website Writer)
+
+### Session Summary
+Added an **"AI Website Writer"** to the builder: a floating button opens a short guided interview, then an LLM drafts the whole site and fills the builder fields for review. Also removed the leftover fake demo data that was polluting real sites, and fixed several bugs found along the way. Branch: `feature/ai-website-writer`. Targeted release [0.8.0].
+
+### What Was Done
+- **AI Writer feature (all in `index.html`, appended as a self-contained script + styles):**
+  - Morphing sparkle FAB (bottom-right) that expands on hover; opens a modal interview.
+  - Interview steps: profession, firm name, years, differentiator, typical clients, **key numbers** (→ stats), **how you work** (→ How We Work), **client reviews** (repeatable list: name/role/rough note), **location + contact** (city/phone/email/address in one group), founder, and free-text "anything else". Most steps are skippable.
+  - On submit it calls the LLM and fills: tagline, hero (badge/short slogan headline with line breaks + accent highlight/sub), CTAs, audience tags, key stats, About highlights, How-We-Work steps (title + desc), testimonials, credentials, about, founder bio, footer, and every service description.
+  - **Provider-agnostic**: OpenAI or Anthropic (Claude), switchable via a **gitignored `local-ai-config.js`** that holds the API key. Both browser-CORS-verified.
+  - "Building your site" animated loading (shimmering site skeleton + cycling status), tinting removed per request.
+- **Killed the demo-data trap (P1):** cleared all Sharma-&-Associates fake defaults (firm/contact/address/copyright/hero/about/founder copy) → empty fields with guiding placeholders; emptied fabricated stats & testimonials; empty stats/highlights/process/testimonials are filtered out at publish/preview.
+- **Anti-fabrication rules in the prompt:** stats use only real numbers the user gives (else qualitative); testimonials are AI-*written* from the user's rough notes but never invented when skipped.
+- **UX polish:** light placeholder colour; `smartTitle()` auto-capitalisation on typed proper-noun fields (firm/city/address/founder, acronym-aware: GST/ITR/CA…); `capFirst()` on email; symbol inserter (₹ ★ + % ✓) for stats; services sorted active-on-top; FAB hidden while preview/publish overlays are open; added `<meta charset="utf-8">` (fixed ₹/★/© mojibake).
+
+### Bugs Fixed
+- **`window.S` was undefined** — state is `const S`, which does not attach to `window`, so every AI array section (stats/highlights/process/testimonials/tags/service-descriptions) was silently skipped. Fixed with `window.S = S;`. This was masked until the demo defaults were cleared.
+- **Heritage template watermark** leaked the literal "HERITAGE" behind testimonials → now bound to the firm name (default "TESTIMONIALS"). (`Live/heritage/index.html`)
+- **Publish step (Step 6)** 2nd checklist bullet showed a lone "," when firm/city were empty → now handles empties gracefully.
+
+### Decisions Made
+- **AI Writer is a Phase-2 (backend) feature.** Calling the provider directly from the browser exposes the API key, so it is **local-demo only**; production must call the LLM **server-side** (planned Golang/Supabase backend) and never ship a key to the browser.
+- **No fabricated content for finance/legal sites** — testimonials and stats are only produced from user-provided input.
+- Provider not finalised (OpenAI vs Claude); code supports both.
+
+### Blockers / Security
+- Local testing used a real OpenAI key placed in the gitignored `local-ai-config.js` (never committed). **That key was pasted in chat during setup and must be rotated/revoked.**
+- To see generation run, a funded API key (OpenAI or Anthropic) must be in `local-ai-config.js`.
+
+### Next Steps
+- Move AI calls **server-side** for production; decide the provider.
+- Optional UX follow-ups discussed but not done: P3 (relayout each step into "your details" vs "AI draft") and P4 (a per-step "needs your input" cue).
+- Stop sending the unused `profession` field in the published config (templates never read it).
+
+---
+
 ## 2026-07-03 — Session 4 (GitHub hosting + persistence setup)
 
 ### Session Summary

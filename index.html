@@ -1,7 +1,14 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>KDK Sites · KDK Software</title>
 <link rel="icon" type="image/png" href="CA%20India%20Logo.png">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+input::placeholder,textarea::placeholder{color:#AEBBCC;opacity:1;font-weight:400}
+.sym-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:0 0 12px}
+.sym-lbl{font-size:11px;font-weight:600;color:#7A8FA6}
+.sym-btn{width:30px;height:30px;border:1px solid #E2E8F4;background:#fff;border-radius:7px;cursor:pointer;font-size:14px;line-height:1;color:#374E6A;display:inline-flex;align-items:center;justify-content:center;transition:all .15s}
+.sym-btn:hover{border-color:#1D4ED8;color:#1D4ED8;background:#F4F6FC}
 html,body{height:100%}
 body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#F4F6FC;color:#374E6A;font-size:14px;display:flex;flex-direction:column;height:100vh;overflow:hidden}
 :root{
@@ -583,13 +590,13 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#F4F6F
         <span class="f-hint">Services are pre-loaded based on your profession</span></div>
     </div>
     <div class="f-row c2">
-      <div class="f-grp"><label class="f-lbl">Firm / Practice Name <span class="req">*</span></label><input class="f-in" id="fFirmName" value="Sharma &amp; Associates"></div>
-      <div class="f-grp"><label class="f-lbl">Tagline</label><input class="f-in" id="fTagline" value="Tax &amp; Financial Consultants"></div>
+      <div class="f-grp"><label class="f-lbl">Firm / Practice Name <span class="req">*</span></label><input class="f-in" id="fFirmName" placeholder="Your firm or practice name" onblur="this.value=smartTitle(this.value)"></div>
+      <div class="f-grp"><label class="f-lbl">Tagline</label><input class="f-in" id="fTagline" placeholder="A short line about what you do"></div>
     </div>
     <div class="f-row c3">
-      <div class="f-grp"><label class="f-lbl">Founded Year</label><input class="f-in" id="fFounded" value="1998"></div>
-      <div class="f-grp"><label class="f-lbl">Team Size</label><input class="f-in" id="fTeam" type="number" value="8"></div>
-      <div class="f-grp"><label class="f-lbl">City <span class="req">*</span></label><input class="f-in" id="fCity" value="New Delhi"></div>
+      <div class="f-grp"><label class="f-lbl">Founded Year</label><input class="f-in" id="fFounded" placeholder="e.g. 2010"></div>
+      <div class="f-grp"><label class="f-lbl">Team Size</label><input class="f-in" id="fTeam" type="number" placeholder="e.g. 8"></div>
+      <div class="f-grp"><label class="f-lbl">City <span class="req">*</span></label><input class="f-in" id="fCity" placeholder="e.g. Jaipur" onblur="this.value=smartTitle(this.value)"></div>
     </div>
     <div class="f-row c1"><div class="f-grp"><label class="f-lbl">Firm Logo</label>
       <div class="upload-zone" id="uzLogo" onclick="document.getElementById('inLogo').click()" style="max-width:280px">
@@ -603,17 +610,17 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#F4F6F
     <div class="f-sub">Appears in the header, contact section, and footer</div>
     <div class="f-div"></div>
     <div class="f-row c2">
-      <div class="f-grp"><label class="f-lbl">Phone Number <span class="req">*</span></label><input class="f-in" id="fPhone" type="tel" value="+91 98100 43210"></div>
-      <div class="f-grp"><label class="f-lbl">WhatsApp Number</label><input class="f-in" id="fWhatsapp" type="tel" value="+91 98100 43210"><span class="f-hint">Powers the floating WhatsApp button</span></div>
+      <div class="f-grp"><label class="f-lbl">Phone Number <span class="req">*</span></label><input class="f-in" id="fPhone" type="tel" placeholder="+91 XXXXX XXXXX"></div>
+      <div class="f-grp"><label class="f-lbl">WhatsApp Number</label><input class="f-in" id="fWhatsapp" type="tel" placeholder="+91 XXXXX XXXXX"><span class="f-hint">Powers the floating WhatsApp button</span></div>
     </div>
     <div class="f-row c2">
-      <div class="f-grp"><label class="f-lbl">Email Address <span class="req">*</span></label><input class="f-in" id="fEmail" type="email" value="info@sharmafirm.in"></div>
-      <div class="f-grp"><label class="f-lbl">Office Hours</label><input class="f-in" id="fHours" value="Mon to Sat: 10:00 AM to 7:00 PM"></div>
+      <div class="f-grp"><label class="f-lbl">Email Address <span class="req">*</span></label><input class="f-in" id="fEmail" type="email" placeholder="you@yourfirm.in" onblur="this.value=capFirst(this.value)"></div>
+      <div class="f-grp"><label class="f-lbl">Office Hours</label><input class="f-in" id="fHours" placeholder="Mon to Sat: 10:00 AM to 7:00 PM"></div>
     </div>
-    <div class="f-row c1"><div class="f-grp"><label class="f-lbl">Office Address</label><input class="f-in" id="fAddress" value="302, Barakhamba House, Connaught Place, New Delhi 110001"></div></div>
+    <div class="f-row c1"><div class="f-grp"><label class="f-lbl">Office Address</label><input class="f-in" id="fAddress" placeholder="Office no., building, area, city, PIN" onblur="this.value=smartTitle(this.value)"></div></div>
     <div class="f-row c2">
-      <div class="f-grp"><label class="f-lbl">Membership No.</label><input class="f-in" id="fMembership" value="ICAI M.No. 123456"></div>
-      <div class="f-grp"><label class="f-lbl">Firm Registration No.</label><input class="f-in" id="fRegno" value="FRN 004567N"></div>
+      <div class="f-grp"><label class="f-lbl">Membership No.</label><input class="f-in" id="fMembership" placeholder="e.g. ICAI M.No. 123456"></div>
+      <div class="f-grp"><label class="f-lbl">Firm Registration No.</label><input class="f-in" id="fRegno" placeholder="e.g. FRN 004567N"></div>
     </div>
   </div>
 
@@ -635,8 +642,8 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#F4F6F
     <div class="f-hd"><div class="f-ico cyan"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="2" width="12" height="12" rx="1.5"/><path d="M2 11h12"/></svg></div><div class="f-title">Footer</div></div>
     <div class="f-sub">The bottom of every page (uses the contact and social details above)</div>
     <div class="f-div"></div>
-    <div class="f-row c1"><div class="f-grp"><label class="f-lbl">Footer Blurb</label><textarea class="f-ta" id="fFooterBlurb" style="min-height:60px">Established 1998, Connaught Place, New Delhi. Serving individuals, businesses, startups, and NRI clients with accurate, on-time tax and compliance work.</textarea></div></div>
-    <div class="f-row c1"><div class="f-grp"><label class="f-lbl">Copyright Line</label><input class="f-in" id="fCopyright" value="© 2025 Sharma &amp; Associates. All rights reserved."><span class="f-hint">"Powered by KDK Software" is added automatically.</span></div></div>
+    <div class="f-row c1"><div class="f-grp"><label class="f-lbl">Footer Blurb</label><textarea class="f-ta" id="fFooterBlurb" placeholder="A short line about your firm for the footer" style="min-height:60px"></textarea></div></div>
+    <div class="f-row c1"><div class="f-grp"><label class="f-lbl">Copyright Line</label><input class="f-in" id="fCopyright" placeholder="© 2026 Your Firm. All rights reserved."><span class="f-hint">"Powered by KDK Software" is added automatically.</span></div></div>
   </div>
 
   <div class="step-nav">
@@ -655,19 +662,17 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#F4F6F
     <div class="f-hd"><div class="f-ico em"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="3" width="12" height="10" rx="1.5"/><path d="M2 6h12"/></svg></div><div class="f-title">Hero Banner</div></div>
     <div class="f-sub">Headline, sub-heading, and call-to-action buttons</div>
     <div class="f-div"></div>
-    <div class="f-row c1"><div class="f-grp"><label class="f-lbl">Eyebrow Badge</label><input class="f-in" id="hBadge" value="Accepting new clients for FY 2025-26"></div></div>
+    <div class="f-row c1"><div class="f-grp"><label class="f-lbl">Eyebrow Badge</label><input class="f-in" id="hBadge" placeholder="e.g. Accepting new clients for FY 2026-27"></div></div>
     <div class="f-row c1">
-      <div class="f-grp"><label class="f-lbl">Headline <span class="req">*</span></label><textarea class="f-ta" id="hHeadline" style="min-height:86px;font-weight:600;font-size:15px">Your taxes.
-Handled right.
-Every year.</textarea><span class="f-hint">Each new line here becomes a new line on the site. Tip: put the phrase you want highlighted on its own line.</span></div>
+      <div class="f-grp"><label class="f-lbl">Headline <span class="req">*</span></label><textarea class="f-ta" id="hHeadline" placeholder="Your headline (each new line becomes a new line on the site)" style="min-height:86px;font-weight:600;font-size:15px"></textarea><span class="f-hint">Each new line here becomes a new line on the site. Tip: put the phrase you want highlighted on its own line.</span></div>
     </div>
     <div class="f-row c1">
-      <div class="f-grp"><label class="f-lbl">Highlighted Phrase</label><input class="f-in" id="hHighlight" value="Handled right"><span class="f-hint">This part of the headline is accented in your brand colour</span></div>
+      <div class="f-grp"><label class="f-lbl">Highlighted Phrase</label><input class="f-in" id="hHighlight" placeholder="The part of the headline to accent"><span class="f-hint">This part of the headline is accented in your brand colour</span></div>
     </div>
-    <div class="f-row c1"><div class="f-grp"><label class="f-lbl">Sub-heading</label><textarea class="f-ta" id="hSub" style="min-height:64px">Complete tax, compliance, and financial advisory from a New Delhi firm that gets it done, for salaried individuals, business owners, NRIs, and freelancers.</textarea></div></div>
+    <div class="f-row c1"><div class="f-grp"><label class="f-lbl">Sub-heading</label><textarea class="f-ta" id="hSub" placeholder="One or two sentences under the headline" style="min-height:64px"></textarea></div></div>
     <div class="f-row c2">
-      <div class="f-grp"><label class="f-lbl">Primary Button</label><input class="f-in" id="hCta1" value="Book Free Consultation"></div>
-      <div class="f-grp"><label class="f-lbl">Secondary Button</label><input class="f-in" id="hCta2" value="View All Services"></div>
+      <div class="f-grp"><label class="f-lbl">Primary Button</label><input class="f-in" id="hCta1" placeholder="e.g. Book a Consultation"></div>
+      <div class="f-grp"><label class="f-lbl">Secondary Button</label><input class="f-in" id="hCta2" placeholder="e.g. View Services"></div>
     </div>
     <div class="f-row c1"><div class="f-grp"><label class="f-lbl">Audience Tags</label><div class="chip-wrap" id="tagWrap"></div><span class="f-hint">Short labels shown under the hero (press Enter to add)</span></div></div>
     <div class="f-row c1" id="heroImgRow"><div class="f-grp"><label class="f-lbl">Hero Images <span style="font-weight:400;color:var(--ts)">(Nova design only)</span></label>
@@ -682,6 +687,14 @@ Every year.</textarea><span class="f-hint">Each new line here becomes a new line
     <div class="f-hd"><div class="f-ico em"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 13V9M6 13V4M10 13V7M14 13V2"/></svg></div><div class="f-title">Key Stats</div></div>
     <div class="f-sub">Numbers that build trust (years, clients, ratings)</div>
     <div class="f-div"></div>
+    <div class="sym-row">
+      <span class="sym-lbl">Click a value field, then insert:</span>
+      <button type="button" class="sym-btn" title="Star" onmousedown="return symIns(event,'★')">★</button>
+      <button type="button" class="sym-btn" title="Rupee" onmousedown="return symIns(event,'₹')">₹</button>
+      <button type="button" class="sym-btn" title="Plus" onmousedown="return symIns(event,'+')">+</button>
+      <button type="button" class="sym-btn" title="Percent" onmousedown="return symIns(event,'%')">%</button>
+      <button type="button" class="sym-btn" title="Tick" onmousedown="return symIns(event,'✓')">✓</button>
+    </div>
     <div id="statList"></div>
     <div class="add-row"><button class="add-btn g3" onclick="addStat()"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 2v10M2 7h10"/></svg>Add a stat</button></div>
   </div>
@@ -723,7 +736,7 @@ Every year.</textarea><span class="f-hint">Each new line here becomes a new line
     <div class="f-hd"><div class="f-ico pink"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M8 1l2 4 5 .5-3.7 3.3L12.5 15 8 12.3 3.5 15l1.2-6.2L1 5.5 6 5z"/></svg></div><div class="f-title">About Your Firm</div></div>
     <div class="f-sub">A short introduction shown in the About section</div>
     <div class="f-div"></div>
-    <div class="f-row c1"><div class="f-grp"><textarea class="f-ta" id="fAbout">Sharma &amp; Associates is a full-service Chartered Accountancy firm based in New Delhi with over 25 years of experience. We specialise in tax planning, GST compliance, audits, and company law matters for individuals, MSMEs, and corporates.</textarea><span class="f-hint">3-5 sentences recommended.</span></div></div>
+    <div class="f-row c1"><div class="f-grp"><textarea class="f-ta" id="fAbout" placeholder="A short introduction to your firm (or let AI write it)"></textarea><span class="f-hint">3-5 sentences recommended.</span></div></div>
   </div>
 
   <div class="f-card">
@@ -731,13 +744,11 @@ Every year.</textarea><span class="f-hint">Each new line here becomes a new line
     <div class="f-sub">Shown in the About section with photo and credentials</div>
     <div class="f-div"></div>
     <div class="f-row c2">
-      <div class="f-grp"><label class="f-lbl">Founder Name <span class="req">*</span></label><input class="f-in" id="fFounderName" value="CA Vikram Sharma"></div>
-      <div class="f-grp"><label class="f-lbl">Designation / Role</label><input class="f-in" id="fFounderRole" value="Founder &amp; Principal Consultant"></div>
+      <div class="f-grp"><label class="f-lbl">Founder Name <span class="req">*</span></label><input class="f-in" id="fFounderName" placeholder="e.g. CA Vikram Sharma" onblur="this.value=smartTitle(this.value)"></div>
+      <div class="f-grp"><label class="f-lbl">Designation / Role</label><input class="f-in" id="fFounderRole" placeholder="e.g. Founder & Principal" onblur="this.value=smartTitle(this.value)"></div>
     </div>
-    <div class="f-row c1"><div class="f-grp"><label class="f-lbl">Founder Bio</label><textarea class="f-ta" id="fFounderBio" style="min-height:70px">Vikram qualified with distinction and spent six years at a national practice before founding his own firm in New Delhi. He specialises in direct taxation, corporate restructuring, and financial advisory.</textarea></div></div>
-    <div class="f-row c1"><div class="f-grp"><label class="f-lbl">Credentials (one per line)</label><textarea class="f-ta" id="fCreds" style="min-height:70px">Fellow Member, ICAI (M.No. 123456)
-Registered GST Practitioner
-20 years of public practice, New Delhi</textarea><span class="f-hint">Each line becomes a bullet under the founder profile.</span></div></div>
+    <div class="f-row c1"><div class="f-grp"><label class="f-lbl">Founder Bio</label><textarea class="f-ta" id="fFounderBio" placeholder="A short bio of the founder (or let AI write it)" style="min-height:70px"></textarea></div></div>
+    <div class="f-row c1"><div class="f-grp"><label class="f-lbl">Credentials (one per line)</label><textarea class="f-ta" id="fCreds" placeholder="One credential per line, e.g.&#10;Fellow Member, ICAI&#10;Registered GST Practitioner" style="min-height:70px"></textarea><span class="f-hint">Each line becomes a bullet under the founder profile.</span></div></div>
     <div class="f-row c1"><div class="f-grp"><label class="f-lbl">Founder Photo</label>
       <div class="upload-zone" id="uzFounder" onclick="document.getElementById('inFounder').click()" style="max-width:280px">
         <img id="imgFounder"><button class="upload-rm" title="Remove image" onclick="event.stopPropagation();removeImage('founder','imgFounder','uzFounder','inFounder')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg></button><div class="upload-body"><div class="upload-ico-box"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="9" cy="6" r="3"/><path d="M3 16c0-3 2.7-5 6-5s6 2 6 5"/></svg></div><div class="upload-lbl">Click to upload a portrait</div><div class="upload-hint">JPG or PNG · portrait, around 600 &times; 800 px (3:4) · under 5 MB</div></div>
@@ -791,7 +802,7 @@ Registered GST Practitioner
       <div class="pub-cl">
         <div class="pub-cl-title">What goes live</div>
         <div class="pub-cl-item" id="clTpl"><div class="pub-cl-dot"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 5l2.5 2.5 4.5-5"/></svg></div>Apex design</div>
-        <div class="pub-cl-item" id="clFirm"><div class="pub-cl-dot"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 5l2.5 2.5 4.5-5"/></svg></div>Sharma &amp; Associates, New Delhi</div>
+        <div class="pub-cl-item" id="clFirm"><div class="pub-cl-dot"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 5l2.5 2.5 4.5-5"/></svg></div>Your firm details</div>
         <div class="pub-cl-item" id="clSvc"><div class="pub-cl-dot"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 5l2.5 2.5 4.5-5"/></svg></div>6 services, contact form, WhatsApp button</div>
         <div class="pub-cl-item"><div class="pub-cl-dot"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 5l2.5 2.5 4.5-5"/></svg></div>Mobile-ready, SSL secured, free hosting</div>
       </div>
@@ -996,13 +1007,16 @@ const S = {
   primary:'#1D4ED8', accent:'#C4830A',
   tags:['Salaried Individuals','Business Owners','NRI Clients','Freelancers','Startups & MSMEs'],
   services:[],
-  stats:[{v:'25+',l:'Years of Practice'},{v:'500+',l:'Clients Served'},{v:'₹0',l:'Penalty Record'},{v:'4.9★',l:'Client Rating'}],
-  highlights:[{t:'Qualified & certified',d:'Current on every rule change, always compliant.'},{t:'Zero missed deadlines',d:'On-time filing, every single year.'},{t:'Direct access',d:'You talk to the person doing the work.'}],
-  process:[{t:'Free consultation',d:'We understand your situation fully before any fee or paperwork.'},{t:'Document review',d:'Share documents via WhatsApp or email; we do a gap analysis.'},{t:'Filing & archive',d:'We file accurately, send the acknowledgement, and archive everything.'}],
-  testimonials:[{q:'Handled our GST and audits flawlessly for years. Truly reliable.',n:'Rajan Kapoor',r:'Director, Kapoor Industries',s:5},{q:'As a freelancer my taxes were confusing. Now they are simple and on time.',n:'Neha Srivastava',r:'Independent Architect',s:5},{q:'Switched after missing a deadline elsewhere. Never looked back.',n:'Mahesh Tiwari',r:'Proprietor, Tiwari Exports',s:5}],
+  stats:[{v:'',l:''},{v:'',l:''},{v:'',l:''}],
+  highlights:[{t:'',d:''},{t:'',d:''},{t:'',d:''}],
+  process:[{t:'',d:''},{t:'',d:''},{t:'',d:''}],
+  testimonials:[{q:'',n:'',r:'',s:5},{q:'',n:'',r:'',s:5},{q:'',n:'',r:'',s:5}],
   img:{logo:'',founder:''},
   heroImages:[]
 };
+/* expose builder state to the AI Writer script (a separate <script>); `const S`
+   does not attach to window, so the AI Writer's window.S checks need this. */
+window.S = S;
 
 /* ---------- STEP META ---------- */
 const STEPS=[
@@ -1149,7 +1163,10 @@ function pickTpl(k){
 function loadServices(prof){S.services=(SERVICE_LIB[prof]||[]).map(function(row){return {name:row[0],desc:row[1],on:!!row[2],custom:false};});}
 function renderServices(){
   const wrap=document.getElementById('svcList'); wrap.innerHTML='';
-  S.services.forEach(function(sv,i){
+  // active services first, disabled ones at the bottom (stable within each group)
+  var order=S.services.map(function(_,i){return i;}).sort(function(a,b){return (S.services[b].on?1:0)-(S.services[a].on?1:0);});
+  order.forEach(function(i){
+    var sv=S.services[i];
     wrap.insertAdjacentHTML('beforeend',
       '<div class="rep'+(sv.on?'':' off')+'"><div class="rep-hd">'+
         '<div class="rep-toggle'+(sv.on?' on':'')+'" onclick="toggleSvc('+i+')"></div>'+
@@ -1177,11 +1194,29 @@ function delTag(i){S.tags.splice(i,1); renderTags();}
 function renderStats(){
   const w=document.getElementById('statList'); w.innerHTML='';
   S.stats.forEach(function(st,i){
-    w.insertAdjacentHTML('beforeend','<div class="rep"><div class="rep-mini" style="margin:0;grid-template-columns:110px 1fr 34px;align-items:center"><input value="'+esc(st.v)+'" placeholder="25+" oninput="S.stats['+i+'].v=this.value"><input value="'+esc(st.l)+'" placeholder="Years of Practice" oninput="S.stats['+i+'].l=this.value">'+delBtn('delStat',i)+'</div></div>');
+    var vp=STAT_VPH[i%STAT_VPH.length], lp=STAT_LPH[i%STAT_LPH.length];
+    w.insertAdjacentHTML('beforeend','<div class="rep"><div class="rep-mini" style="margin:0;grid-template-columns:110px 1fr 34px;align-items:center"><input value="'+esc(st.v)+'" placeholder="'+vp+'" onfocus="statFocus(this)" oninput="S.stats['+i+'].v=this.value"><input value="'+esc(st.l)+'" placeholder="'+lp+'" oninput="S.stats['+i+'].l=this.value">'+delBtn('delStat',i)+'</div></div>');
   });
 }
+var STAT_VPH=['12+','On time','Direct','100%'];
+var STAT_LPH=['Years of Practice','Every deadline','Partner access','Compliance focus'];
 function addStat(){S.stats.push({v:'',l:''}); renderStats();}
 function delStat(i){S.stats.splice(i,1); renderStats();}
+/* remember the last-focused stat value field so the symbol buttons insert into it */
+var _statEl=null;
+function statFocus(el){ _statEl=el; }
+function symIns(ev,ch){
+  if(ev&&ev.preventDefault) ev.preventDefault();   // mousedown-preventDefault keeps the caret in the field
+  var el=_statEl;
+  if(!el || !document.body.contains(el)){ return false; }
+  var s=el.selectionStart, e=el.selectionEnd;
+  if(s==null){ s=e=el.value.length; }
+  el.value = el.value.slice(0,s)+ch+el.value.slice(e);
+  var p=s+ch.length; try{ el.selectionStart=el.selectionEnd=p; }catch(_){}
+  el.focus();
+  el.dispatchEvent(new Event('input',{bubbles:true}));  // triggers oninput -> updates S.stats
+  return false;
+}
 
 function renderHighlights(){
   const w=document.getElementById('hlList'); w.innerHTML='';
@@ -1217,7 +1252,7 @@ function renderTestimonials(){
       ? '<img src="'+t.img+'" alt="">'
       : '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13.5V4.5M6.5 8L10 4.5 13.5 8"/><path d="M4 13.5v2A1.5 1.5 0 005.5 17h9a1.5 1.5 0 001.5-1.5v-2"/></svg>';
     var av='<div class="rep-av-wrap"><div class="rep-av'+(hasImg?' has-img':'')+'" title="Upload reviewer photo" onclick="document.getElementById(\'testImg'+i+'\').click()">'+avInner+'<span class="rep-av-rm" title="Remove photo" onclick="event.stopPropagation();removeTestiImg('+i+')"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3l6 6M9 3l-6 6"/></svg></span><input type="file" id="testImg'+i+'" accept="image/*" hidden onchange="onTestiUpload(this,'+i+')"></div><span class="rep-av-cap">'+(hasImg?'Photo':'Add photo')+'</span></div>';
-    w.insertAdjacentHTML('beforeend','<div class="rep"><div class="rep-hd"><div class="star-row" onmouseleave="resetStars(this,'+i+')"><span class="star-lbl">Rating</span>'+stars+'<span class="star-num">'+t.s+' / 5</span></div><div style="flex:1"></div>'+delBtn('delTest',i)+'</div><textarea class="rep-ta" placeholder="Client quote" oninput="S.testimonials['+i+'].q=this.value">'+esc(t.q)+'</textarea><div class="rep-author">'+av+'<div class="rep-fields"><input value="'+esc(t.n)+'" placeholder="Client name" oninput="S.testimonials['+i+'].n=this.value"><input value="'+esc(t.r)+'" placeholder="Role / company" oninput="S.testimonials['+i+'].r=this.value"></div></div></div>');
+    w.insertAdjacentHTML('beforeend','<div class="rep"><div class="rep-hd"><div class="star-row" onmouseleave="resetStars(this,'+i+')"><span class="star-lbl">Rating</span>'+stars+'<span class="star-num">'+t.s+' / 5</span></div><div style="flex:1"></div>'+delBtn('delTest',i)+'</div><textarea class="rep-ta" placeholder="e.g. They handled our GST and audits flawlessly. Truly reliable." oninput="S.testimonials['+i+'].q=this.value">'+esc(t.q)+'</textarea><div class="rep-author">'+av+'<div class="rep-fields"><input value="'+esc(t.n)+'" placeholder="e.g. Rajan Kapoor" oninput="S.testimonials['+i+'].n=this.value"><input value="'+esc(t.r)+'" placeholder="e.g. Director, Kapoor Industries" oninput="S.testimonials['+i+'].r=this.value"></div></div></div>');
   });
 }
 function onTestiUpload(input,i){
@@ -1264,7 +1299,8 @@ function updUrl(){const v=(document.getElementById('subIn').value||'').toLowerCa
 function refreshPublish(){
   const d=DESIGNS.find(function(x){return x.key===S.template;});
   document.getElementById('clTpl').lastChild.textContent=d.name+' design';
-  document.getElementById('clFirm').lastChild.textContent=stripTags(val('fFirmName'))+', '+val('fCity');
+  var _fn=stripTags(val('fFirmName')).trim(), _ct=val('fCity').trim();
+  document.getElementById('clFirm').lastChild.textContent=(_fn&&_ct)?(_fn+', '+_ct):(_fn||_ct||'Your firm details');
   const n=S.services.filter(function(s){return s.on;}).length;
   document.getElementById('clSvc').lastChild.textContent=n+' services, contact form, WhatsApp button';
 }
@@ -1506,7 +1542,10 @@ function collectConfig(){
     phone:val('fPhone'), whatsapp:val('fWhatsapp'), email:val('fEmail'),
     hours:val('fHours'), address:val('fAddress'), membershipNo:val('fMembership'), firmRegNo:val('fRegno'),
     hero:{badge:val('hBadge'),headline:val('hHeadline'),highlight:val('hHighlight'),sub:val('hSub'),cta1:val('hCta1'),cta2:val('hCta2'),tags:S.tags.slice(),images:S.heroImages.slice(),image:(S.heroImages[0]||'')},
-    stats:S.stats.slice(), highlights:S.highlights.slice(), process:S.process.slice(), testimonials:S.testimonials.slice(),
+    stats:S.stats.filter(function(x){return String(x.v||'').trim()&&String(x.l||'').trim();}),
+    highlights:S.highlights.filter(function(x){return String(x.t||'').trim()||String(x.d||'').trim();}),
+    process:S.process.filter(function(x){return String(x.t||'').trim()||String(x.d||'').trim();}),
+    testimonials:S.testimonials.filter(function(x){return String(x.q||'').trim();}),
     services:S.services.filter(function(s){return s.on;}).map(function(s){return {name:s.name,desc:s.desc};}),
     footerBlurb:val('fFooterBlurb'), copyright:stripTags(val('fCopyright')),
     social:{linkedin:val('fLinkedin'),facebook:val('fFacebook'),instagram:val('fInstagram'),youtube:val('fYoutube')},
@@ -1561,6 +1600,24 @@ function toast(msg){const t=document.getElementById('toast'); document.getElemen
 
 /* ---------- HELPERS ---------- */
 function val(id){const el=document.getElementById(id); return el?el.value:'';}
+/* Clean capitalisation for user-typed proper nouns (firm, city, address, founder).
+   Capitalises each word's first letter, keeps known finance/legal acronyms upper,
+   and leaves already-uppercase words (e.g. KDK) untouched. */
+const TITLE_ACR={gst:'GST',itr:'ITR',tds:'TDS',roc:'ROC',nri:'NRI',llp:'LLP',opc:'OPC',pin:'PIN',ca:'CA',cs:'CS',cma:'CMA',pan:'PAN',tan:'TAN',icai:'ICAI',icsi:'ICSI',mca:'MCA',rbi:'RBI',fema:'FEMA',huf:'HUF',pvt:'Pvt',ltd:'Ltd',msme:'MSME',fy:'FY'};
+function smartTitle(s){
+  s=String(s==null?'':s).trim(); if(!s) return s;
+  return s.replace(/\S+/g,function(w){
+    var lead=(w.match(/^[^A-Za-z0-9]*/)||[''])[0], trail=(w.match(/[^A-Za-z0-9]*$/)||[''])[0];
+    var core=w.slice(lead.length, w.length-(trail.length||0));
+    if(!core) return w;
+    var lc=core.toLowerCase();
+    if(TITLE_ACR[lc]) core=TITLE_ACR[lc];
+    else core=core.charAt(0).toUpperCase()+core.slice(1);   // keep the rest as typed (preserves KDK, McKinsey)
+    return lead+core+trail;
+  });
+}
+/* capitalise the first letter only (used for email: info@x.in -> Info@x.in) */
+function capFirst(s){ s=String(s==null?'':s); var i=s.search(/[a-z]/i); return i<0?s:s.slice(0,i)+s.charAt(i).toUpperCase()+s.slice(i+1); }
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function stripTags(s){return String(s||'').replace(/&amp;/g,'&');}
 function toHex(c){if(/^#[0-9a-fA-F]{6}$/.test(c)) return c; const m=String(c).match(/^#([0-9a-fA-F]{3})$/); if(m) return '#'+m[1].split('').map(function(x){return x+x;}).join(''); return '#0D1E35';}
@@ -1583,4 +1640,487 @@ runSplash();
 setTimeout(function(){ var sp=document.getElementById('splash'); if(sp) sp.classList.add('hide'); }, 4200);
 window.addEventListener('resize',scaleShots);
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closePreview(); if(document.getElementById('pubDone').classList.contains('show')) closePublish(); }});
+</script>
+
+<!-- ===== LOCAL AI WRITER (test only) ===== -->
+<!-- Loads a gitignored key file. On the live site this 404s harmlessly and the
+     AI Writer button simply never appears. Production must call the API server-side. -->
+<script src="local-ai-config.js"></script>
+<script>
+'use strict';
+(function(){
+  var AI = window.KDK_AI;
+  if(!AI){ return; }   // no local config -> feature stays hidden (e.g. on live site)
+
+  // active provider config + whether a real key is set
+  function activeCfg(){ var p=(AI.provider||'anthropic'); return AI[p]||{}; }
+  function keyOk(){ var k=(activeCfg().apiKey||''); return !!k && !/PASTE_/.test(k) && k.length>20; }
+
+  var PROF_LABEL = {ca:'Chartered Accountant',advocate:'Advocate / Lawyer',tax_consultant:'Tax Consultant',gst_practitioner:'GST Practitioner',company_secretary:'Company Secretary',cost_accountant:'Cost & Management Accountant'};
+
+  var QS = [
+    {k:'profession',type:'select',q:'Who is this website for?',hint:'Sets the services and the tone of the writing.'},
+    {k:'firm',type:'text',q:"What is your firm or practice name?",ph:'e.g. Sharma & Associates',req:true},
+    {k:'years',type:'text',q:'How many years have you been practising?',ph:'e.g. 15',hint:'Optional'},
+    {k:'edge',type:'ta',q:'What are you best known for, or what makes you different?',ph:'e.g. fast GST refunds, deep experience with NRI taxation',hint:'Optional, but this is what makes your copy unique'},
+    {k:'clients',type:'ta',q:'Who are your typical clients?',ph:'e.g. small businesses, salaried individuals, startups, NRIs',hint:'Optional'},
+    {k:'numbers',type:'ta',q:'Any numbers worth showing off?',ph:'e.g. 15 years, 800+ clients, 4.8 Google rating, 100% on-time filing',hint:'Optional - becomes your Key Stats. Only real numbers you give are used, never invented.'},
+    {k:'workflow',type:'ta',q:'How do you work with a client, step by step?',ph:'e.g. free consultation, then document review over WhatsApp, then filing and a shared archive',hint:'Optional - becomes your "How We Work" section'},
+    {k:'reviews',type:'list',q:'Client reviews',hint:'Add a client and a rough note of what they said - the AI writes it into a polished review. Add as many as you like, or skip.',addLabel:'Add another review',item:{fields:[
+      {k:'name',label:'Client name',ph:'e.g. Rajan Kapoor'},
+      {k:'role',label:'Role / company',ph:'e.g. Director, Kapoor Industries'},
+      {k:'note',label:'What did they say? (rough notes are fine)',ta:true,ph:'e.g. very happy, we sorted their GST mess and saved them penalties'}
+    ]}},
+    {k:'contact',type:'group',q:'Your location and contact details',hint:'Your own details - the AI cannot invent these. Add what you have now; fill the rest later.',fields:[
+      {k:'city',label:'City',ph:'e.g. Jaipur'},
+      {k:'phone',label:'Phone number',ph:'+91 XXXXX XXXXX'},
+      {k:'email',label:'Email address',ph:'you@yourfirm.in'},
+      {k:'address',label:'Full office address',ph:'Office no., building, street, area, PIN'}
+    ]},
+    {k:'founder',type:'text',q:"Founder's name and role?",ph:'e.g. CA Vikram Sharma, Founder & Principal',hint:'Optional'},
+    {k:'extra',type:'ta',q:'Anything else you want on your site?',ph:'e.g. awards, languages spoken, memberships, areas you specialise in, achievements, your approach... write freely',hint:'Optional - the AI will weave whatever you add into the copy'}
+  ];
+
+  var A = {profession:(window.S&&S.profession)||'ca',firm:'',city:'',years:'',edge:'',clients:'',numbers:'',workflow:'',reviews:[{name:'',role:'',note:''}],phone:'',email:'',address:'',founder:'',extra:''};
+  var step = 0;
+
+  /* ---- styles ---- */
+  var css = document.createElement('style');
+  css.textContent = [
+    '.aiw-fab{position:fixed;right:22px;bottom:22px;z-index:9000;display:flex;align-items:center;height:54px;padding:0;border:none;border-radius:27px;cursor:pointer;background:transparent;overflow:hidden;isolation:isolate;box-shadow:0 10px 30px rgba(13,30,53,.35);transition:box-shadow .25s ease,transform .2s ease}',
+    '.aiw-fab::before{content:\"\";position:absolute;z-index:-2;top:50%;left:50%;width:220%;height:420%;background:conic-gradient(from 0deg,#1D4ED8,#7C3AED,#E6A62A,#12A265,#22D3EE,#1D4ED8);transform:translate(-50%,-50%);animation:aiwRing 5s linear infinite}',
+    '.aiw-fab::after{content:\"\";position:absolute;z-index:-1;inset:2px;border-radius:25px;background:linear-gradient(135deg,#0D1E35,#16305A)}',
+    '@keyframes aiwRing{to{transform:translate(-50%,-50%) rotate(360deg)}}',
+    '.aiw-fab-ic{flex:0 0 54px;width:54px;height:54px;display:flex;align-items:center;justify-content:center;color:#fff}',
+    '.aiw-fab-ic svg{width:19px;height:19px;filter:drop-shadow(0 0 6px rgba(230,166,42,.55));animation:aiwTwinkle 2.8s ease-in-out infinite}',
+    '@keyframes aiwTwinkle{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.15);opacity:.82}}',
+    '.aiw-fab-tx{color:#fff;white-space:nowrap;font:600 13.5px \"Segoe UI\",system-ui,sans-serif;max-width:0;opacity:0;overflow:hidden;padding-right:0;transition:max-width .34s cubic-bezier(.4,0,.2,1),opacity .22s ease,padding-right .34s}',
+    '.aiw-fab:hover{transform:translateY(-2px);box-shadow:0 16px 38px rgba(29,78,216,.5)}',
+    '.aiw-fab:hover .aiw-fab-tx,.aiw-fab.aiw-peek .aiw-fab-tx{max-width:220px;opacity:1;padding-right:20px}',
+    /* hide the floating AI button while a full-screen preview/publish overlay is open */
+    '.pv-overlay.open ~ .aiw-fab,.pub-ov.open ~ .aiw-fab{display:none !important}',
+    '.aiw-ov{position:fixed;inset:0;z-index:9500;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(9,18,32,.55);backdrop-filter:blur(3px)}',
+    '.aiw-ov.open{display:flex}',
+    '.aiw-card{width:100%;max-width:520px;background:#fff;border-radius:18px;box-shadow:0 30px 80px rgba(9,18,32,.4);overflow:hidden;font-family:"Segoe UI",system-ui,sans-serif;animation:aiwUp .28s cubic-bezier(.4,0,.2,1)}',
+    '@keyframes aiwUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}',
+    '.aiw-hd{position:relative;padding:20px 22px 16px;background:linear-gradient(135deg,#0D1E35,#152a49);color:#fff}',
+    '.aiw-hd h3{margin:0;font-size:16.5px;font-weight:600;display:flex;align-items:center;gap:9px}',
+    '.aiw-hd h3 svg{width:17px;height:17px;color:#E6A62A}',
+    '.aiw-hd p{margin:5px 0 0;font-size:12.5px;color:rgba(255,255,255,.6)}',
+    '.aiw-x{position:absolute;top:16px;right:16px;width:28px;height:28px;border:none;border-radius:8px;background:rgba(255,255,255,.1);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center}',
+    '.aiw-x:hover{background:rgba(255,255,255,.2)}.aiw-x svg{width:14px;height:14px}',
+    '.aiw-dots{display:flex;gap:5px;padding:14px 22px 0}',
+    '.aiw-dot{height:4px;flex:1;border-radius:3px;background:#E2E8F0;transition:background .25s}',
+    '.aiw-dot.on{background:#1D4ED8}.aiw-dot.done{background:#0F6B45}',
+    '.aiw-body{padding:20px 22px 6px;min-height:150px;max-height:min(60vh,460px);overflow-y:auto}',
+    '.aiw-q{font-size:16px;font-weight:600;color:#0D1E35;margin:0 0 4px}',
+    '.aiw-hint{font-size:12px;color:#5A7A9B;margin:0 0 14px}',
+    '.aiw-in,.aiw-ta,.aiw-sel{width:100%;padding:11px 13px;border:1.5px solid #DDE5EF;border-radius:10px;font:400 14px "Segoe UI",system-ui,sans-serif;color:#0D1E35;background:#fff;box-sizing:border-box;outline:none;transition:border-color .15s}',
+    '.aiw-in:focus,.aiw-ta:focus,.aiw-sel:focus{border-color:#1D4ED8}',
+    '.aiw-ta{min-height:82px;resize:vertical;line-height:1.5}',
+    '.aiw-err-in{border-color:#DC2626 !important}',
+    '.aiw-ft{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:16px 22px 20px}',
+    '.aiw-btn{padding:10px 18px;border-radius:10px;border:none;cursor:pointer;font:600 13.5px "Segoe UI",system-ui,sans-serif}',
+    '.aiw-back{background:#fff;color:#5A7A9B;border:1.5px solid #DDE5EF}.aiw-back:hover{background:#F0F4F8}',
+    '.aiw-next{background:#1D4ED8;color:#fff;margin-left:auto}.aiw-next:hover{background:#1841b8}',
+    '.aiw-gen{background:linear-gradient(135deg,#0F6B45,#12A265);color:#fff;margin-left:auto;display:flex;align-items:center;gap:7px}.aiw-gen:hover{filter:brightness(1.05)}',
+    '.aiw-gen svg{width:15px;height:15px}',
+    '.aiw-load{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px 20px}',
+    '.aiw-spin{width:38px;height:38px;border-radius:50%;border:3px solid #E2E8F0;border-top-color:#1D4ED8;animation:aiwSpin .8s linear infinite;margin-bottom:16px}',
+    '@keyframes aiwSpin{to{transform:rotate(360deg)}}',
+    '.aiw-load b{font-size:14.5px;color:#0D1E35}.aiw-load span{font-size:12.5px;color:#5A7A9B;margin-top:5px}',
+    /* AI "building your site" animation */
+    '.aiw-build{padding:18px 22px 22px}',
+    '.aiw-bwrap{border:1px solid #E7EDF5;border-radius:12px;overflow:hidden;background:#fff;box-shadow:0 10px 28px rgba(13,30,53,.08);animation:aiwUp .4s cubic-bezier(.4,0,.2,1)}',
+    '.aiw-bhead{display:flex;align-items:center;gap:10px;padding:11px 13px;border-bottom:1px solid #EEF2F8}',
+    '.aiw-blogo{width:36px;height:20px;border-radius:5px}',
+    '.aiw-blines{display:flex;gap:8px;margin-left:auto}',
+    '.aiw-blines span{width:32px;height:8px;border-radius:4px;display:block}',
+    '.aiw-bhero{padding:20px 16px;display:flex;flex-direction:column;align-items:center;gap:9px;background:linear-gradient(180deg,#F7FAFF,#fff)}',
+    '.aiw-bbadge{width:124px;height:13px;border-radius:20px}',
+    '.aiw-bh1{width:76%;height:17px;border-radius:6px}',
+    '.aiw-bh2{width:54%;height:17px;border-radius:6px}',
+    '.aiw-bbtns{display:flex;gap:9px;margin-top:6px}',
+    '.aiw-bbtns span{width:98px;height:26px;border-radius:8px;display:block}',
+    '.aiw-bcards{display:flex;gap:10px;padding:14px 16px 18px}',
+    '.aiw-bcard{flex:1;height:62px;border-radius:9px}',
+    '.shimmer{background:linear-gradient(100deg,#EAF0F8 30%,#D5E3F6 50%,#EAF0F8 70%);background-size:200% 100%;animation:aiwShim 1.5s ease-in-out infinite}',
+    '@keyframes aiwShim{0%{background-position:200% 0}100%{background-position:-200% 0}}',
+    '.aiw-bstatus{display:flex;align-items:center;gap:9px;justify-content:center;margin-top:18px;color:#0D1E35;font-size:13.5px;font-weight:600}',
+    '.aiw-bstatus b{transition:opacity .18s ease}',
+    '.aiw-bspin{width:15px;height:15px;flex:0 0 15px;border-radius:50%;border:2px solid #DCE6F5;border-top-color:#1D4ED8;animation:aiwSpin .8s linear infinite}',
+    '.aiw-fail{padding:8px 22px 4px}.aiw-fail-box{background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:12px 14px;color:#991B1B;font-size:12.5px;line-height:1.5;word-break:break-word}',
+    '.aiw-flabel{display:block;font-size:12px;font-weight:600;color:#33475b;margin:10px 0 5px}',
+    '.aiw-gfield{margin-bottom:2px}',
+    '.aiw-litem{border:1px solid #E2E8F0;border-radius:10px;padding:6px 12px 12px;margin-bottom:10px}',
+    '.aiw-lnum{font-size:11px;font-weight:700;color:#7C3AED;text-transform:uppercase;letter-spacing:.05em;margin-top:8px}',
+    '.aiw-lrm{margin-top:8px;background:none;border:none;color:#DC2626;font-size:12px;font-weight:600;cursor:pointer;padding:2px 0}',
+    '.aiw-ladd{width:100%;padding:9px;border:1.5px dashed #C7D2E4;border-radius:10px;background:#F7F9FC;color:#1D4ED8;font-weight:600;font-size:13px;cursor:pointer}',
+    '.aiw-ladd:hover{background:#EEF3FB;border-color:#1D4ED8}',
+    ''
+  ].join('');
+  document.head.appendChild(css);
+
+  /* ---- DOM ---- */
+  var fab = document.createElement('button');
+  fab.className = 'aiw-fab';
+  fab.title = 'Write my site with AI';
+  fab.innerHTML =
+    '<span class="aiw-fab-ic"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l1.6 4.4L16 8l-4.4 1.6L10 14l-1.6-4.4L4 8l4.4-1.6z"/><path d="M15.5 12.5l.6 1.7 1.7.6-1.7.6-.6 1.7-.6-1.7-1.7-.6 1.7-.6z"/></svg></span>'+
+    '<span class="aiw-fab-tx">Write with AI</span>';
+  fab.onclick = openW;
+  document.body.appendChild(fab);
+  // one-time "peek": briefly reveal the label on load so the button is discoverable
+  fab.classList.add('aiw-peek');
+  setTimeout(function(){ fab.classList.remove('aiw-peek'); }, 2800);
+
+  var ov = document.createElement('div');
+  ov.className = 'aiw-ov';
+  ov.innerHTML =
+    '<div class="aiw-card" id="aiwCard">'+
+      '<div class="aiw-hd"><h3><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l1.6 4.4L16 8l-4.4 1.6L10 14l-1.6-4.4L4 8l4.4-1.6z"/></svg>AI Website Writer</h3>'+
+      '<p>Answer a few questions - most are optional, just skip any. AI writes your whole site and you can edit it all after.</p>'+
+      '<button class="aiw-x" onclick="__aiwClose()"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div>'+
+      '<div class="aiw-dots" id="aiwDots"></div>'+
+      '<div id="aiwMain"></div>'+
+    '</div>';
+  document.body.appendChild(ov);
+  ov.addEventListener('click',function(e){ if(e.target===ov && !ov.dataset.busy){ closeW(); } });
+
+  function openW(){ step=0; if(window.S&&S.profession) A.profession=S.profession; ov.classList.add('open'); render(); }
+  function closeW(){ ov.classList.remove('open'); delete ov.dataset.busy; }
+  window.__aiwClose = closeW;
+
+  function saveCurrent(){
+    var q = QS[step];
+    if(q.type==='group'){
+      q.fields.forEach(function(f){ var el=document.getElementById('aiwField_'+f.k); if(el){ A[f.k]=el.value; } });
+      return;
+    }
+    if(q.type==='list'){
+      var rows=(Array.isArray(A[q.k])?A[q.k]:[]);
+      A[q.k]=rows.map(function(rv,ri){
+        var o={}; q.item.fields.forEach(function(f){ var el=document.getElementById('aiwL_'+ri+'_'+f.k); o[f.k]=el?el.value:(rv[f.k]||''); }); return o;
+      });
+      return;
+    }
+    var el = document.getElementById('aiwField');
+    if(el){ A[q.k] = el.value; }
+  }
+  window.__aiwAddReview=function(ev){ if(ev&&ev.preventDefault)ev.preventDefault(); saveCurrent(); var k=QS[step].k; if(!Array.isArray(A[k]))A[k]=[]; A[k].push({name:'',role:'',note:''}); render(); return false; };
+  window.__aiwRmReview=function(ev,i){ if(ev&&ev.preventDefault)ev.preventDefault(); saveCurrent(); var k=QS[step].k; if(Array.isArray(A[k]))A[k].splice(i,1); if(!A[k].length)A[k].push({name:'',role:'',note:''}); render(); return false; };
+
+  function render(){
+    var dots = QS.map(function(_,i){ return '<div class="aiw-dot'+(i<step?' done':(i===step?' on':''))+'"></div>'; }).join('');
+    document.getElementById('aiwDots').innerHTML = dots;
+    var q = QS[step];
+    var field;
+    if(q.type==='group'){
+      field = q.fields.map(function(f){
+        return '<label class="aiw-flabel">'+f.label+'</label>'+
+          '<input class="aiw-in aiw-gfield" id="aiwField_'+f.k+'" placeholder="'+(f.ph||'')+'" value="'+escAttr(A[f.k]||'')+'">';
+      }).join('');
+    } else if(q.type==='list'){
+      var rows=(Array.isArray(A[q.k])?A[q.k]:[]);
+      field = rows.map(function(rv,ri){
+        var inner=q.item.fields.map(function(f){
+          var id='aiwL_'+ri+'_'+f.k;
+          var inp = f.ta
+            ? '<textarea class="aiw-ta aiw-lfield" id="'+id+'" placeholder="'+(f.ph||'')+'">'+escAttr(rv[f.k]||'')+'</textarea>'
+            : '<input class="aiw-in aiw-lfield" id="'+id+'" placeholder="'+(f.ph||'')+'" value="'+escAttr(rv[f.k]||'')+'">';
+          return '<label class="aiw-flabel">'+f.label+'</label>'+inp;
+        }).join('');
+        return '<div class="aiw-litem">'+(rows.length>1?'<div class="aiw-lnum">Review '+(ri+1)+'</div>':'')+inner+(rows.length>1?'<button type="button" class="aiw-lrm" onmousedown="return __aiwRmReview(event,'+ri+')">Remove</button>':'')+'</div>';
+      }).join('')+'<button type="button" class="aiw-ladd" onmousedown="return __aiwAddReview(event)">+ '+(q.addLabel||'Add another')+'</button>';
+    } else if(q.type==='select'){
+      field = '<select class="aiw-sel" id="aiwField">'+Object.keys(PROF_LABEL).map(function(k){
+        return '<option value="'+k+'"'+(A.profession===k?' selected':'')+'>'+PROF_LABEL[k]+'</option>';
+      }).join('')+'</select>';
+    } else if(q.type==='ta'){
+      field = '<textarea class="aiw-ta" id="aiwField" placeholder="'+(q.ph||'')+'">'+escAttr(A[q.k]||'')+'</textarea>';
+    } else {
+      field = '<input class="aiw-in" id="aiwField" placeholder="'+(q.ph||'')+'" value="'+escAttr(A[q.k]||'')+'">';
+    }
+    var isLast = step===QS.length-1;
+    var main =
+      '<div class="aiw-body">'+
+        '<p class="aiw-q">'+q.q+(q.req?' <span style="color:#DC2626">*</span>':'')+'</p>'+
+        (q.hint?'<p class="aiw-hint">'+q.hint+'</p>':'<div style="height:6px"></div>')+
+        field+
+      '</div>'+
+      '<div class="aiw-ft">'+
+        (step>0?'<button class="aiw-btn aiw-back" onclick="__aiwBack()">Back</button>':'<span></span>')+
+        (isLast
+          ? '<button class="aiw-btn aiw-gen" onclick="__aiwGen()"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l1.6 4.4L16 8l-4.4 1.6L10 14l-1.6-4.4L4 8l4.4-1.6z"/></svg>Write my website</button>'
+          : '<button class="aiw-btn aiw-next" onclick="__aiwNext()">Continue</button>')+
+      '</div>';
+    document.getElementById('aiwMain').innerHTML = main;
+    var f = (q.type==='group') ? document.querySelector('.aiw-gfield') : (q.type==='list' ? null : document.getElementById('aiwField'));
+    if(f && q.type!=='select'){ f.focus(); }
+    if(f && q.type!=='group'){ f.onkeydown = function(e){ if(e.key==='Enter' && q.type!=='ta'){ e.preventDefault(); isLast?doGen():next(); } }; }
+  }
+
+  function next(){
+    saveCurrent();
+    var q = QS[step];
+    if(q.req && !String(A[q.k]||'').trim()){ var el=document.getElementById('aiwField'); if(el) el.classList.add('aiw-err-in'); return; }
+    if(step<QS.length-1){ step++; render(); }
+  }
+  function back(){ saveCurrent(); if(step>0){ step--; render(); } }
+  window.__aiwNext = next; window.__aiwBack = back; window.__aiwGen = doGen;
+
+  function stepOf(key){ for(var i=0;i<QS.length;i++){ if(QS[i].k===key) return i; } return 0; }
+  function doGen(){
+    saveCurrent();
+    // required checks across all answers
+    if(!String(A.firm||'').trim()){ step=stepOf('firm'); render(); flagRequired(); return; }
+    if(!String(A.city||'').trim()){ step=stepOf('contact'); render(); var c=document.getElementById('aiwField_city'); if(c){ c.classList.add('aiw-err-in'); c.focus(); } return; }
+    generate();
+  }
+  function flagRequired(){ var el=document.getElementById('aiwField'); if(el) el.classList.add('aiw-err-in'); }
+
+  var aiwBuildTimer=null;
+  function stopBuild(){ if(aiwBuildTimer){ clearInterval(aiwBuildTimer); aiwBuildTimer=null; } }
+  function showLoading(){
+    ov.dataset.busy = '1';
+    document.getElementById('aiwDots').innerHTML = QS.map(function(){return '<div class="aiw-dot done"></div>';}).join('');
+    document.getElementById('aiwMain').innerHTML =
+      '<div class="aiw-build">'+
+        '<div class="aiw-bwrap">'+
+          '<div class="aiw-bhead"><div class="aiw-blogo shimmer"></div><div class="aiw-blines"><span class="shimmer"></span><span class="shimmer"></span><span class="shimmer"></span></div></div>'+
+          '<div class="aiw-bhero"><div class="aiw-bbadge shimmer"></div><div class="aiw-bh1 shimmer"></div><div class="aiw-bh2 shimmer"></div><div class="aiw-bbtns"><span class="shimmer"></span><span class="shimmer"></span></div></div>'+
+          '<div class="aiw-bcards"><div class="aiw-bcard shimmer"></div><div class="aiw-bcard shimmer"></div><div class="aiw-bcard shimmer"></div></div>'+
+        '</div>'+
+        '<div class="aiw-bstatus"><span class="aiw-bspin"></span><b id="aiwBuildMsg">Designing your layout</b></div>'+
+      '</div>';
+    var msgs=['Designing your layout','Writing your headline','Describing your services','Crafting your About section','Adding highlights and stats','Polishing the finishing touches'];
+    var mi=0;
+    stopBuild();
+    aiwBuildTimer=setInterval(function(){
+      mi=Math.min(mi+1,msgs.length-1);
+      var e=document.getElementById('aiwBuildMsg');
+      if(!e){ stopBuild(); return; }
+      e.style.opacity='0';
+      setTimeout(function(){ var e2=document.getElementById('aiwBuildMsg'); if(e2){ e2.textContent=msgs[mi]; e2.style.opacity='1'; } },170);
+    },1350);
+  }
+  function showError(msg){
+    stopBuild();
+    delete ov.dataset.busy;
+    document.getElementById('aiwMain').innerHTML =
+      '<div class="aiw-fail"><div class="aiw-fail-box"><b>Could not generate.</b><br>'+escAttr(msg)+'</div></div>'+
+      '<div class="aiw-ft"><button class="aiw-btn aiw-back" onclick="__aiwReopen()">Back</button>'+
+      '<button class="aiw-btn aiw-gen" onclick="__aiwGen()">Try again</button></div>';
+  }
+  window.__aiwReopen = function(){ step=QS.length-1; delete ov.dataset.busy; render(); };
+
+  /* ---- generation ---- */
+  function generate(){
+    if(!keyOk()){
+      showError('No API key set yet. Open local-ai-config.js, set provider to "openai" or "anthropic", paste that provider\'s key, then reload the page.');
+      return;
+    }
+    // load the canonical services for the chosen profession
+    A.profession = A.profession || 'ca';
+    if(window.S){ S.profession = A.profession; }
+    var sel = document.getElementById('fProfession'); if(sel){ sel.value = A.profession; }
+    if(typeof loadServices==='function'){ loadServices(A.profession); }
+    var svcNames = (window.S && S.services ? S.services : []).map(function(s){ return s.name; });
+    // only reviews where the user gave a name or a note
+    var reviewSeeds = (Array.isArray(A.reviews)?A.reviews:[]).filter(function(rv){ return String((rv&&(rv.name||rv.note))||'').trim(); });
+
+    showLoading();
+
+    var profLabel = PROF_LABEL[A.profession] || 'finance professional';
+    var sys = 'You are a senior website copywriter for Indian finance and legal professionals (CAs, advocates, tax consultants, GST practitioners, company secretaries, cost accountants). '+
+      'Write clean, warm, credible copy in Indian English that leads with the CLIENT outcome, trust, and peace of mind. Sell the benefit, not the location. '+
+      'No hype, no buzzwords, no emoji, no exclamation marks, no em dashes. Vary structure and wording so no two firms read alike. '+
+      'The city is minor background detail: use it AT MOST ONCE, and only inside the "about" text. Never place the city in the tagline, hero, audience tags, or service descriptions. '+
+      'Return ONLY valid JSON, no markdown, no commentary.';
+
+    var user = 'Write website copy for this firm. Respect every length limit exactly.\n\n'+
+      'INPUTS:\n'+JSON.stringify({
+        profession: profLabel,
+        firmName: A.firm,
+        city: A.city,
+        yearsPractising: A.years||'',
+        knownFor: A.edge||'',
+        typicalClients: A.clients||'',
+        keyNumbers: A.numbers||'',
+        howYouWork: A.workflow||'',
+        clientReviews: reviewSeeds,
+        founder: A.founder||'',
+        additionalDetails: A.extra||''
+      },null,2)+'\n\n'+
+      'SERVICES (write a description for each, keep the exact name):\n'+JSON.stringify(svcNames)+'\n\n'+
+      'The hero section is the first thing visitors see. Make heroHeadline, heroHighlight and heroSub genuinely compelling, human and confident, speaking to what the client gains (clarity, compliance, saved time, no missed deadlines). Do NOT use the firm name or the city in the hero.\n'+
+      'If additionalDetails are provided, weave the relevant ones naturally into about, highlights, tagline and services wherever they fit. Do NOT invent client numbers, awards, or facts that were not given.\n\n'+
+      'Return JSON with EXACTLY these keys:\n'+
+      '{\n'+
+      '  "tagline": "4 to 8 words. A crisp line about the value delivered. No city, no full stop.",\n'+
+      '  "heroBadge": "max 6 words. A short, inviting status line such as: Now accepting clients for FY 2025-26. No city.",\n'+
+      '  "heroHeadline": "VERY SHORT and punchy like a slogan: 3 to 6 words TOTAL, not a full sentence. Split into 2 short lines (1 to 3 words each) using a real newline, with the heroHighlight phrase on its own line. Keep ALL descriptive detail out of the headline - that belongs in heroSub. Not the firm name, not the city.",\n'+
+      '  "heroHighlight": "1 or 2 words copied verbatim from one line of heroHeadline (a literal substring).",\n'+
+      '  "heroSub": "20 to 35 words, 1 to 2 sentences. Expand the promise: what you do, who you help, why they can trust you. No city.",\n'+
+      '  "cta1": "primary button label, 2 to 4 words, e.g. Book a Consultation.",\n'+
+      '  "cta2": "secondary button label, 2 to 3 words, e.g. View Services.",\n'+
+      '  "audienceTags": ["4 to 6 short tags naming the client types served, each 1 to 3 words. No city."],\n'+
+      '  "stats": [ {"value": "short", "label": "2 to 3 words"} ],\n'+
+      '  "highlights": [ {"title": "2 to 4 words", "desc": "8 to 16 words on why clients trust you"} ],\n'+
+      '  "process": [ {"title": "2 to 4 words", "desc": "8 to 16 words describing this step of working with you"} ],\n'+
+      '  "testimonials": [ {"quote": "the review text", "name": "client name if given", "role": "role or company if given"} ],\n'+
+      '  "credentials": ["2 to 4 short professional credential lines, generic (no fake registration numbers)"],\n'+
+      '  "about": "45 to 70 words, 3 to 4 sentences. The ONLY place the city may appear, and only once. Weave in years, the differentiator and typical clients naturally.",\n'+
+      '  "founderBio": "30 to 45 words about the founder.",\n'+
+      '  "footerBlurb": "20 to 30 words. No city.",\n'+
+      '  "services": [ {"name": "<exact service name>", "desc": "15 to 28 words, one sentence, focused on the client benefit. No city."} ]\n'+
+      '}\n'+
+      'STATS: If keyNumbers is provided, build 3 to 4 stats from those real figures. Otherwise give 3 to 4 stats where only one uses a number (the yearsPractising figure, label like Years of Practice) and the rest are qualitative, e.g. {value:"On time",label:"Every deadline"}, {value:"Direct",label:"Partner access"}. NEVER invent client counts, percentages, ratings, or any figure you were not explicitly told.\n'+
+      'HIGHLIGHTS: exactly 3, drawn from what makes the firm different.\n'+
+      'PROCESS (the "How We Work" section): write 3 to 4 steps, each with its OWN short step title (2 to 4 words) AND a one-line description (8 to 16 words). If howYouWork is provided, base the steps on it; otherwise draft a sensible client journey. Every step must have both a title and a description.\n'+
+      'TESTIMONIALS: clientReviews is a list of {name, role, note}. For EACH entry, WRITE a polished, natural, first-person client review of 1 to 2 sentences based on the note - rewrite it in warm, credible Indian English, do NOT copy the note words. Keep the given name and role. If a note is missing, write a short believable positive review consistent with the services. Produce one testimonial per entry and none for clients not listed. If clientReviews is empty, return an empty testimonials array.\n'+
+      'RULES: heroHighlight MUST be a literal substring of heroHeadline. The city may appear only once, only inside "about". Nowhere else.';
+
+    callLLM(sys,user).then(function(content){
+      if(!content){ throw new Error('Empty response from the API.'); }
+      var ai=parseJson(content);
+      if(!ai){ throw new Error('Could not parse the AI response.'); }
+      apply(ai);
+    }).catch(function(err){
+      showError((err && err.message) || 'Network or CORS error.');
+    });
+  }
+
+  // set a field value. fromAI=true also tints it so the user can see the AI wrote it.
+  function setV(id,v,fromAI){
+    var el=document.getElementById(id);
+    if(el && v!=null && String(v).trim()!==''){
+      el.value = String(v);
+      if(fromAI){ el.classList.add('ai-filled'); }
+    }
+  }
+  function markBlock(id){ var el=document.getElementById(id); if(el){ el.classList.add('ai-block'); } }
+
+  function apply(ai){
+    stopBuild();
+    // user facts (typed by the user, not tinted as AI)
+    var TC = (typeof smartTitle==='function') ? smartTitle : function(x){return x;};
+    setV('fFirmName', TC(A.firm));
+    setV('fCity', TC(A.city));
+    var yrs = parseInt(String(A.years).replace(/\D/g,''),10);
+    if(yrs>0){ var fy = new Date().getFullYear()-yrs; if(fy>1900 && fy<=new Date().getFullYear()){ setV('fFounded', String(fy)); } }
+    if(A.founder){ var parts=String(A.founder).split(/,| - | – /); setV('fFounderName',TC((parts[0]||'').trim())); if(parts[1]) setV('fFounderRole',TC(parts.slice(1).join(', ').trim())); }
+    // contact details the user gave (their own facts, not AI)
+    setV('fPhone', A.phone);
+    setV('fWhatsapp', A.phone);   // default WhatsApp to the phone number; user can change it
+    setV('fEmail', (typeof capFirst==='function'?capFirst(A.email):A.email));
+    setV('fAddress', TC(A.address));
+    // a sensible copyright line from the firm name
+    if(String(A.firm||'').trim()){ setV('fCopyright', '© '+new Date().getFullYear()+' '+A.firm.trim()+'. All rights reserved.'); }
+    // AI-written copy (tinted)
+    setV('fTagline', ai.tagline, true);
+    setV('hBadge', ai.heroBadge, true);
+    setV('hHeadline', ai.heroHeadline, true);
+    // the highlight must be a literal part of the headline, or the accent finds nothing;
+    // if the AI's highlight isn't in the headline, fall back to the last line
+    var hh = ai.heroHighlight;
+    if(ai.heroHeadline && (!hh || String(ai.heroHeadline).indexOf(hh)===-1)){
+      var hlines = String(ai.heroHeadline).split('\n').map(function(x){return x.trim();}).filter(Boolean);
+      if(hlines.length){ hh = hlines[hlines.length-1]; }
+    }
+    setV('hHighlight', hh, true);
+    setV('hSub', ai.heroSub, true);
+    setV('hCta1', ai.cta1, true);
+    setV('hCta2', ai.cta2, true);
+    setV('fAbout', ai.about, true);
+    setV('fFounderBio', ai.founderBio, true);
+    setV('fFooterBlurb', ai.footerBlurb, true);
+    if(Array.isArray(ai.credentials) && ai.credentials.length){
+      setV('fCreds', ai.credentials.map(String).join('\n'), true);
+    }
+    if(Array.isArray(ai.audienceTags) && ai.audienceTags.length && window.S){
+      S.tags = ai.audienceTags.slice(0,6).map(String);
+      if(typeof renderTags==='function'){ renderTags(); markBlock('tagWrap'); }
+    }
+    if(Array.isArray(ai.stats) && ai.stats.length && window.S){
+      S.stats = ai.stats.slice(0,4).map(function(x){ return {v:String((x&&x.value)||''),l:String((x&&x.label)||'')}; });
+      if(typeof renderStats==='function'){ renderStats(); markBlock('statList'); }
+    }
+    if(Array.isArray(ai.highlights) && ai.highlights.length && window.S){
+      S.highlights = ai.highlights.slice(0,4).map(function(x){ return {t:String((x&&x.title)||''),d:String((x&&x.desc)||'')}; });
+      if(typeof renderHighlights==='function'){ renderHighlights(); markBlock('hlList'); }
+    }
+    if(Array.isArray(ai.process) && ai.process.length && window.S){
+      S.process = ai.process.slice(0,5).map(function(x){ return {t:String((x&&x.title)||''),d:String((x&&x.desc)||'')}; });
+      if(typeof renderProcess==='function'){ renderProcess(); markBlock('procList'); }
+    }
+    if(Array.isArray(ai.testimonials) && window.S){
+      var tlist = ai.testimonials.map(function(x){ return {q:String((x&&x.quote)||''),n:String((x&&x.name)||''),r:String((x&&x.role)||''),s:5}; })
+                    .filter(function(t){ return t.q.trim(); });   // only real, quoted reviews
+      if(tlist.length){ S.testimonials = tlist.slice(0,6); if(typeof renderTestimonials==='function'){ renderTestimonials(); markBlock('testList'); } }
+    }
+    if(Array.isArray(ai.services) && window.S && S.services){
+      ai.services.forEach(function(item){
+        if(!item || !item.name) return;
+        var nm = String(item.name).toLowerCase().trim();
+        var m = S.services.find(function(s){ return s.name.toLowerCase().trim()===nm; });
+        if(m && item.desc){ m.desc = String(item.desc); }
+      });
+      if(typeof renderServices==='function'){ renderServices(); markBlock('svcList'); }
+    }
+    delete ov.dataset.busy;
+    closeW();
+    if(typeof go==='function') go(2);
+    if(typeof toast==='function') toast('AI wrote your website content. Review and edit anything.');
+  }
+
+  function escAttr(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  // Provider-agnostic call: returns a Promise that resolves to the model's raw text.
+  function readOk(res){
+    if(!res.ok){ return res.text().then(function(t){ throw new Error('HTTP '+res.status+'. '+t.slice(0,240)); }); }
+    return res.json();
+  }
+  function callLLM(sys,user){
+    var p=(AI.provider||'anthropic'), cfg=activeCfg();
+    if(p==='openai'){
+      return fetch(cfg.endpoint||'https://api.openai.com/v1/chat/completions',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+cfg.apiKey},
+        body:JSON.stringify({
+          model:cfg.model||'gpt-4o-mini',
+          response_format:{type:'json_object'},
+          messages:[{role:'system',content:sys},{role:'user',content:user}]
+        })
+      }).then(readOk).then(function(data){
+        return (data&&data.choices&&data.choices[0]&&data.choices[0].message&&data.choices[0].message.content)||'';
+      });
+    }
+    // anthropic (default)
+    return fetch(cfg.endpoint||'https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':cfg.apiKey,
+        'anthropic-version':cfg.version||'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({model:cfg.model||'claude-opus-4-8',max_tokens:2000,system:sys,messages:[{role:'user',content:user}]})
+    }).then(readOk).then(function(data){
+      var out=''; if(data&&data.content&&data.content.length){ for(var i=0;i<data.content.length;i++){ if(data.content[i].type==='text'){ out+=data.content[i].text; } } } return out;
+    });
+  }
+
+  // Model returns text; usually pure JSON, sometimes wrapped in ```json fences.
+  function parseJson(txt){
+    var s=String(txt||'').trim();
+    s=s.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'');
+    try{ return JSON.parse(s); }catch(e){}
+    var a=s.indexOf('{'), b=s.lastIndexOf('}');
+    if(a>=0 && b>a){ try{ return JSON.parse(s.slice(a,b+1)); }catch(e2){} }
+    return null;
+  }
+
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape' && ov.classList.contains('open') && !ov.dataset.busy){ closeW(); } });
+})();
 </script>

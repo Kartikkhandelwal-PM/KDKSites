@@ -4,6 +4,34 @@
 
 ---
 
+## [0.8.0] 2026-07-11 — AI Website Writer (prototype)
+
+> Branch `feature/ai-website-writer`. Adds an AI-assisted "write my whole site" flow to the builder, and removes leftover demo data from published sites. AI runs **client-side for local demo only**; production must move it server-side.
+
+### Added
+- **AI Website Writer** in `index.html`: a floating sparkle button opens a short guided interview (profession, firm, differentiator, clients, key numbers, how-you-work, client reviews, location + contact, founder, extra — most steps skippable), then an LLM drafts and fills the entire builder: tagline, hero (short slogan headline + accent + sub), CTAs, audience tags, key stats, About highlights, How-We-Work steps, testimonials, credentials, about, founder bio, footer, and all service descriptions.
+- **Provider-agnostic** LLM integration (OpenAI or Anthropic/Claude), switched via a **gitignored `local-ai-config.js`** holding the API key (never committed).
+- Animated "building your site" loading state (shimmering site skeleton + cycling status messages).
+- Repeatable **client-reviews** input; the AI writes polished testimonials from the user's rough notes (never fabricated when skipped).
+- Input helpers: `smartTitle()` auto-capitalisation (firm/city/address/founder, acronym-aware), `capFirst()` on email, and a ₹ ★ + % ✓ symbol inserter for Key Stats.
+
+### Changed / Removed
+- **Removed all fake "Sharma & Associates" demo data** from the builder defaults (firm, contact, address, copyright, hero, about, founder, stats, testimonials) → empty fields with guiding placeholders. Empty stats/highlights/process/testimonials are filtered out at publish/preview so they never ship as blank cards.
+- Services list now shows active services on top, disabled at the bottom.
+- The floating AI button is hidden while the preview/publish overlay is open.
+- Added `<meta charset="utf-8">` to `index.html` (fixed ₹ / ★ / © mojibake).
+
+### Fixed
+- **`window.S` bug:** builder state is `const S`, which doesn't attach to `window`, so the AI Writer's `window.S`-guarded sections (stats/highlights/process/testimonials/tags/service descriptions) were silently skipped. Fixed with `window.S = S;`.
+- **Heritage template:** the testimonials watermark leaked the literal "HERITAGE" → now bound to the firm name.
+- **Publish step:** the firm/city checklist line showed a stray "," when those fields were empty → now handled gracefully.
+
+### Decisions / open items
+- AI Writer is **local-demo only** as shipped (browser-direct API call exposes the key). Production must call the LLM **server-side** (planned Golang/Supabase backend). Provider (OpenAI vs Claude) not finalised.
+- Security: the OpenAI key used for local testing lives only in the gitignored config and should be rotated (it was exposed during setup).
+
+---
+
 ## [0.7.0] 2026-07-03 — GitHub Pages hosting + repo restructure
 
 > The prototype is now version-controlled and hosted online. Live: https://kartikkhandelwal-pm.github.io/KDKSites/
