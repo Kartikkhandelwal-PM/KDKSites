@@ -804,7 +804,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#F4F6F
       <div class="pub-globe"><div class="globe-ring"></div><div class="globe-ring"></div><div class="globe-ring"></div><div class="globe-core"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="20" cy="20" r="16"/><path d="M4 20h32"/><path d="M20 4c-5 5-8 10-8 16s3 11 8 16M20 4c5 5 8 10 8 16s-3 11-8 16"/></svg></div></div>
       <div class="pub-h1">Pick your web address</div>
       <div class="pub-sub">Share it with clients, print it on your visiting card, add it to your WhatsApp status.</div>
-      <div class="url-row"><div class="url-pfx">https://</div><input class="url-in" id="subIn" placeholder="your-firm-name" maxlength="30" oninput="updUrl()"><div class="url-sfx">.kdksites.in</div></div>
+      <div class="url-row"><div class="url-pfx">https://</div><input class="url-in" id="subIn" placeholder="your-firm-name" maxlength="30" oninput="subManual();updUrl()"><div class="url-sfx">.kdksites.in</div></div>
       <div class="url-live" id="urlLive">Choose a URL for your site above.</div>
       <div class="pub-cl">
         <div class="pub-cl-title">What goes live</div>
@@ -1306,6 +1306,9 @@ function syncColorInputs(){
 function siteSlug(v){ return (v||'').toLowerCase().replace(/[^a-z0-9-]/g,'-').replace(/^-+|-+$/g,''); }
 function siteUrl(sub){ var base=(window.KDK_AI&&window.KDK_AI.publicBase)||'https://kdksites.netlify.app/s/'; return base+siteSlug(sub); }
 function prettyUrl(sub){ var dom=(window.KDK_AI&&window.KDK_AI.prettyDomain)||'kdksites.in'; return siteSlug(sub)+'.'+dom; }
+/* User typed their own address -> stop auto-mirroring the firm name.
+   Clearing the field resumes mirroring. */
+function subManual(){ var el=document.getElementById('subIn'); window._subEdited=!!(el&&el.value.trim()); }
 function updUrl(){
   var v=siteSlug(document.getElementById('subIn').value);
   var el=document.getElementById('urlLive');
@@ -1317,9 +1320,10 @@ function refreshPublish(){
   document.getElementById('clTpl').lastChild.textContent=d.name+' design';
   var _fn=stripTags(val('fFirmName')).trim(), _ct=val('fCity').trim();
   document.getElementById('clFirm').lastChild.textContent=(_fn&&_ct)?(_fn+', '+_ct):(_fn||_ct||'Your firm details');
-  // suggest a subdomain from the firm name if none chosen yet
+  // The web address mirrors the firm name automatically. It stops tracking the
+  // moment the user types their own address (subManual sets window._subEdited).
   var _sub=document.getElementById('subIn');
-  if(_sub && !_sub.value.trim() && _fn){ var slug=_fn.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,''); if(slug) _sub.value=slug.slice(0,30); }
+  if(_sub && !window._subEdited && _fn){ var slug=siteSlug(_fn); if(slug) _sub.value=slug.slice(0,30); }
   if(typeof updUrl==='function'){ updUrl(); }
   const n=S.services.filter(function(s){return s.on;}).length;
   document.getElementById('clSvc').lastChild.textContent=n+' services, contact form, WhatsApp button';
