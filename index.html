@@ -1616,7 +1616,10 @@ function applyConfigToBuilder(c){
   setIfEl('hBadge',h.badge); setIfEl('hHeadline',h.headline); setIfEl('hHighlight',h.highlight); setIfEl('hSub',h.sub); setIfEl('hCta1',h.cta1); setIfEl('hCta2',h.cta2);
   setIfEl('fFooterBlurb',c.footerBlurb); setIfEl('fCopyright',c.copyright);
   var so=c.social||{}; setIfEl('fLinkedin',so.linkedin); setIfEl('fFacebook',so.facebook); setIfEl('fInstagram',so.instagram); setIfEl('fYoutube',so.youtube);
-  setIfEl('subIn',c.subdomain);
+  // Never restore leftover demo subdomains from an old draft; let it re-derive from the firm name.
+  var DEMO_SUBS=['sharma-associates','iyer-iyer','your-site'];
+  var _cs=(c.subdomain||'').toLowerCase();
+  setIfEl('subIn', DEMO_SUBS.indexOf(_cs)>=0 ? '' : c.subdomain);
   if(Array.isArray(h.tags)) S.tags=h.tags.slice();
   if(Array.isArray(h.images)) S.heroImages=h.images.slice();
   if(Array.isArray(c.stats)) S.stats=c.stats.map(function(x){return {v:String(x.v||x.value||''),l:String(x.l||x.label||'')};});

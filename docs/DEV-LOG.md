@@ -12,7 +12,7 @@ Netlify is **deployed and verified end-to-end** — the builder is live at `http
 ### What Was Done
 - **Real share URLs in the builder.** Added `publicBase` (`https://kdksites.netlify.app/s/`) + `prettyDomain` (`kdksites.in`) to `app-config.js`, and `siteSlug()` / `siteUrl()` / `prettyUrl()` helpers in `index.html`. The subdomain step, publish animation, "Visit" button (now opens the real URL in a new tab), and preview URL all use the working `netlify.app/s/<sub>` link, while still showing the future `<sub>.kdksites.in` as the "permanent address once the domain is live".
 - **Publish auto-derives a subdomain** from the firm name if none is chosen (e.g. "Mehta & Co" → `mehta-co`).
-- **Demo data fully cleared:** removed the last `sharma-associates` defaults (subIn value, urlLive, pvUrl) — 0 matches remain in `index.html`.
+- **Demo data fully cleared:** removed the last `sharma-associates` defaults (subIn value, urlLive, pvUrl) — 0 matches remain in `index.html`. Also **deleted the leftover published `sharma-associates` row** (an "Iyer & Iyer" test site) from Supabase `wb_websites` (via service_role; table now empty), and `applyConfigToBuilder()` now **scrubs known demo subdomains** (`sharma-associates`, `iyer-iyer`, `your-site`) when restoring an old draft so they never reappear in the field.
 - **Draft persistence fixed** (from Session 6 handoff): `saveDraft()` writes localStorage + a Supabase draft row; `applyConfigToBuilder()` + init-restore read it back so a saved draft actually reloads.
 
 ### Verified
