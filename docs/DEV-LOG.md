@@ -4,6 +4,29 @@
 
 ---
 
+## 2026-07-11 — Session 6 (Auth + Supabase backend + Netlify publishing)
+
+### Session Summary
+Added user **login/auth**, wired up a **Supabase backend**, and set up **Netlify** so published sites can actually go live (no domain needed). The AI key is now server-side. Continues on branch `feature/ai-website-writer`. Targeted release [0.9.0].
+
+### What Was Done
+- **Auth (Supabase Auth via REST, no CDN library):** a dark, animated split-screen login/signup gates the builder; sign-up captures name+email; session persists with token refresh; the splash is **skipped for returning users** on refresh. Signed-in state shows the real user in the sidebar; clicking the profile opens an **in-place account menu** (Profile / Settings / Subscription placeholders that do not navigate, + working **Sign Out**).
+- **Supabase backend (project `hlhtopqbzfzlxxmolkok`):**
+  - `wb_websites` (config as JSONB) + `wb_leads` tables and **RLS policies** applied (`supabase db push`).
+  - `ai-generate` **Edge Function deployed** + `OPENAI_API_KEY` secret set → the **AI key is now server-side**, never in the browser. The builder's `callLLM()` routes through it (verified working).
+- **Publishing / hosting (Netlify):** `netlify.toml` + `netlify/edge-functions/render.ts` serve each published site at **`/s/<subdomain>`** by reading its config from Supabase and injecting it into the `Live/` template (via `window.__applyConfig`). **Save-on-Publish** writes the config to `wb_websites`. `app-config.js` holds the **public** Supabase URL + anon key so the *deployed* builder has auth/publish (gitignored `local-ai-config.js` isn't deployed).
+- **Design:** the splash was re-skinned to the dark premium look to match the login; login got animated mesh gradient, drifting orbs, a "website-building" browser mockup, and a waving 👋 on "Welcome back".
+
+### Decisions Made
+- **No domain needed to go live:** sites are served at `kdksites.netlify.app/s/<subdomain>` (path-based). The day `kdksites.in` is owned, point wildcard DNS at Netlify → `sharma.kdksites.in`, no rebuild.
+- Anon key + Supabase URL are **public by design** and committed in `app-config.js`; the `service_role` key lives **only in Netlify env**, the OpenAI key **only in Supabase secrets**.
+
+### Blockers / Next Steps (user)
+- **Netlify (user action):** grant the Netlify GitHub app access to `KDKSites` ("Configure the Netlify app on GitHub"), import the repo on branch `feature/ai-website-writer`, and set env vars `SUPABASE_URL` + `SUPABASE_SERVICE_KEY` (service_role). Then Publish → live at `/s/<subdomain>`.
+- Rotate the OpenAI key that was pasted during setup.
+
+---
+
 ## 2026-07-11 — Session 5 (AI Website Writer)
 
 ### Session Summary

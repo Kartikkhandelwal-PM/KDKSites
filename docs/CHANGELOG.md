@@ -4,6 +4,29 @@
 
 ---
 
+## [0.9.0] 2026-07-11 — User auth + Supabase backend + Netlify publishing
+
+> Branch `feature/ai-website-writer`. Adds login, a Supabase backend, and Netlify hosting so published sites can actually go live (no domain needed). The AI key moves server-side.
+
+### Added
+- **User authentication** (Supabase Auth via REST, no CDN library): animated dark split-screen login/signup that gates the builder; name+email captured on sign-up; persistent session with token refresh; signed-in user shown in the sidebar.
+- **Account menu** — clicking the profile opens an in-place popover: Profile / Settings / Subscription (placeholders, no navigation) + working **Sign Out**.
+- **Supabase backend** — `wb_websites` (JSONB config) + `wb_leads` tables with RLS; `ai-generate` Edge Function that proxies OpenAI/Anthropic with the key **server-side**.
+- **Publishing to Netlify** — `netlify.toml` + `render` Edge Function serve each published site at `/s/<subdomain>` from its saved config + `Live/` template; **Save-on-Publish** writes config to Supabase.
+- `app-config.js` — public Supabase URL + anon key so the deployed builder has auth/publish.
+- Splash re-skinned to the dark premium theme; login mesh-gradient + drifting orbs + browser mockup + waving 👋.
+
+### Changed / Fixed
+- The splash no longer flashes on refresh for signed-in users (shown only to logged-out/new visitors).
+- Fixed the profile click not opening the account menu (bound directly to the element, overriding the stale inline handler).
+
+### Decisions / notes
+- **No domain required** to go live: `kdksites.netlify.app/s/<subdomain>` now; becomes `sub.kdksites.in` once `kdksites.in` + wildcard DNS exist, with no builder change.
+- Public vs secret split: anon key + URL are committed (`app-config.js`); `service_role` key lives only in Netlify env, OpenAI key only in Supabase secrets.
+- Pending: user connects Netlify (repo access + env vars) to go live.
+
+---
+
 ## [0.8.0] 2026-07-11 — AI Website Writer (prototype)
 
 > Branch `feature/ai-website-writer`. Adds an AI-assisted "write my whole site" flow to the builder, and removes leftover demo data from published sites. AI runs **client-side for local demo only**; production must move it server-side.

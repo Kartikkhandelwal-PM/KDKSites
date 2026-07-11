@@ -20,7 +20,12 @@ A **website builder product** embedded inside the KDK Software desktop/web app. 
 - The root **`index.html` IS the builder.** It was moved up from `Admin Panel/website-builder-admin-v4.html` on 2026-07-03, and its `../` asset paths were rewritten to be root-relative.
 - **Hosting:** GitHub Pages (static), serving the root of `main`. Every push triggers a Pages rebuild (typically 1 to 3 minutes) followed by a CDN cache refresh.
 - The four published website templates live in `Live/` (apex, nova, heritage, zenith). `New Design/` holds design iterations. `Admin Panel/` now holds only its notes file.
-- **AI Website Writer (prototype, on branch `feature/ai-website-writer`, not yet merged to `main`):** a floating button in the builder runs a short interview and an LLM drafts the whole site. It needs a **gitignored `local-ai-config.js`** holding an API key (OpenAI or Anthropic) and calls the LLM **directly from the browser — local demo only**. Production must move this server-side (never ship a key to the browser). See [docs/DEV-LOG.md](docs/DEV-LOG.md) 2026-07-11.
+- **AI Writer + Auth + Supabase + Netlify (prototype, on branch `feature/ai-website-writer`, not yet merged to `main`):**
+  - **AI Writer** — a floating button runs a short interview and an LLM drafts the whole site. The AI key is now **server-side** in a Supabase Edge Function (`ai-generate`); the browser calls that, never the provider directly.
+  - **Auth** — Supabase Auth (email/password) gates the builder with an animated login; the profile menu has Sign Out.
+  - **Supabase** — project `hlhtopqbzfzlxxmolkok`; `wb_websites`/`wb_leads` tables + RLS applied; `ai-generate` function deployed. Public config (URL + anon key) is in committed `app-config.js`; local AI overrides in gitignored `local-ai-config.js`.
+  - **Publishing** — `netlify.toml` + `netlify/edge-functions/render.ts` serve published sites at `kdksites.netlify.app/s/<subdomain>` (no domain needed). Publish saves config to Supabase. **Pending: user connects Netlify** (repo access + `SUPABASE_URL`/`SUPABASE_SERVICE_KEY` env vars).
+  - Full detail: [docs/DEV-LOG.md](docs/DEV-LOG.md) 2026-07-11 (Sessions 5 & 6).
 
 ### Deploy a change
 ```

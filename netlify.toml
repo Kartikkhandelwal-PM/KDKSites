@@ -1,0 +1,11 @@
+# Netlify config — serves the repo as static (builder + Live/ templates) and
+# runs the render Edge Function for published sites at /s/<subdomain>.
+
+[build]
+  publish = "."
+  command = ""
+
+# Published client sites: kdksites.netlify.app/s/<subdomain>
+[[edge_functions]]
+  path = "/s/*"
+  function = "render"
