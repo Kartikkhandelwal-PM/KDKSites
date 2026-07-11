@@ -45,6 +45,36 @@ export default async (request: Request) => {
     return page("Template missing", "Could not load the template.", 502);
   }
 
+  // --- SEO / social-share metadata ---------------------------------------
+  // The templates ship with demo <title>/text. Rewrite the title and inject
+  // Open Graph + Twitter tags from the firm's config so a shared link previews
+  // the real firm name (not the template's demo firm). Applies to every template.
+  const esc = (s: unknown) =>
+    String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  const firm = String((config as any).firmName || "").trim();
+  const tagline = String((config as any).tagline || "").trim();
+  const city = String((config as any).city || "").trim();
+  const about = String((config as any).about || "").trim();
+  const brand = firm || "Professional Services";
+  const titleText = brand + (tagline ? " | " + tagline : "") + (city ? (tagline ? ", " : " | ") + city : "");
+  const descText = (tagline || about || (firm ? firm + " — professional services" : "")).slice(0, 180);
+  const shareUrl = `${url.origin}/s/${subdomain}`;
+  const metaTags =
+    `<meta property="og:type" content="website">` +
+    `<meta property="og:site_name" content="${esc(brand)}">` +
+    `<meta property="og:title" content="${esc(brand)}">` +
+    `<meta property="og:description" content="${esc(descText)}">` +
+    `<meta property="og:url" content="${esc(shareUrl)}">` +
+    `<meta name="twitter:card" content="summary">` +
+    `<meta name="twitter:title" content="${esc(brand)}">` +
+    `<meta name="twitter:description" content="${esc(descText)}">` +
+    `<meta name="description" content="${esc(descText)}">`;
+  if (/<title>[\s\S]*?<\/title>/i.test(html)) {
+    html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${esc(titleText)}</title>${metaTags}`);
+  } else if (/<\/head>/i.test(html)) {
+    html = html.replace(/<\/head>/i, `<title>${esc(titleText)}</title>${metaTags}</head>`);
+  }
+
   // Apply the saved config after the template's own script defines __applyConfig.
   const json = JSON.stringify(config).replace(/</g, "\\u003c");
   const apply = `<script>(function(){try{var c=${json};if(window.__applyConfig)window.__applyConfig(c);}catch(e){}})();</script>`;

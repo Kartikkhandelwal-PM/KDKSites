@@ -15,6 +15,10 @@ Netlify is **deployed and verified end-to-end** — the builder is live at `http
 - **Demo data fully cleared:** removed the last `sharma-associates` defaults (subIn value, urlLive, pvUrl) — 0 matches remain in `index.html`. Also **deleted the leftover published `sharma-associates` row** (an "Iyer & Iyer" test site) from Supabase `wb_websites` (via service_role; table now empty), and `applyConfigToBuilder()` now **scrubs known demo subdomains** (`sharma-associates`, `iyer-iyer`, `your-site`) when restoring an old draft so they never reappear in the field.
 - **Draft persistence fixed** (from Session 6 handoff): `saveDraft()` writes localStorage + a Supabase draft row; `applyConfigToBuilder()` + init-restore read it back so a saved draft actually reloads.
 
+- **Web address mirrors the firm name** with a clean slug: the Publish subdomain auto-tracks `fFirmName` (via `subManual()`/`window._subEdited` — stops when the user types their own, resumes if they clear it), and `siteSlug()` collapses any run of non-alphanumerics into a single hyphen ("Kartik & Associates" → `kartik-associates`, not `kartik---associates`).
+- **Splash flash on refresh removed:** a `<head>` script marks `<html class="has-session">` from `localStorage` *before* the splash paints, and CSS hides `.splash` from the first frame (plus `runSplash()` bails when a session exists). Logged-out users still see it.
+- **Share-preview shows the real firm (all templates):** the render Edge Function now rewrites `<title>` and injects Open Graph + Twitter meta (`og:title`/`og:description`/`og:url`) from the site's config, so a shared `/s/<sub>` link previews the real firm name. The four `Live/` templates' hardcoded demo `<title>` values were also neutralized to "Professional Website | KDK Sites".
+
 ### Verified
 - `kdksites.netlify.app/` → 200; `/s/test-123` → "Site not found / No site at" (Supabase reached, RLS + env OK); `app-config.js` + `Live/apex` reachable on the deploy.
 
