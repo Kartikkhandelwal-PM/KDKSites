@@ -2,7 +2,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>KDK Sites · KDK Software</title>
 <link rel="icon" type="image/png" href="CA%20India%20Logo.png">
+<script>
+/* Returning users must never see the splash flash. Decide BEFORE the splash is
+   parsed/painted: if a saved session exists, mark <html> so CSS hides the
+   splash from the very first frame. The auth boot script confirms the session. */
+try{ var _ks=localStorage.getItem('kdk_auth'); if(_ks && JSON.parse(_ks).access_token){ document.documentElement.className+=' has-session'; } }catch(e){}
+</script>
 <style>
+html.has-session .splash{display:none!important}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 input::placeholder,textarea::placeholder{color:#AEBBCC;opacity:1;font-weight:400}
 .sym-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:0 0 12px}
@@ -1512,6 +1519,8 @@ function fireConfetti(){
 function runSplash(){
   const fill=document.getElementById('splashFill'), st=document.getElementById('splashStatus'), sp=document.getElementById('splash');
   if(!sp) return;
+  /* Returning user (session present): splash is already hidden by CSS — don't animate it. */
+  if(document.documentElement.classList.contains('has-session')){ sp.classList.add('hide'); return; }
   const steps=[[20,'Preparing your workspace'],[46,'Loading your designs'],[70,'Syncing templates'],[90,'Almost ready'],[100,'Welcome back']];
   let i=0;
   (function tick(){
