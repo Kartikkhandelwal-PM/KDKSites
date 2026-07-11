@@ -804,8 +804,8 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#F4F6F
       <div class="pub-globe"><div class="globe-ring"></div><div class="globe-ring"></div><div class="globe-ring"></div><div class="globe-core"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="20" cy="20" r="16"/><path d="M4 20h32"/><path d="M20 4c-5 5-8 10-8 16s3 11 8 16M20 4c5 5 8 10 8 16s-3 11-8 16"/></svg></div></div>
       <div class="pub-h1">Pick your web address</div>
       <div class="pub-sub">Share it with clients, print it on your visiting card, add it to your WhatsApp status.</div>
-      <div class="url-row"><div class="url-pfx">https://</div><input class="url-in" id="subIn" value="sharma-associates" maxlength="30" oninput="updUrl()"><div class="url-sfx">.kdksites.in</div></div>
-      <div class="url-live" id="urlLive">Live at: <strong>https://sharma-associates.kdksites.in</strong></div>
+      <div class="url-row"><div class="url-pfx">https://</div><input class="url-in" id="subIn" placeholder="your-firm-name" maxlength="30" oninput="updUrl()"><div class="url-sfx">.kdksites.in</div></div>
+      <div class="url-live" id="urlLive">Choose a URL for your site above.</div>
       <div class="pub-cl">
         <div class="pub-cl-title">What goes live</div>
         <div class="pub-cl-item" id="clTpl"><div class="pub-cl-dot"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 5l2.5 2.5 4.5-5"/></svg></div>Apex design</div>
@@ -828,7 +828,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#F4F6F
 <!-- PREVIEW OVERLAY -->
 <div class="pv-overlay" id="pvOverlay">
   <div class="pv-top">
-    <div class="pv-top-l"><div class="pv-live-dot"></div><span class="pv-top-title">Live Preview</span><span class="pv-top-url" id="pvUrl">sharma-associates.kdksites.in</span></div>
+    <div class="pv-top-l"><div class="pv-live-dot"></div><span class="pv-top-title">Live Preview</span><span class="pv-top-url" id="pvUrl">your-site preview</span></div>
     <div class="pv-devsw">
       <button class="pv-devbtn" id="dvMobile" onclick="setDevice('mobile')"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="3" y="1" width="8" height="12" rx="2"/><line x1="5.5" y1="11" x2="8.5" y2="11"/></svg>Mobile</button>
       <button class="pv-devbtn" id="dvTablet" onclick="setDevice('tablet')"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="2" y="1" width="10" height="12" rx="1.5"/><line x1="6" y1="11" x2="8" y2="11"/></svg>Tablet</button>
@@ -1302,12 +1302,25 @@ function syncColorInputs(){
 }
 
 /* ---------- STEP 7: publish ---------- */
-function updUrl(){const v=(document.getElementById('subIn').value||'').toLowerCase().replace(/[^a-z0-9-]/g,'-'); document.getElementById('urlLive').innerHTML='Live at: <strong>https://'+v+'.kdksites.in</strong>';}
+/* slug -> the real, working share URL (path-based on Netlify today) */
+function siteSlug(v){ return (v||'').toLowerCase().replace(/[^a-z0-9-]/g,'-').replace(/^-+|-+$/g,''); }
+function siteUrl(sub){ var base=(window.KDK_AI&&window.KDK_AI.publicBase)||'https://kdksites.netlify.app/s/'; return base+siteSlug(sub); }
+function prettyUrl(sub){ var dom=(window.KDK_AI&&window.KDK_AI.prettyDomain)||'kdksites.in'; return siteSlug(sub)+'.'+dom; }
+function updUrl(){
+  var v=siteSlug(document.getElementById('subIn').value);
+  var el=document.getElementById('urlLive');
+  if(!v){ el.innerHTML='Choose a URL for your site above.'; return; }
+  el.innerHTML='Live at: <strong>'+siteUrl(v)+'</strong><br><span style="color:var(--ts);font-size:11px">Permanent address once the domain is live: '+prettyUrl(v)+'</span>';
+}
 function refreshPublish(){
   const d=DESIGNS.find(function(x){return x.key===S.template;});
   document.getElementById('clTpl').lastChild.textContent=d.name+' design';
   var _fn=stripTags(val('fFirmName')).trim(), _ct=val('fCity').trim();
   document.getElementById('clFirm').lastChild.textContent=(_fn&&_ct)?(_fn+', '+_ct):(_fn||_ct||'Your firm details');
+  // suggest a subdomain from the firm name if none chosen yet
+  var _sub=document.getElementById('subIn');
+  if(_sub && !_sub.value.trim() && _fn){ var slug=_fn.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,''); if(slug) _sub.value=slug.slice(0,30); }
+  if(typeof updUrl==='function'){ updUrl(); }
   const n=S.services.filter(function(s){return s.on;}).length;
   document.getElementById('clSvc').lastChild.textContent=n+' services, contact form, WhatsApp button';
 }
@@ -1333,13 +1346,14 @@ function pubClearTimers(){ pubTimers.forEach(clearTimeout); pubTimers=[]; if(win
 const STEP_CHECK='<svg class="pub-step-check" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.2l2.6 2.6L10 3"/></svg>';
 const STEP_IDLE='<span class="pub-step-idle"></span>';
 /* Persist the site to Supabase so it can be served live at /s/<subdomain>. */
-function saveSiteToSupabase(cfg,sub){
+function saveSiteToSupabase(cfg,sub,status){
+  status=status||'published';
   var C=window.KDK_AI||{};
   var url=String(C.supabaseUrl||'').replace(/\/+$/,''), key=String(C.supabaseAnonKey||'');
   if(!url||!key||!window.KDK_TOKEN||!window.KDK_USER){ return Promise.resolve(false); }
   var body={ user_id:window.KDK_USER.id, subdomain:sub, template:S.template, profession:S.profession,
-             primary_color:S.primary, accent_color:S.accent, config:cfg, status:'published',
-             published_at:new Date().toISOString() };
+             primary_color:S.primary, accent_color:S.accent, config:cfg, status:status };
+  if(status==='published'){ body.published_at=new Date().toISOString(); }
   return fetch(url+'/rest/v1/wb_websites?on_conflict=subdomain',{
     method:'POST',
     headers:{'apikey':key,'Authorization':'Bearer '+window.KDK_TOKEN,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates,return=minimal'},
@@ -1351,9 +1365,9 @@ function startPublish(){
   pubClearTimers();
   const cfg=collectConfig();
   const d=DESIGNS.find(function(x){return x.key===S.template;})||DESIGNS[0];
-  const sub=(cfg.subdomain||'your-site').toLowerCase().replace(/[^a-z0-9-]/g,'-');
+  const sub=siteSlug(cfg.subdomain||'your-site');
   saveSiteToSupabase(cfg,sub);   // fire-and-forget; site is written while the animation plays
-  const host=sub+'.kdksites.in', url='https://'+host;
+  const host=prettyUrl(sub), url=siteUrl(sub);   // host = future pretty address; url = the real working link
   const firm=stripTags(cfg.firmName||'your firm');
   const nSvc=(cfg.services||[]).length, nPages=5;
 
@@ -1430,7 +1444,7 @@ function startPublish(){
 function finishPublish(url,host,d){
   document.getElementById('pubBuild').style.display='none';
   document.getElementById('pubUrlDone').textContent=url;
-  document.getElementById('pubVisit').href=(d&&(d.live||d.path))||'#';
+  var vb=document.getElementById('pubVisit'); vb.href=url; vb.target='_blank'; vb.rel='noopener';
   document.getElementById('pubDone').classList.add('show');
   window._pubUrl=url;
   /* wait for the overlay to lay out so the confetti canvas has real dimensions */
@@ -1575,6 +1589,58 @@ function collectConfig(){
     logo:S.img.logo, founderPhoto:S.img.founder, subdomain:val('subIn')
   };
 }
+
+/* Restore a saved config back into the builder (reverse of collectConfig). */
+function setIfEl(id,v){ var el=document.getElementById(id); if(el && v!=null){ el.value=String(v); } }
+function applyImgTo(key,imgId,zoneId){
+  var url=S.img[key], img=document.getElementById(imgId), zone=document.getElementById(zoneId);
+  if(url && img && zone){ img.src=url; zone.classList.add('has-img'); }
+  else if(zone){ zone.classList.remove('has-img'); }
+}
+function applyConfigToBuilder(c){
+  if(!c || typeof c!=='object') return;
+  if(c.profession){ S.profession=c.profession; var ps=document.getElementById('fProfession'); if(ps) ps.value=c.profession; }
+  if(c.template){ S.template=c.template; }
+  var themes=(THEMES_BY_DESIGN[S.template]||THEMES_BY_DESIGN.apex);
+  if(c.nativeTheme){ S.theme=0; }
+  else { var idx=themes.findIndex(function(t){return t.primary===c.primaryColor&&t.accent===c.accentColor;}); S.theme=(idx>=0?idx:1); }
+  if(c.primaryColor) S.primary=c.primaryColor;
+  if(c.accentColor) S.accent=c.accentColor;
+  setIfEl('fFirmName',c.firmName); setIfEl('fTagline',c.tagline); setIfEl('fAbout',c.about);
+  setIfEl('fFounded',c.foundedYear); setIfEl('fTeam',c.teamSize); setIfEl('fCity',c.city);
+  setIfEl('fFounderName',c.founderName); setIfEl('fFounderRole',c.founderRole); setIfEl('fFounderBio',c.founderBio);
+  setIfEl('fCreds',(c.credentials||[]).join('\n'));
+  setIfEl('fPhone',c.phone); setIfEl('fWhatsapp',c.whatsapp); setIfEl('fEmail',c.email);
+  setIfEl('fHours',c.hours); setIfEl('fAddress',c.address); setIfEl('fMembership',c.membershipNo); setIfEl('fRegno',c.firmRegNo);
+  var h=c.hero||{};
+  setIfEl('hBadge',h.badge); setIfEl('hHeadline',h.headline); setIfEl('hHighlight',h.highlight); setIfEl('hSub',h.sub); setIfEl('hCta1',h.cta1); setIfEl('hCta2',h.cta2);
+  setIfEl('fFooterBlurb',c.footerBlurb); setIfEl('fCopyright',c.copyright);
+  var so=c.social||{}; setIfEl('fLinkedin',so.linkedin); setIfEl('fFacebook',so.facebook); setIfEl('fInstagram',so.instagram); setIfEl('fYoutube',so.youtube);
+  setIfEl('subIn',c.subdomain);
+  if(Array.isArray(h.tags)) S.tags=h.tags.slice();
+  if(Array.isArray(h.images)) S.heroImages=h.images.slice();
+  if(Array.isArray(c.stats)) S.stats=c.stats.map(function(x){return {v:String(x.v||x.value||''),l:String(x.l||x.label||'')};});
+  if(Array.isArray(c.highlights)) S.highlights=c.highlights.map(function(x){return {t:String(x.t||x.title||''),d:String(x.d||x.desc||'')};});
+  if(Array.isArray(c.process)) S.process=c.process.map(function(x){return {t:String(x.t||x.title||''),d:String(x.d||x.desc||'')};});
+  if(Array.isArray(c.testimonials)) S.testimonials=c.testimonials.map(function(x){return {q:String(x.q||x.quote||''),n:String(x.n||x.name||''),r:String(x.r||x.role||''),s:x.s||5,img:x.img||''};});
+  loadServices(S.profession);
+  if(Array.isArray(c.services) && c.services.length){
+    S.services.forEach(function(s){ s.on=false; });
+    c.services.forEach(function(item){
+      var nm=String((item&&item.name)||'').toLowerCase().trim(); if(!nm) return;
+      var m=S.services.find(function(s){return s.name.toLowerCase().trim()===nm;});
+      if(m){ m.on=true; if(item.desc) m.desc=item.desc; }
+      else { S.services.push({name:item.name,desc:item.desc||'',on:true,custom:true}); }
+    });
+  }
+  S.img.logo=c.logo||''; S.img.founderPhoto=c.founderPhoto; S.img.founder=c.founderPhoto||'';
+  try{
+    document.querySelectorAll('.tpl-card').forEach(function(cc){cc.classList.toggle('sel',cc.dataset.k===S.template);});
+    buildThemes(); syncColorInputs(); updateHeroVisibility(); if(typeof pushThumbs==='function') pushThumbs();
+    renderServices(); renderTags(); renderStats(); renderHighlights(); renderProcess(); renderTestimonials(); renderHeroImages();
+    applyImgTo('logo','imgLogo','uzLogo'); applyImgTo('founder','imgFounder','uzFounder');
+  }catch(e){ if(window.console) console.warn('restore render error',e); }
+}
 function pushConfig(){
   const fr=document.getElementById('pvFrame');
   if(!fr||!fr.contentWindow) return;
@@ -1605,8 +1671,8 @@ function openPreview(keyOverride,sampleMode){
   // Preview renders a SEPARATE live copy (never the pristine sample). Designs
   // without a live renderer yet fall back to the sample (edits not applied).
   const target=d.live||d.path;
-  const sub=(document.getElementById('subIn').value||'your-site').toLowerCase().replace(/[^a-z0-9-]/g,'-');
-  document.getElementById('pvUrl').textContent=pvSample?(d.name+' (sample design)'):(sub+'.kdksites.in'+(d.live?'':'  (sample: this design is not wired to your edits yet)'));
+  const sub=siteSlug(document.getElementById('subIn').value||'your-site');
+  document.getElementById('pvUrl').textContent=pvSample?(d.name+' (sample design)'):(prettyUrl(sub)+(d.live?'':'  (sample: this design is not wired to your edits yet)'));
   document.getElementById('pvOpen2').href=target;
   const fr=document.getElementById('pvFrame');
   pushConfig();
@@ -1618,7 +1684,16 @@ function closePreview(){document.getElementById('pvOverlay').classList.remove('o
 function setDevice(m){pvDevice=m; ['mobile','tablet','desktop'].forEach(function(x){document.getElementById('dv'+x.charAt(0).toUpperCase()+x.slice(1)).classList.toggle('active',x===m);}); document.getElementById('pvFrameWrap').className='pv-frame-wrap '+m;}
 
 /* ---------- SAVE ---------- */
-function saveDraft(){try{localStorage.setItem('kdk_wb_draft',JSON.stringify(collectConfig()));}catch(e){} toast('Draft saved');}
+function saveDraft(){
+  var cfg=collectConfig();
+  try{localStorage.setItem('kdk_wb_draft',JSON.stringify(cfg));}catch(e){}   // instant, this device
+  var sub=(val('subIn')||'').toLowerCase().replace(/[^a-z0-9-]/g,'-');
+  if(window.KDK_TOKEN && sub.length>=3){
+    saveSiteToSupabase(cfg,sub,'draft').then(function(ok){ toast(ok?'Draft saved to your account':'Draft saved on this device'); });
+  } else {
+    toast('Draft saved on this device'+(window.KDK_TOKEN?' (choose a URL in Publish to save to your account)':''));
+  }
+}
 function toast(msg){const t=document.getElementById('toast'); document.getElementById('toastMsg').textContent=msg; t.classList.add('show'); clearTimeout(window._tt); window._tt=setTimeout(function(){t.classList.remove('show');},2200);}
 
 /* ---------- HELPERS ---------- */
@@ -1652,7 +1727,10 @@ function initAdmin(){
   buildNav(); buildTemplates();
   loadServices(S.profession); renderServices();
   renderTags(); renderStats(); renderHighlights(); renderProcess(); renderTestimonials(); renderHeroImages();
-  buildThemes(); syncColorInputs(); updateHeroVisibility(); go(1);
+  buildThemes(); syncColorInputs(); updateHeroVisibility();
+  // restore the last saved draft so "Save draft" actually persists across reloads
+  try{ var _d=localStorage.getItem('kdk_wb_draft'); if(_d){ applyConfigToBuilder(JSON.parse(_d)); } }catch(e){}
+  go(1);
   requestAnimationFrame(scaleShots);
 }
 /* Build immediately — this script is the last thing in <body>, so all elements above exist.

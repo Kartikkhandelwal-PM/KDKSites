@@ -4,6 +4,27 @@
 
 ---
 
+## 2026-07-11 — Session 7 (Netlify live, real share URLs, draft persistence)
+
+### Session Summary
+Netlify is **deployed and verified end-to-end** — the builder is live at `https://kdksites.netlify.app/` and the render Edge Function serves published sites at `/s/<subdomain>` (env vars confirmed set: hitting a missing site returns "Site not found", not "Not configured"). Wired the builder to show the **real, working share URL** instead of the not-yet-real `.kdksites.in`, and fixed draft persistence + the last demo-data leftover. Branch `feature/ai-website-writer`.
+
+### What Was Done
+- **Real share URLs in the builder.** Added `publicBase` (`https://kdksites.netlify.app/s/`) + `prettyDomain` (`kdksites.in`) to `app-config.js`, and `siteSlug()` / `siteUrl()` / `prettyUrl()` helpers in `index.html`. The subdomain step, publish animation, "Visit" button (now opens the real URL in a new tab), and preview URL all use the working `netlify.app/s/<sub>` link, while still showing the future `<sub>.kdksites.in` as the "permanent address once the domain is live".
+- **Publish auto-derives a subdomain** from the firm name if none is chosen (e.g. "Mehta & Co" → `mehta-co`).
+- **Demo data fully cleared:** removed the last `sharma-associates` defaults (subIn value, urlLive, pvUrl) — 0 matches remain in `index.html`.
+- **Draft persistence fixed** (from Session 6 handoff): `saveDraft()` writes localStorage + a Supabase draft row; `applyConfigToBuilder()` + init-restore read it back so a saved draft actually reloads.
+
+### Verified
+- `kdksites.netlify.app/` → 200; `/s/test-123` → "Site not found / No site at" (Supabase reached, RLS + env OK); `app-config.js` + `Live/apex` reachable on the deploy.
+
+### Blockers / Next Steps (user)
+- Publish a real site while **logged in** (auth is required for the row to save under `user_id`), then open `kdksites.netlify.app/s/<subdomain>` to confirm the live render.
+- Still pending: **rotate the OpenAI key** pasted during setup.
+- When `kdksites.in` is owned: point wildcard DNS at Netlify and flip `publicBase` to the subdomain form.
+
+---
+
 ## 2026-07-11 — Session 6 (Auth + Supabase backend + Netlify publishing)
 
 ### Session Summary

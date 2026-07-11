@@ -14,5 +14,9 @@ window.KDK_AI = {
   supabaseUrl:     'https://hlhtopqbzfzlxxmolkok.supabase.co',
   supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhsaHRvcHFiemZ6bHh4bW9sa29rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3NTMyOTAsImV4cCI6MjA5OTMyOTI5MH0.K5UZ9CbqbNEfMRTMaOVTtlrx9HGi544iy2zf5CVZXww',
   openai:    { model: 'gpt-4o-mini' },
-  anthropic: { model: 'claude-opus-4-8' }
+  anthropic: { model: 'claude-opus-4-8' },
+  // Where published sites are actually served today (path-based, no custom domain needed).
+  // Later, when the kdksites.in domain + wildcard DNS is set up, switch to subdomain URLs.
+  publicBase:   'https://kdksites.netlify.app/s/',   // real, working share URL: publicBase + <subdomain>
+  prettyDomain: 'kdksites.in'                         // the future subdomain form: <subdomain>.kdksites.in
 };
