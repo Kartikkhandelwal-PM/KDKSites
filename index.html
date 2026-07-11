@@ -1704,7 +1704,7 @@ function setDevice(m){pvDevice=m; ['mobile','tablet','desktop'].forEach(function
 /* ---------- SAVE ---------- */
 function saveDraft(){
   var cfg=collectConfig();
-  try{localStorage.setItem('kdk_wb_draft',JSON.stringify(cfg));}catch(e){}   // instant, this device
+  try{localStorage.setItem('kdk_wb_draft',JSON.stringify(cfg)); localStorage.setItem('kdk_wb_draft_at',String(Date.now()));}catch(e){}   // instant, this device
   var sub=(val('subIn')||'').toLowerCase().replace(/[^a-z0-9-]/g,'-');
   if(window.KDK_TOKEN && sub.length>=3){
     saveSiteToSupabase(cfg,sub,'draft').then(function(ok){ toast(ok?'Draft saved to your account':'Draft saved on this device'); });
@@ -2477,6 +2477,28 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closePrevi
     var sp=document.getElementById('splash'); if(sp) sp.classList.add('hide');
     ov.classList.remove('open');
     updateProfile(sess.user);
+    loadCloudSite(sess);
+  }
+  /* Pull the user's saved website from Supabase so their data appears on any
+     device after login (localStorage alone is per-browser). Applied unless a
+     newer unsaved local draft exists on this device. */
+  function loadCloudSite(sess){
+    if(!sess || !sess.access_token || !sess.user || !sess.user.id) return;
+    if(typeof applyConfigToBuilder!=='function') return;
+    authFetch('/rest/v1/wb_websites?user_id=eq.'+encodeURIComponent(sess.user.id)+
+              '&select=subdomain,status,config,updated_at&order=updated_at.desc&limit=1',
+              {headers:{Authorization:'Bearer '+sess.access_token}}).then(function(res){
+      if(!res.ok || !Array.isArray(res.body) || !res.body.length) return;
+      var row=res.body[0], cfg=row.config;
+      if(!cfg || typeof cfg!=='object') return;
+      var localAt=parseInt(localStorage.getItem('kdk_wb_draft_at')||'0',10);
+      var cloudAt=Date.parse(row.updated_at||'')||0;
+      if(localAt && localAt>cloudAt) return;   // keep the fresher local draft
+      try{
+        applyConfigToBuilder(cfg);
+        if(row.subdomain){ var s=document.getElementById('subIn'); if(s){ s.value=row.subdomain; window._subEdited=true; if(typeof updUrl==='function') updUrl(); } }
+      }catch(e){ if(window.console) console.warn('cloud restore error',e); }
+    }).catch(function(){});
   }
   function getUserDisplay(){
     var u=window.KDK_USER||{}; var meta=u.user_metadata||{};
