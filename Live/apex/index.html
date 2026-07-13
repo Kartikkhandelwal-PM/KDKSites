@@ -1177,6 +1177,27 @@ bootTesti();
   function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
   function qs(s,r){return (r||document).querySelector(s);}
   function qsa(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+
+  /* Enquiry-form options follow the professional's ROLE (profession), not the
+     visual template — a CA on any design sees CA services, an advocate sees
+     legal matters, and so on. */
+  var ROLE_SERVICES={
+    ca:['Income Tax Return Filing','GST Registration & Returns','Tax Audit (Section 44AB)','TDS Management','Tax Planning & Advisory','NRI Taxation Services','Company / LLP Incorporation','ROC Annual Filings','Statutory Audit','Virtual CFO Services','Accounting & Book-keeping','Business Registration & Licenses'],
+    advocate:['Civil Litigation','Criminal Defense','Corporate & Company Law','Tax Litigation','Property & Real Estate','Family & Matrimonial','Consumer & Arbitration','Cheque Bounce / Recovery','Labour & Employment','Contract Drafting & Review','Wills & Succession'],
+    tax_consultant:['Income Tax Return Filing','TDS Filing & Compliance','Tax Planning & Advisory','NRI Taxation','Advance Tax Computation','Income Tax Notice Handling','GST Returns','Capital Gains Advisory','Accounting & Book-keeping'],
+    gst_practitioner:['GST Registration','Monthly & Quarterly GST Returns','GST Annual Return (GSTR-9)','GST Audit','GST Refund Applications','GST Notice Response','E-Way Bill & E-Invoicing','LUT Filing (Exports)','GST Cancellation / Amendment'],
+    company_secretary:['Company Incorporation','LLP Registration','ROC Annual Filings','FEMA Compliance','Board Meeting & Secretarial Audit','Share Transfer & ESOP','Trademark & IP Registration','Winding Up / Strike Off','Legal & Statutory Drafting'],
+    cost_accountant:['Cost Audit','Management Accounting','Cost Records Maintenance','Product Costing','Budgeting & MIS Reports','CAS Compliance','Inventory & Process Costing','Cost Reduction Advisory']
+  };
+  function populateEnquiryOptions(sel,cfg,placeholder){
+    if(!sel) return;
+    var names=(ROLE_SERVICES[cfg.profession]||[]).slice();
+    if(!names.length && cfg.services && cfg.services.length) names=cfg.services.map(function(s){return s.name;});
+    if(!names.length) return; // nothing known — keep the template's default options
+    sel.innerHTML='<option value="">'+placeholder+'</option>'
+      +names.map(function(n){return '<option>'+esc(n)+'</option>';}).join('')
+      +'<option>General Consultation</option><option>Other / Not sure yet</option>';
+  }
   function initials(name){
     var skip={'ca':1,'cs':1,'cma':1,'adv':1,'adv.':1,'dr':1,'dr.':1,'mr':1,'mrs':1,'ms':1,'shri':1,'smt':1,'m/s':1};
     var parts=String(name||'').replace(/&/g,' ').split(/\s+/).filter(Boolean);
@@ -1247,9 +1268,10 @@ bootTesti();
     if(cfg.services&&cfg.services.length){
       var g=qs('.svc-grid'); if(g) g.innerHTML=cfg.services.map(function(sv,i){
         return '<div class="svc-card svc-c'+((i%6)+1)+'"><div class="svc-bar"></div><div class="svc-name">'+esc(sv.name)+'</div><div class="svc-desc">'+esc(sv.desc||'')+'</div><a class="svc-enq" href="#contact">Enquire &#8594;</a></div>'; }).join('');
-      var sel=qs('.form-card select.fsel'); if(sel) sel.innerHTML='<option value="">Select a service</option>'+cfg.services.map(function(sv){return '<option>'+esc(sv.name)+'</option>';}).join('')+'<option>Other / Not sure yet</option>';
       var fc=qsa('.foot-grid > div'); if(fc[1]) fc[1].innerHTML='<div class="foot-ct">Services</div>'+cfg.services.slice(0,6).map(function(sv){return '<a class="foot-lnk" href="#services">'+esc(sv.name)+'</a>';}).join('');
     }
+    /* enquiry dropdown — driven by the professional's role, not the template */
+    populateEnquiryOptions(qs('.form-card select.fsel'),cfg,'Select a service');
 
     /* about text */
     if(cfg.about){ var ab=qs('#about .about-grid'); if(ab){ var ps=qsa('p',ab).filter(function(p){return !p.classList.contains('pc-bio');}); if(ps[0])ps[0].textContent=cfg.about; if(ps[1])ps[1].style.display='none'; } }
