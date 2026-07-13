@@ -4,6 +4,30 @@
 
 ---
 
+## 2026-07-13 — Session 9 (Enquiries inbox in the builder)
+
+### Session Summary
+Added an **Enquiries** page to the builder so a signed-in professional can see every lead their published site received. New "Enquiries" item in the account menu (alongside Profile / Settings / Subscription) opens a full overlay that reads `wb_leads` from Supabase, scoped to the owner by the existing `wb_leads_select_owner` RLS policy. Branch `feature/ai-website-writer`.
+
+### What Was Done
+- **Account menu:** added an **Enquiries** item (inbox icon) in `buildPop()`; it closes the popover and calls `openEnquiries()`. Profile / Settings / Subscription remain placeholders.
+- **Enquiries overlay** (all self-contained in the auth IIFE in `index.html`, reusing its `authFetch` / `getSession` / `esc`):
+  - Fetches `GET /rest/v1/wb_leads?select=id,name,email,phone,message,created_at,wb_websites(subdomain)&order=created_at.desc&limit=500` with the user's access token. RLS returns only the owner's leads; the embedded `wb_websites(subdomain)` shows which site each lead came from.
+  - **Lead cards:** name + relative time (with exact timestamp on hover), a service/matter chip parsed from the message's `Service:`/`Matter:` prefix, the message body, and one-tap contact chips — **Call** (`tel:`), **WhatsApp** (`wa.me`), **Email** (`mailto:`) — plus the source site.
+  - **Search** (name / phone / email / message), a live **count**, **Refresh**, and **Export CSV** (BOM + CRLF, service split into its own column).
+  - **States:** loading spinner, empty ("No enquiries yet"), no-search-match, and error with a Try-again button; expired session prompts re-login.
+  - Navy-gradient header matching the design tokens; responsive (full-screen on mobile, labels collapse). Closes on overlay-click, ✕, or Esc.
+- No schema/policy changes needed — the table and owner-read policy already existed from Session 6.
+
+### Verified
+- Headless Chrome over `http://` (localStorage needs a real origin): seeded session + stubbed Supabase. Opening via the account-menu item renders 2 sample leads (service chip parsed, 2 WhatsApp chips, correct embedded query), search "priya" filters to 1, and the empty-leads case shows "No enquiries yet". Menu item present and wired.
+
+### Blockers / Next Steps (user)
+- Same as Session 8: set `SUPABASE_ANON_KEY` in Netlify so published forms actually write leads; then leads will appear in this inbox.
+- Profile / Settings / Subscription are still placeholders (unchanged).
+
+---
+
 ## 2026-07-13 — Session 8 (enquiry form actually captures leads)
 
 ### Session Summary
