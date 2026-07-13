@@ -1308,3 +1308,48 @@ bootHero();
   window.__applyConfig=applyConfig;
 })();
 </script>
+
+<script>
+/* ── ENQUIRY / LEAD CAPTURE ──
+   Posts the contact form to Supabase (wb_leads) when the published page has
+   been given credentials via window.__KDK (injected by the render function).
+   Opened directly or on a static host, it falls back to a visible confirmation
+   so the form always responds. */
+(function(){
+  var card=document.querySelector('.form-card'); if(!card) return;
+  var btn=card.querySelector('.btn-submit'); if(!btn) return;
+  var nameEl=card.querySelector('.fi[type="text"]'),
+      telEl =card.querySelector('.fi[type="tel"]'),
+      mailEl=card.querySelector('.fi[type="email"]'),
+      selEl =card.querySelector('.fsel'),
+      msgEl =card.querySelector('.fta');
+  var orig=btn.textContent;
+  function send(p){
+    var K=window.__KDK||{};
+    if(K.supabaseUrl&&K.supabaseAnonKey&&K.websiteId){
+      return fetch(K.supabaseUrl.replace(/\/+$/,'')+'/rest/v1/wb_leads',{
+        method:'POST',
+        headers:{'Content-Type':'application/json',apikey:K.supabaseAnonKey,Authorization:'Bearer '+K.supabaseAnonKey,Prefer:'return=minimal'},
+        body:JSON.stringify(p)
+      }).then(function(r){return r.ok;}).catch(function(){return false;});
+    }
+    return new Promise(function(res){ setTimeout(function(){res(true);},700); });
+  }
+  btn.addEventListener('click',function(){
+    var nm=(nameEl&&nameEl.value||'').trim(), ph=(telEl&&telEl.value||'').trim();
+    if(!nm||!ph){ alert('Please enter your name and mobile number.'); (nm?telEl:nameEl).focus(); return; }
+    var svc=selEl&&selEl.value?selEl.value:'', body=(msgEl&&msgEl.value||'').trim();
+    var parts=[]; if(svc)parts.push('Service: '+svc); if(body)parts.push(body);
+    var K=window.__KDK||{};
+    var p={ website_id:K.websiteId||null, name:nm, phone:ph,
+      email:(mailEl&&mailEl.value||'').trim()||null, message:parts.join('\n')||null };
+    btn.disabled=true; btn.textContent='Sending…';
+    send(p).then(function(ok){
+      btn.textContent=ok?'Enquiry Sent!':'Please try again';
+      if(ok){ btn.style.background='linear-gradient(135deg,#0F6B45,#0F8B55)';
+        [nameEl,telEl,mailEl,msgEl].forEach(function(el){if(el)el.value='';}); if(selEl)selEl.selectedIndex=0; }
+      setTimeout(function(){ btn.disabled=false; btn.textContent=orig; btn.style.background=''; }, ok?3200:2200);
+    });
+  });
+})();
+</script>

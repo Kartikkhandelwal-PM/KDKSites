@@ -1307,8 +1307,41 @@ bootTestiZ();
 /* Form submit */
 function handleSubmit(e){
   e.preventDefault();
-  document.getElementById('formContent').style.display = 'none';
-  document.getElementById('formOk').style.display = 'block';
+  var form = document.getElementById('contactForm');
+  var btn  = form.querySelector('.btn-submit');
+  var nameEl = form.querySelector('.fi[type="text"]'),
+      telEl  = form.querySelector('.fi[type="tel"]'),
+      mailEl = form.querySelector('.fi[type="email"]'),
+      selEl  = form.querySelector('.fsel'),
+      msgEl  = form.querySelector('.fta');
+  var nm=(nameEl&&nameEl.value||'').trim(), ph=(telEl&&telEl.value||'').trim();
+  if(!nm||!ph){ alert('Please enter your name and mobile number.'); (nm?telEl:nameEl).focus(); return; }
+  var svc=selEl&&selEl.value?selEl.value:'', body=(msgEl&&msgEl.value||'').trim();
+  var parts=[]; if(svc)parts.push('Service: '+svc); if(body)parts.push(body);
+  var K=window.__KDK||{};
+  var payload={ website_id:K.websiteId||null, name:nm, phone:ph,
+    email:(mailEl&&mailEl.value||'').trim()||null, message:parts.join('\n')||null };
+  var orig=btn?btn.textContent:'';
+  if(btn){ btn.disabled=true; btn.textContent='Sending…'; }
+  function send(p){
+    if(K.supabaseUrl&&K.supabaseAnonKey&&K.websiteId){
+      return fetch(K.supabaseUrl.replace(/\/+$/,'')+'/rest/v1/wb_leads',{
+        method:'POST',
+        headers:{'Content-Type':'application/json',apikey:K.supabaseAnonKey,Authorization:'Bearer '+K.supabaseAnonKey,Prefer:'return=minimal'},
+        body:JSON.stringify(p)
+      }).then(function(r){return r.ok;}).catch(function(){return false;});
+    }
+    return new Promise(function(res){ setTimeout(function(){res(true);},700); });
+  }
+  send(payload).then(function(ok){
+    if(ok){
+      document.getElementById('formContent').style.display='none';
+      document.getElementById('formOk').style.display='block';
+    } else if(btn){
+      btn.disabled=false; btn.textContent=orig;
+      alert('Something went wrong. Please try again.');
+    }
+  });
 }
 
 /* Admin config */

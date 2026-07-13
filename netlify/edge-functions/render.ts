@@ -5,6 +5,10 @@
 // Netlify env vars required (Site settings -> Environment variables):
 //   SUPABASE_URL          e.g. https://hlhtopqbzfzlxxmolkok.supabase.co
 //   SUPABASE_SERVICE_KEY  the "service_role" key (Supabase -> Settings -> API)  [SECRET]
+//   SUPABASE_ANON_KEY     the "anon" public key — injected into the page so the
+//                         contact form can insert leads (RLS restricts anon to
+//                         inserting into wb_leads only). Optional: if unset, the
+//                         form still works but shows a confirmation without saving.
 
 export default async (request: Request) => {
   const url = new URL(request.url);
@@ -18,7 +22,7 @@ export default async (request: Request) => {
 
   // Look up the site (service key bypasses RLS)
   const q = `${SB_URL.replace(/\/+$/, "")}/rest/v1/wb_websites` +
-    `?subdomain=eq.${encodeURIComponent(subdomain)}&select=template,config,status&limit=1`;
+    `?subdomain=eq.${encodeURIComponent(subdomain)}&select=id,template,config,status&limit=1`;
   let rows: any[] = [];
   try {
     const r = await fetch(q, { headers: { apikey: SB_SERVICE, authorization: `Bearer ${SB_SERVICE}` } });
@@ -75,10 +79,23 @@ export default async (request: Request) => {
     html = html.replace(/<\/head>/i, `<title>${esc(titleText)}</title>${metaTags}</head>`);
   }
 
+  // Expose the anon key + this site's id so the contact form can insert leads
+  // straight into wb_leads (RLS lets anon insert leads only). Safe to embed: the
+  // anon key is a public key. Injected before applyConfig so it's ready early.
+  const kdk = {
+    supabaseUrl: SB_URL.replace(/\/+$/, ""),
+    supabaseAnonKey: Deno.env.get("SUPABASE_ANON_KEY") || "",
+    websiteId: site.id || null,
+    subdomain,
+  };
+  const kdkJson = JSON.stringify(kdk).replace(/</g, "\\u003c");
+  const kdkScript = `<script>window.__KDK=${kdkJson};</script>`;
+
   // Apply the saved config after the template's own script defines __applyConfig.
   const json = JSON.stringify(config).replace(/</g, "\\u003c");
   const apply = `<script>(function(){try{var c=${json};if(window.__applyConfig)window.__applyConfig(c);}catch(e){}})();</script>`;
-  html = html.includes("</body>") ? html.replace("</body>", apply + "</body>") : html + apply;
+  const tail = kdkScript + apply;
+  html = html.includes("</body>") ? html.replace("</body>", tail + "</body>") : html + tail;
 
   return new Response(html, {
     headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=60" },

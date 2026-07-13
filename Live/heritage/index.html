@@ -1602,35 +1602,60 @@ function bootTestiH() {
 }
 bootTestiH();
 
-/* ── 5. FORM SUBMIT ── */
+/* ── 5. FORM SUBMIT ──
+   Posts to Supabase (wb_leads) when window.__KDK credentials are present
+   (injected on the published site by the render function); otherwise falls
+   back to a visible confirmation so the form always responds. */
 (function () {
   var btn = document.getElementById('btnSub');
   if (!btn) return;
+  function send(p) {
+    var K = window.__KDK || {};
+    if (K.supabaseUrl && K.supabaseAnonKey && K.websiteId) {
+      return fetch(K.supabaseUrl.replace(/\/+$/, '') + '/rest/v1/wb_leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', apikey: K.supabaseAnonKey, Authorization: 'Bearer ' + K.supabaseAnonKey, Prefer: 'return=minimal' },
+        body: JSON.stringify(p)
+      }).then(function (r) { return r.ok; }).catch(function () { return false; });
+    }
+    return new Promise(function (res) { setTimeout(function () { res(true); }, 700); });
+  }
   btn.addEventListener('click', function () {
     var name  = document.getElementById('fname').value.trim();
     var phone = document.getElementById('ftel').value.trim();
     var area  = document.getElementById('farea').value;
+    var msg   = document.getElementById('fmsg').value.trim();
     if (!name || !phone) {
       alert('Please enter your name and mobile number.');
       return;
     }
+    var parts = []; if (area) parts.push('Matter: ' + area); if (msg) parts.push(msg);
+    var K = window.__KDK || {};
+    var payload = {
+      website_id: K.websiteId || null,
+      name: name,
+      phone: phone,
+      email: document.getElementById('femail').value.trim() || null,
+      message: parts.join('\n') || null
+    };
     btn.disabled = true;
     btn.textContent = 'Sending…';
-    /* Simulate API call — replace with real endpoint */
-    setTimeout(function () {
-      btn.textContent = 'Enquiry Sent!';
-      btn.style.background = 'linear-gradient(135deg,#2e7d32,#388e3c)';
+    send(payload).then(function (ok) {
+      btn.textContent = ok ? 'Enquiry Sent!' : 'Please try again';
+      if (ok) {
+        btn.style.background = 'linear-gradient(135deg,#2e7d32,#388e3c)';
+        document.getElementById('fname').value  = '';
+        document.getElementById('ftel').value   = '';
+        document.getElementById('femail').value = '';
+        document.getElementById('farea').value  = '';
+        document.getElementById('fmsg').value   = '';
+      }
       setTimeout(function () {
         btn.disabled = false;
         btn.textContent = 'Send Enquiry';
         btn.style.background = '';
-        document.getElementById('fname').value = '';
-        document.getElementById('ftel').value  = '';
-        document.getElementById('femail').value = '';
-        document.getElementById('farea').value  = '';
-        document.getElementById('fmsg').value   = '';
-      }, 3000);
-    }, 1200);
+      }, ok ? 3000 : 2200);
+    });
   });
 })();
 

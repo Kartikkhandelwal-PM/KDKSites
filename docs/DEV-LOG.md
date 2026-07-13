@@ -4,6 +4,29 @@
 
 ---
 
+## 2026-07-13 — Session 8 (enquiry form actually captures leads)
+
+### Session Summary
+Fixed the **"Send Enquiry" / contact form on published sites** — it did nothing usable before (apex/nova had no click handler at all, heritage only faked a success, zenith just swapped in a success panel without submitting). None of the four templates ever wrote to the `wb_leads` table that already existed. Now every template's contact form submits a real lead to Supabase when the page has credentials, with a graceful visible-confirmation fallback for static/preview contexts. Branch `feature/ai-website-writer`.
+
+### What Was Done
+- **`netlify/edge-functions/render.ts`** now injects `window.__KDK = { supabaseUrl, supabaseAnonKey, websiteId, subdomain }` into every published page (added `id` to the site lookup `select`, reads a new **`SUPABASE_ANON_KEY`** env var). The anon key is a public key and RLS (`wb_leads_insert_any`) restricts anon to inserting leads only.
+- **All four `Live/` templates** wired the contact form to `POST` to `…/rest/v1/wb_leads` (`{ website_id, name, phone, email, message }`, service/matter folded into `message`) when `window.__KDK` is present; otherwise they resolve to a visible "Enquiry Sent!" / success-panel confirmation so the form always responds. Name + mobile are validated before sending.
+  - apex/nova: added a self-contained enquiry IIFE (they had no handler).
+  - heritage: replaced the simulated `setTimeout` with the real submit (kept its animated button feedback).
+  - zenith: rewrote `handleSubmit()` to validate + submit, and only reveal `#formOk` on success.
+
+### Verified
+- Headless Chrome drove the fallback path on all four templates: valid submit → apex/nova/heritage show "Enquiry Sent!" and clear the fields; zenith reveals its success panel. Empty submit on apex → `alert()` fires and the button stays "Send Enquiry" (no send). All inline scripts parse clean.
+- **Not** exercised locally: the live Supabase insert path (needs a published `/s/<sub>` page with the env var set).
+
+### Blockers / Next Steps (user)
+- **Set `SUPABASE_ANON_KEY`** in Netlify env vars (Site settings → Environment variables) — same anon key that's in `app-config.js`. Without it, published forms still confirm to the visitor but do not save the lead.
+- After setting it, submit a test enquiry on a live `/s/<subdomain>` and confirm the row lands in `wb_leads` (owner can read it via RLS).
+- (Pre-existing) the in-form "Chat on WhatsApp" button on apex/nova has no `onclick` — only the floating WA button is wired. Out of scope here; note for later.
+
+---
+
 ## 2026-07-11 — Session 7 (Netlify live, real share URLs, draft persistence)
 
 ### Session Summary
