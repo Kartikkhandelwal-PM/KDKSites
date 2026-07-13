@@ -4,6 +4,25 @@
 
 ---
 
+## 2026-07-13 — Session 12 (Enquiries UI: table view + status dropdown)
+
+### Session Summary
+Per feedback that the master/detail layout still didn't look good, switched the Enquiries page to a **tabular view** and replaced the status pill/segmented buttons with a **dropdown `<select>`** per row. Kept the full-page shell, top bar, filter chips, search, export. Same data/RLS/PATCH. Branch `feature/ai-website-writer`.
+
+### What Was Done
+- **Table layout:** columns Lead (name + "via subdomain"), Contact (click-to-call / mailto links), Service (chip), **Status (colour-coded dropdown select)**, Received (full date+time, relative, and "updated" line), and an expand chevron. Sticky header, horizontal scroll on narrow screens, a "N leads" count strip.
+- **Status dropdown:** native `<select>` styled per status (blue/amber/purple/green/grey); `change` → optimistic recolour + PATCH; if the current filter no longer matches, the row animates out.
+- **Expandable detail row:** clicking a row (or the chevron) reveals a full-width panel with the full message + Call/WhatsApp/Email actions and the private-notes editor (Save → PATCH). Editing a note no longer collapses on status change because status updates the select in place.
+- Removed the master/detail markup, CSS, and helpers (side list, detail pane, segmented status buttons, avatars). Export CSV unchanged.
+
+### Verified
+- Headless Chrome (http, seeded session + stub): table renders 4 rows with 4 status selects; changing a row's status → `PATCH {"status":"converted"}`; expanding a row shows message + notes; saving a note → `PATCH {"notes":"…"}`; the Converted filter narrows to the converted rows. Screenshots (collapsed + expanded) confirm a clean tabular layout.
+
+### Blockers / Next Steps (user)
+- Unchanged: `supabase db push` (status/notes columns + update policy) and set `SUPABASE_ANON_KEY` in Netlify.
+
+---
+
 ## 2026-07-13 — Session 11 (Enquiries UI redesign: full-page master/detail)
 
 ### Session Summary

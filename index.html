@@ -2393,70 +2393,65 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closePrevi
     '.enq-tab-n{font-size:11px;font-weight:700;background:rgba(90,122,155,.13);color:inherit;border-radius:999px;padding:1px 7px;min-width:18px;text-align:center}',
     '.enq-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}',
     '.d-new{background:#3B82F6}.d-contacted{background:#D9930B}.d-in-progress{background:#8B5CF6}.d-converted{background:#12855A}.d-closed{background:#94A3B8}',
-    // main split
-    '.enq-main{flex:1;display:flex;min-height:0}',
-    '.enq-side{width:384px;flex-shrink:0;border-right:1px solid #E2E8F4;background:#fff;display:flex;flex-direction:column;min-height:0}',
-    '.enq-side-head{flex-shrink:0;padding:11px 18px;border-bottom:1px solid #EEF2F8;font-size:11.5px;font-weight:600;color:#7A8FA6;letter-spacing:.02em}',
-    '.enq-rows{flex:1;overflow-y:auto}',
-    '.enq-row{display:flex;gap:12px;padding:14px 18px;border-bottom:1px solid #F2F5FA;cursor:pointer;transition:background .12s}',
-    '.enq-row:hover{background:#F8FAFF}',
-    '.enq-row.sel{background:#EFF4FE;box-shadow:inset 3px 0 0 #1D4ED8}',
-    '.enq-av{width:40px;height:40px;flex-shrink:0;border-radius:50%;background:#EAF0FB;color:#1D4ED8;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}',
-    '.enq-rmain{flex:1;min-width:0}',
-    '.enq-rtop{display:flex;align-items:baseline;justify-content:space-between;gap:8px}',
-    '.enq-rname{font-size:14px;font-weight:700;color:#1A2B4A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
-    '.enq-rtime{font-size:11px;color:#94A3B8;flex-shrink:0;white-space:nowrap}',
-    '.enq-rsnip{font-size:12.5px;color:#5A7A9B;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
-    '.enq-rbadge{display:inline-block;margin-top:8px;font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:6px;border:1px solid}',
-    // status colours (badge + active status button)
+    // status colours (badge + status dropdown)
     '.st-new{color:#1D4ED8;background:#EAF0FB;border-color:#CFE0FA}',
     '.st-contacted{color:#8A5A00;background:#FDF3E2;border-color:#F0DBB4}',
     '.st-in-progress{color:#6D28D9;background:#F2ECFC;border-color:#DFCFF7}',
     '.st-converted{color:#0F6B45;background:#E7F3EE;border-color:#CFE7DC}',
     '.st-closed{color:#5A7A9B;background:#EEF2F7;border-color:#DCE4EF}',
-    // detail pane
-    '.enq-detail{flex:1;overflow-y:auto;padding:30px 34px;min-width:0}',
-    '.enq-dwrap{max-width:700px}',
-    '.enq-dback{display:none}',
-    '.enq-dhead{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}',
-    '.enq-dav{width:52px;height:52px;flex-shrink:0;border-radius:50%;background:#EAF0FB;color:#1D4ED8;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700}',
-    '.enq-dname{font-size:22px;font-weight:800;color:#0D1E35;letter-spacing:-.01em}',
-    '.enq-dtime{font-size:12.5px;color:#7A8FA6;margin-top:5px}',
-    '.enq-dsite{font-size:12px;color:#94A3B8;margin-top:2px}',
-    '.enq-dsite b{color:#5A7A9B;font-weight:600}',
-    '.enq-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#94A3B8;margin:0 0 9px}',
-    '.enq-statusbar{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 4px}',
-    '.enq-sbtn{padding:8px 14px;border-radius:9px;border:1px solid #E2E8F4;background:#fff;color:#5A7A9B;font:600 12.5px "Segoe UI",system-ui,sans-serif;cursor:pointer;transition:border-color .14s,background .14s,color .14s}',
-    '.enq-sbtn:hover{border-color:#CDD6E8;background:#F8FAFF}',
-    '.enq-sbtn.act{font-weight:700}',
-    '.enq-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}',
-    '.enq-abtn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:10px;border:1px solid #E2E8F4;background:#fff;color:#374E6A;font:600 13px "Segoe UI",system-ui,sans-serif;text-decoration:none;transition:border-color .15s,box-shadow .15s,color .15s}',
+    // main area (column: count strip + scrolling table)
+    '.enq-main{flex:1;display:flex;flex-direction:column;min-height:0}',
+    '.enq-tabletop{flex-shrink:0;padding:10px 22px;font-size:12px;font-weight:600;color:#7A8FA6;background:#fff;border-bottom:1px solid #EEF2F8}',
+    '.enq-tablewrap{flex:1;overflow:auto}',
+    '.enq-table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:760px}',
+    '.enq-table thead th{position:sticky;top:0;z-index:1;background:#F8FAFC;text-align:left;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#94A3B8;padding:11px 16px;border-bottom:1px solid #E2E8F4;white-space:nowrap}',
+    '.enq-tr{border-bottom:1px solid #EEF2F8;background:#fff;cursor:pointer;transition:background .12s}',
+    '.enq-tr:hover{background:#F8FAFF}',
+    '.enq-tr.open{background:#F4F8FF}',
+    '.enq-tr>td{padding:12px 16px;vertical-align:top}',
+    '.enq-lead-nm{font-weight:700;color:#1A2B4A;font-size:14px}',
+    '.enq-lead-sub{font-size:11px;color:#94A3B8;margin-top:2px}',
+    '.enq-clink{display:block;color:#374E6A;text-decoration:none;font-size:12.5px;white-space:nowrap}',
+    '.enq-clink+.enq-clink{margin-top:3px;color:#5A7A9B}',
+    '.enq-clink:hover{color:#1D4ED8;text-decoration:underline}',
+    '.enq-svc{display:inline-block;font-size:12px;font-weight:600;color:#0F6B45;background:#E7F3EE;border:1px solid #CFE7DC;padding:4px 10px;border-radius:7px}',
+    '.enq-status{font:700 12px "Segoe UI",system-ui,sans-serif;border-radius:8px;padding:6px 10px;border:1px solid;outline:none;cursor:pointer;max-width:150px}',
+    '.enq-td-date{white-space:nowrap;color:#374E6A;font-size:12.5px}',
+    '.enq-td-date .muted{color:#94A3B8;font-size:11px;margin-top:2px}',
+    '.enq-td-exp{text-align:right;width:44px}',
+    '.enq-expbtn{width:30px;height:30px;border-radius:8px;border:1px solid #E2E8F4;background:#fff;color:#7A8FA6;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:border-color .14s,color .14s,background .14s}',
+    '.enq-expbtn:hover{border-color:#1D4ED8;color:#1D4ED8}',
+    '.enq-expbtn svg{width:15px;height:15px;transition:transform .18s}',
+    '.enq-tr.open .enq-expbtn{background:#EAF0FB;border-color:#BFD4F7;color:#1D4ED8}',
+    '.enq-tr.open .enq-expbtn svg{transform:rotate(180deg)}',
+    // expanded detail row
+    '.enq-detailrow>td{padding:0;background:#F8FAFC;border-bottom:1px solid #EEF2F8}',
+    '.enq-expand{padding:18px 22px;display:grid;grid-template-columns:1fr 320px;gap:26px}',
+    '.enq-label{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#94A3B8;margin:0 0 9px}',
+    '.enq-msg{font-size:13.5px;line-height:1.6;color:#374E6A;white-space:pre-wrap;word-break:break-word;background:#fff;border:1px solid #EEF2F8;border-radius:11px;padding:13px 15px}',
+    '.enq-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}',
+    '.enq-abtn{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:9px;border:1px solid #E2E8F4;background:#fff;color:#374E6A;font:600 12.5px "Segoe UI",system-ui,sans-serif;text-decoration:none;transition:border-color .15s,box-shadow .15s,color .15s}',
     '.enq-abtn:hover{border-color:#1D4ED8;color:#1D4ED8;box-shadow:0 2px 10px rgba(29,78,216,.1)}',
     '.enq-abtn svg{width:15px;height:15px;color:#7A8FA6}',
     '.enq-abtn.wa{border-color:#CDEBD8;color:#0B7A44}.enq-abtn.wa svg{color:#25D366}',
     '.enq-abtn.wa:hover{border-color:#25D366;box-shadow:0 2px 10px rgba(37,211,102,.15)}',
-    '.enq-section{margin-top:24px}',
-    '.enq-svc{display:inline-block;font-size:12.5px;font-weight:700;color:#0F6B45;background:#E7F3EE;border:1px solid #CFE7DC;padding:5px 12px;border-radius:8px}',
-    '.enq-msg{font-size:14px;line-height:1.62;color:#374E6A;white-space:pre-wrap;word-break:break-word;background:#F8FAFC;border:1px solid #EEF2F8;border-radius:12px;padding:14px 16px}',
-    '.enq-note{width:100%;min-height:96px;resize:vertical;padding:12px 14px;border:1.5px solid #DDE5EF;border-radius:11px;font:400 13.5px "Segoe UI",system-ui,sans-serif;color:#374E6A;outline:none;background:#fff;box-sizing:border-box;transition:border-color .15s,box-shadow .15s}',
+    '.enq-note{width:100%;min-height:84px;resize:vertical;padding:11px 13px;border:1.5px solid #DDE5EF;border-radius:10px;font:400 13px "Segoe UI",system-ui,sans-serif;color:#374E6A;outline:none;background:#fff;box-sizing:border-box;transition:border-color .15s,box-shadow .15s}',
     '.enq-note:focus{border-color:#1D4ED8;box-shadow:0 0 0 3px rgba(29,78,216,.1)}',
-    '.enq-noteact{display:flex;align-items:center;gap:12px;margin-top:11px}',
-    '.enq-note-save{padding:9px 20px;border-radius:9px;border:none;background:#1D4ED8;color:#fff;font:600 13px "Segoe UI",system-ui,sans-serif;cursor:pointer;transition:background .15s}',
+    '.enq-noteact{margin-top:10px}',
+    '.enq-note-save{padding:8px 18px;border-radius:9px;border:none;background:#1D4ED8;color:#fff;font:600 12.5px "Segoe UI",system-ui,sans-serif;cursor:pointer;transition:background .15s}',
     '.enq-note-save:hover{background:#1842B8}',
     '.enq-note-save.ok{background:#0F6B45}',
     '.enq-note-save[disabled]{opacity:.6;cursor:default}',
-    '.enq-detail-empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#94A3B8;text-align:center;gap:10px}',
-    '.enq-detail-empty svg{width:32px;height:32px;opacity:.6}',
     // shared states
-    '.enq-state{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:320px;padding:30px;color:#7A8FA6}',
+    '.enq-state{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:340px;padding:30px;color:#7A8FA6}',
     '.enq-ic{width:60px;height:60px;border-radius:16px;background:#EAF0FB;display:flex;align-items:center;justify-content:center;margin-bottom:16px;color:#1D4ED8}',
     '.enq-ic svg{width:28px;height:28px}',
     '.enq-state h3{font-size:16px;font-weight:700;color:#1A2B4A;margin:0 0 6px}',
     '.enq-state p{font-size:13px;line-height:1.6;margin:0;max-width:360px}',
     '.enq-state .enq-ibtn{margin-top:16px;background:#1D4ED8;border-color:#1D4ED8}',
     '.enq-spin{width:34px;height:34px;border-radius:50%;border:3px solid #E2E8F0;border-top-color:#1D4ED8;animation:auSpin .8s linear infinite}',
-    // responsive: list becomes full width; detail slides over
-    '@media(max-width:820px){.enq-brand span{display:none}.enq-search{width:34vw}.enq-side{width:100%;border-right:none}.enq-detail{display:none}.enq-ov.show-detail .enq-side{display:none}.enq-ov.show-detail .enq-detail{display:block}.enq-detail{padding:20px 18px}.enq-ibtn span{display:none}.enq-dback{display:inline-flex;align-items:center;gap:7px;margin-bottom:16px;padding:7px 12px;border-radius:9px;border:1px solid #E2E8F4;background:#fff;color:#374E6A;font:600 12.5px "Segoe UI",system-ui,sans-serif;cursor:pointer}.enq-dback svg{width:14px;height:14px}}'
+    // responsive
+    '@media(max-width:820px){.enq-brand span{display:none}.enq-search{width:32vw}.enq-ibtn span{display:none}.enq-expand{grid-template-columns:1fr;gap:16px}}'
   ].join('');
   document.head.appendChild(css);
 
@@ -2690,7 +2685,8 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closePrevi
       mail:'<rect x="2.5" y="3.7" width="13" height="10.6" rx="1.6"/><path d="M3 4.7l6 4 6-4"/>',
       wa:'<path d="M15.4 8.9a6 6 0 01-8.7 5.4L3 15.4l1.1-3.6A6 6 0 1115.4 8.9z"/><path d="M6.6 6.4c.5 2.7 2.3 4.5 5 5"/>',
       search:'<circle cx="8" cy="8" r="5"/><path d="M15.5 15.5l-3.5-3.5"/>',
-      chevleft:'<path d="M11 4l-5 5 5 5"/>'
+      chevleft:'<path d="M11 4l-5 5 5 5"/>',
+      chevdown:'<path d="M4 7l5 5 5-5"/>'
     };
     return '<svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">'+(p[name]||'')+'</svg>';
   }
@@ -2727,21 +2723,24 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closePrevi
     enqOv.querySelector('#enqClose').onclick=closeEnquiries;
     enqOv.querySelector('#enqRefresh').onclick=function(){ loadEnquiries(true); };
     enqOv.querySelector('#enqExport').onclick=exportEnquiries;
-    enqOv.querySelector('#enqSearch').addEventListener('input',function(){ renderList(); enqEnsureSel(); renderDetail(); });
-    // delegated: the filter bar + main are re-rendered, so bind once to the root
+    enqOv.querySelector('#enqSearch').addEventListener('input',function(){ renderList(); });
+    // status is a <select> — listen for change on the container (rows re-render)
+    enqOv.addEventListener('change',function(e){
+      var t=e.target;
+      if(t && t.classList && t.classList.contains('enq-status')){ onStatusChange(t.getAttribute('data-id'), t.value, t); }
+    });
     enqOv.addEventListener('click',function(e){
       var tab=e.target.closest && e.target.closest('.enq-tab');
-      if(tab){ enqFilter=tab.getAttribute('data-f'); renderFilters(); renderList(); enqEnsureSel(); renderDetail(); return; }
-      var row=e.target.closest && e.target.closest('.enq-row');
-      if(row){ enqSelId=row.getAttribute('data-id'); markSelectedRow(); renderDetail(); enqOv.classList.add('show-detail'); return; }
-      var sbtn=e.target.closest && e.target.closest('.enq-sbtn');
-      if(sbtn){ onStatusChange(sbtn.getAttribute('data-id'), sbtn.getAttribute('data-status')); return; }
+      if(tab){ enqFilter=tab.getAttribute('data-f'); renderFilters(); renderList(); return; }
       var save=e.target.closest && e.target.closest('.enq-note-save');
       if(save){ onNoteSave(save.getAttribute('data-id'), save); return; }
-      var back=e.target.closest && e.target.closest('.enq-dback');
-      if(back){ enqOv.classList.remove('show-detail'); return; }
       var retry=e.target.closest && e.target.closest('#enqRetry');
       if(retry){ loadEnquiries(true); return; }
+      var exp=e.target.closest && e.target.closest('.enq-expbtn');
+      var tr=e.target.closest && e.target.closest('.enq-tr');
+      if(exp && tr){ toggleExpand(tr.getAttribute('data-id')); return; }
+      // a click anywhere else on the main row (not an input/link) toggles the detail
+      if(tr && !(e.target.closest && e.target.closest('select, a, button, textarea'))){ toggleExpand(tr.getAttribute('data-id')); return; }
     });
   }
 
@@ -2759,20 +2758,17 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closePrevi
       return true;
     });
   }
-  function enqEnsureSel(){
-    var vis=enqVisible();
-    if(!enqSelId || !vis.some(function(l){ return String(l.id)===String(enqSelId); })){ enqSelId = vis.length ? vis[0].id : null; }
-  }
   function renderEnquiries(){
     if(!enqOv) return;
     var fb=enqOv.querySelector('#enqFilters'), main=enqOv.querySelector('#enqMain');
     if(!enqData.length){ fb.style.display='none'; main.innerHTML=enqState('inbox','No enquiries yet','When a visitor submits the contact form on your published website, their enquiry appears here. Share your site link to start receiving leads.',false); return; }
     fb.style.display='';
     renderFilters();
-    main.innerHTML='<div class="enq-side"><div class="enq-side-head" id="enqSideHead"></div><div class="enq-rows" id="enqRows"></div></div>'+
-                   '<div class="enq-detail" id="enqDetail"></div>';
-    enqEnsureSel();
-    renderList(); renderDetail();
+    main.innerHTML='<div class="enq-tabletop" id="enqCount"></div>'+
+      '<div class="enq-tablewrap"><table class="enq-table"><thead><tr>'+
+        '<th>Lead</th><th>Contact</th><th>Service</th><th>Status</th><th>Received</th><th></th>'+
+      '</tr></thead><tbody id="enqTbody"></tbody></table></div>';
+    renderList();
   }
   function renderFilters(){
     var el=enqOv && enqOv.querySelector('#enqFilters'); if(!el) return;
@@ -2786,59 +2782,50 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closePrevi
     }).join('');
   }
   function rowHtml(l){
-    var sp=enqSplit(l.message); var snip=sp.svc||sp.msg||'No message'; var st=l.status||'new';
-    return '<div class="enq-row'+(String(l.id)===String(enqSelId)?' sel':'')+'" data-id="'+esc(l.id)+'">'+
-      '<div class="enq-av">'+esc(enqInitials(l.name))+'</div>'+
-      '<div class="enq-rmain">'+
-        '<div class="enq-rtop"><span class="enq-rname">'+esc(l.name||'Someone')+'</span><span class="enq-rtime">'+esc(enqTimeAgo(l.created_at))+'</span></div>'+
-        '<div class="enq-rsnip">'+esc(snip)+'</div>'+
-        '<span class="enq-rbadge '+enqStatusCls(st)+'">'+esc(enqStatusLabel(st))+'</span>'+
-      '</div></div>';
-  }
-  function renderList(){
-    var rows=enqOv && enqOv.querySelector('#enqRows'); if(!rows) return;
-    var list=enqVisible();
-    var head=enqOv.querySelector('#enqSideHead');
-    if(head){ var q=enqQuery(); head.textContent = list.length+(list.length===1?' lead':' leads')+((q||enqFilter!=='all')?' shown':''); }
-    if(!list.length){ rows.innerHTML=enqState('search','Nothing to show','No leads match this filter or search.',false); return; }
-    rows.innerHTML=list.map(rowHtml).join('');
-  }
-  function markSelectedRow(){
-    if(!enqOv) return;
-    Array.prototype.forEach.call(enqOv.querySelectorAll('.enq-row'),function(r){ r.classList.toggle('sel', String(r.getAttribute('data-id'))===String(enqSelId)); });
-  }
-  function renderDetail(){
-    var d=enqOv && enqOv.querySelector('#enqDetail'); if(!d) return;
-    var l=enqFind(enqSelId);
-    if(!l){ d.innerHTML='<div class="enq-detail-empty">'+enqIcon('inbox')+'<p>Select a lead to see the details.</p></div>'; return; }
-    var sp=enqSplit(l.message);
+    var sp=enqSplit(l.message); var st=l.status||'new';
     var phone=String(l.phone||'').trim(), digits=phone.replace(/\D/g,''), email=String(l.email||'').trim();
-    var st=l.status||'new';
+    var opts=ENQ_STATUSES.map(function(s){ return '<option value="'+s.k+'"'+(s.k===st?' selected':'')+'>'+s.label+'</option>'; }).join('');
+    var contact='';
+    if(phone) contact+='<a class="enq-clink" href="tel:'+esc(phone)+'">'+esc(phone)+'</a>';
+    if(email) contact+='<a class="enq-clink" href="mailto:'+esc(email)+'">'+esc(email)+'</a>';
+    if(!contact) contact='<span class="enq-clink" style="color:#B4C0D3">No contact</span>';
     var acts='';
     if(phone) acts+='<a class="enq-abtn" href="tel:'+esc(phone)+'">'+enqIcon('phone')+esc(phone)+'</a>';
     if(digits.length>=8) acts+='<a class="enq-abtn wa" href="https://wa.me/'+esc(digits)+'" target="_blank" rel="noopener">'+enqIcon('wa')+'WhatsApp</a>';
     if(email) acts+='<a class="enq-abtn" href="mailto:'+esc(email)+'">'+enqIcon('mail')+esc(email)+'</a>';
-    var sbtns=ENQ_STATUSES.map(function(s){ return '<button class="enq-sbtn'+(s.k===st?' act '+enqStatusCls(st):'')+'" data-id="'+esc(l.id)+'" data-status="'+s.k+'">'+esc(s.label)+'</button>'; }).join('');
     var cAt=Date.parse(l.created_at||'')||0, uAt=Date.parse(l.updated_at||'')||0;
-    var updated=(uAt && uAt-cAt>60000)?' &middot; updated '+esc(enqTimeAgo(l.updated_at)):'';
-    d.innerHTML='<div class="enq-dwrap">'+
-      '<button class="enq-dback">'+enqIcon('chevleft')+'Back to list</button>'+
-      '<div class="enq-dhead"><div style="display:flex;gap:14px;align-items:center;min-width:0">'+
-        '<div class="enq-dav">'+esc(enqInitials(l.name))+'</div>'+
-        '<div style="min-width:0"><div class="enq-dname">'+esc(l.name||'Someone')+'</div>'+
-          '<div class="enq-dtime">'+esc(enqFullDate(l.created_at))+updated+'</div>'+
-          (l._site?'<div class="enq-dsite">Received via <b>'+esc(l._site)+'</b></div>':'')+
-        '</div></div>'+
-      '</div>'+
-      '<div class="enq-section" style="margin-top:20px"><div class="enq-label">Status</div><div class="enq-statusbar" style="margin:0">'+sbtns+'</div></div>'+
-      (acts?'<div class="enq-section"><div class="enq-label">Contact</div><div class="enq-actions" style="margin-top:0">'+acts+'</div></div>':'')+
-      (sp.svc?'<div class="enq-section"><div class="enq-label">Service requested</div><span class="enq-svc">'+esc(sp.svc)+'</span></div>':'')+
-      '<div class="enq-section"><div class="enq-label">Message</div>'+(sp.msg?'<div class="enq-msg">'+esc(sp.msg)+'</div>':'<div class="enq-msg" style="color:#94A3B8">No message left.</div>')+'</div>'+
-      '<div class="enq-section"><div class="enq-label">Private notes</div>'+
-        '<textarea class="enq-note" data-id="'+esc(l.id)+'" placeholder="Add a private note — only you can see this…">'+esc(l.notes||'')+'</textarea>'+
+    var updated=(uAt && uAt-cAt>60000)?'<div class="muted">updated '+esc(enqTimeAgo(l.updated_at))+'</div>':'';
+    var main='<tr class="enq-tr" data-id="'+esc(l.id)+'">'+
+      '<td><div class="enq-lead-nm">'+esc(l.name||'Someone')+'</div>'+(l._site?'<div class="enq-lead-sub">via '+esc(l._site)+'</div>':'')+'</td>'+
+      '<td>'+contact+'</td>'+
+      '<td>'+(sp.svc?'<span class="enq-svc">'+esc(sp.svc)+'</span>':'<span style="color:#B4C0D3">None</span>')+'</td>'+
+      '<td><select class="enq-status '+enqStatusCls(st)+'" data-id="'+esc(l.id)+'" aria-label="Status">'+opts+'</select></td>'+
+      '<td class="enq-td-date"><div>'+esc(enqFullDate(l.created_at))+'</div><div class="muted">'+esc(enqTimeAgo(l.created_at))+'</div>'+updated+'</td>'+
+      '<td class="enq-td-exp"><button class="enq-expbtn" aria-label="Show message and notes">'+enqIcon('chevdown')+'</button></td>'+
+    '</tr>';
+    var detail='<tr class="enq-detailrow" data-for="'+esc(l.id)+'" hidden><td colspan="6"><div class="enq-expand">'+
+      '<div><div class="enq-label">Message</div>'+(sp.msg?'<div class="enq-msg">'+esc(sp.msg)+'</div>':'<div class="enq-msg" style="color:#94A3B8">No message left.</div>')+
+        (acts?'<div class="enq-actions">'+acts+'</div>':'')+'</div>'+
+      '<div><div class="enq-label">Private notes</div>'+
+        '<textarea class="enq-note" data-id="'+esc(l.id)+'" placeholder="Add a private note, only you can see this…">'+esc(l.notes||'')+'</textarea>'+
         '<div class="enq-noteact"><button class="enq-note-save" data-id="'+esc(l.id)+'">Save note</button></div>'+
       '</div>'+
-    '</div>';
+    '</div></td></tr>';
+    return main+detail;
+  }
+  function renderList(){
+    var tb=enqOv && enqOv.querySelector('#enqTbody'); if(!tb) return;
+    var list=enqVisible(), q=enqQuery();
+    var countEl=enqOv.querySelector('#enqCount');
+    if(countEl) countEl.textContent=(q||enqFilter!=='all')?(list.length+' of '+enqData.length+' leads'):(enqData.length+(enqData.length===1?' lead':' leads'));
+    if(!list.length){ tb.innerHTML='<tr><td colspan="6">'+enqState('search','Nothing to show','No leads match this filter or search. Try clearing the search or picking a different tab.',false)+'</td></tr>'; return; }
+    tb.innerHTML=list.map(rowHtml).join('');
+  }
+  function toggleExpand(id){
+    var tr=enqOv.querySelector('.enq-tr[data-id="'+id+'"]'), dr=enqOv.querySelector('.enq-detailrow[data-for="'+id+'"]');
+    if(!tr||!dr) return;
+    if(dr.hasAttribute('hidden')){ dr.removeAttribute('hidden'); tr.classList.add('open'); }
+    else { dr.setAttribute('hidden',''); tr.classList.remove('open'); }
   }
   function patchLead(id,patch,cb){
     var sess=getSession();
@@ -2847,27 +2834,24 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closePrevi
       {method:'PATCH',headers:{Authorization:'Bearer '+sess.access_token,Prefer:'return=minimal'},body:JSON.stringify(patch)})
       .then(function(res){ cb&&cb(res.ok); }).catch(function(){ cb&&cb(false); });
   }
-  function onStatusChange(id,val){
+  function onStatusChange(id,val,sel){
     var item=enqFind(id); if(!item) return;
     var prev=item.status||'new';
     if(val===prev) return;
     item.status=val; item.updated_at=new Date().toISOString();
-    // detail: update the status buttons + time in place (keeps any unsaved note text)
-    var d=enqOv.querySelector('#enqDetail');
-    if(d && String(enqSelId)===String(id)){
-      Array.prototype.forEach.call(d.querySelectorAll('.enq-sbtn'),function(b){ var k=b.getAttribute('data-status'); b.className='enq-sbtn'+(k===val?' act '+enqStatusCls(val):''); });
-      var tEl=d.querySelector('.enq-dtime'); if(tEl) tEl.innerHTML=esc(enqFullDate(item.created_at))+' &middot; updated just now';
-    }
-    // side list: update the badge
-    var row=enqOv.querySelector('.enq-row[data-id="'+id+'"]');
-    if(row){ var bd=row.querySelector('.enq-rbadge'); if(bd){ bd.className='enq-rbadge '+enqStatusCls(val); bd.textContent=enqStatusLabel(val); } }
+    if(sel) sel.className='enq-status '+enqStatusCls(val);
     renderFilters();
-    if(enqFilter!=='all' && enqFilter!==val && row){ row.style.transition='opacity .18s'; row.style.opacity='0'; setTimeout(function(){ renderList(); },190); }
-    patchLead(id,{status:val},function(ok){ if(!ok){ item.status=prev; renderFilters(); renderList(); if(String(enqSelId)===String(id)) renderDetail(); if(window.toast) window.toast('Could not update status. Please try again.'); } });
+    if(enqFilter!=='all' && enqFilter!==val){
+      var tr=enqOv.querySelector('.enq-tr[data-id="'+id+'"]'), dr=enqOv.querySelector('.enq-detailrow[data-for="'+id+'"]');
+      if(dr) dr.setAttribute('hidden','');
+      if(tr){ tr.style.transition='opacity .18s'; tr.style.opacity='0'; }
+      setTimeout(function(){ renderList(); },190);
+    }
+    patchLead(id,{status:val},function(ok){ if(!ok){ item.status=prev; renderFilters(); renderList(); if(window.toast) window.toast('Could not update status. Please try again.'); } });
   }
   function onNoteSave(id,btn){
     var item=enqFind(id); if(!item) return;
-    var d=enqOv.querySelector('#enqDetail'); var ta=d && d.querySelector('.enq-note');
+    var dr=enqOv.querySelector('.enq-detailrow[data-for="'+id+'"]'); var ta=dr && dr.querySelector('.enq-note');
     var val=((ta&&ta.value)||'').trim();
     item.notes=val; item.updated_at=new Date().toISOString();
     btn.disabled=true; btn.textContent='Saving…'; btn.classList.remove('ok');
@@ -2890,7 +2874,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closePrevi
       if(!res.ok){ main.innerHTML=enqState('x','Could not load enquiries','The server returned an error ('+res.status+'). Please try again.',true,'err'); return; }
       var rows=Array.isArray(res.body)?res.body:[];
       enqData=rows.map(function(r){ var w=r.wb_websites; r._site=(w&&(w.subdomain||(w[0]&&w[0].subdomain)))||''; return r; });
-      enqLoaded=true; enqSelId=null; renderEnquiries();
+      enqLoaded=true; renderEnquiries();
     }).catch(function(){ main.innerHTML=enqState('x','Network error','Could not reach the server. Check your connection and try again.',true,'err'); });
   }
   function exportEnquiries(){
