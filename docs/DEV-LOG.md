@@ -4,6 +4,29 @@
 
 ---
 
+## 2026-07-13 — Session 10 (Enquiries: status, notes, date/time)
+
+### Session Summary
+Made the Enquiries inbox a real lead-management view. Each lead now has a **status** the owner can change (New / Contacted / In Progress / Converted / Closed), a **private note** field, and a clear **date + time**. Added status **filter tabs** with counts. Requires a small DB migration. Branch `feature/ai-website-writer`.
+
+### What Was Done
+- **Migration `20260713090000_lead_status_notes.sql`:** adds `status` (default `new`, checked enum), `notes`, and `updated_at` to `wb_leads`; adds the `trg_wb_leads_touch` trigger (reusing `wb_touch_updated_at`); adds RLS policy **`wb_leads_update_owner`** so an owner can UPDATE their own leads (insert stays public, select stays owner-only). **Must be applied: `supabase db push`.**
+- **Status:** each card has a colour-coded `<select>` pill (blue/amber/purple/green/grey). Changing it optimistically updates the pill + counts and `PATCH`es `{status}` to Supabase; on failure it reverts. If a filter is active and the lead no longer matches, the card animates out.
+- **Notes:** an inline note box per card with a Save button (`PATCH {notes}`), shows "Saved"; note text is searchable and included in CSV.
+- **Date/time:** full localized date + time plus relative "x ago"; an "Updated x ago" chip appears when the lead was edited after creation.
+- **Filter tabs:** All + one per status, each with a live count; combine with search. Empty/error/no-match states retained.
+- **CSV export** now includes Status, Notes, and Last-updated columns.
+- Fetch now selects `status,notes,updated_at`; leads with no status fall back to `new` in the UI.
+
+### Verified
+- Headless Chrome over `http://` with seeded session + stubbed Supabase: 6 tabs with correct counts (All 2 / New 1 / Contacted 1 / …), status select reflects value, full date/time renders. Changing a status sends `PATCH {"status":"converted"}`; saving a note sends `PATCH {"notes":"…"}`; filtering by Contacted after re-statusing correctly narrows the list to the matching lead.
+
+### Blockers / Next Steps (user)
+- **Apply the migration:** `supabase db push` (project `hlhtopqbzfzlxxmolkok`). Status/notes editing will error until the columns + update policy exist.
+- Still pending from Session 8: set `SUPABASE_ANON_KEY` in Netlify so the public form actually writes leads.
+
+---
+
 ## 2026-07-13 — Session 9 (Enquiries inbox in the builder)
 
 ### Session Summary
