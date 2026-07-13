@@ -4,6 +4,31 @@
 
 ---
 
+## 2026-07-13 — Session 13 (Enquiries table: Jira-style grid, filters, pagination, Excel)
+
+### Session Summary
+Iterated the Enquiries page into a polished Jira "List"-style table based on live feedback. All in `index.html` (the auth IIFE's enquiries module + its injected CSS). No backend change. Branch `feature/ai-website-writer`.
+
+### What Was Done
+- **Jira-style grid** in a rounded card: column-header icons, vertical + horizontal gridlines, zebra-free clean rows, checkbox column with select-all (+ indeterminate).
+- **Light header** (was dark, clashed) merged into a single bar: Back button (replaces ✕), title, search, Export. Removed the top count, the "Show" status dropdown, and the Refresh button.
+- **Columns:** Lead (name + phone + email), **Enquiry** (bold service + message, 2-line clamp, click to expand), **Status** (uppercase colour lozenge `<select>`), **Received** (single date chip), **Notes** (text with pencil; click to edit inline, saves on blur), **Actions** (brand-coloured call/WhatsApp/email icons).
+- **Column filter:** funnel on the Status header opens a menu to filter by status (highlights when active).
+- **Sorting:** click the Received header to toggle newest↔oldest (arrow indicator).
+- **Pagination + count in the footer:** "Showing X to Y of Z", Prev / Page n of m / Next (10/page).
+- **Bulk actions:** selecting rows shows a contextual blue bulk bar (Mark as / Export selected / Clear); also, changing any one selected row's status applies to all selected.
+- **Excel export:** replaced CSV with a styled HTML `.xls` — navy header, borders, zebra rows, colour-coded status cells, and a **frozen header row**.
+- **Reload persistence:** the page persists across refresh via `#enquiries` in the URL; a pre-paint cover (`html.enq-boot::before`) prevents the builder from flashing before the overlay reopens.
+
+### Verified
+- Headless Chrome throughout (seeded session + stubbed Supabase): status/notes PATCH, column filter, date sort (desc→asc), pagination (page 2 of 14), bulk status on selected rows, and reload-with-hash reopening the page. Screenshots confirmed the layout.
+
+### Blockers / Next Steps (user)
+- Unchanged: `supabase db push` (status/notes columns + update policy) and set `SUPABASE_ANON_KEY` in Netlify for live data.
+- **Going live:** this is on `feature/ai-website-writer`; merge to `main` (GitHub Pages) or point the host at the branch.
+
+---
+
 ## 2026-07-13 — Session 12 (Enquiries UI: table view + status dropdown)
 
 ### Session Summary

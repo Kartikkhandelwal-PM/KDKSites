@@ -6,7 +6,7 @@
 /* Returning users must never see the splash flash. Decide BEFORE the splash is
    parsed/painted: if a saved session exists, mark <html> so CSS hides the
    splash from the very first frame. The auth boot script confirms the session. */
-try{ var _ks=localStorage.getItem('kdk_auth'); if(_ks && JSON.parse(_ks).access_token){ document.documentElement.className+=' has-session'; } }catch(e){}
+try{ var _ks=localStorage.getItem('kdk_auth'); if(_ks && JSON.parse(_ks).access_token){ var _c=' has-session'; if((location.hash||'').slice(1)==='enquiries') _c+=' enq-boot'; document.documentElement.className+=_c; } }catch(e){}
 </script>
 <style>
 html.has-session .splash{display:none!important}
@@ -37,6 +37,9 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#F4F6F
   --g6:linear-gradient(135deg,#C4830A,#E09B20);
   --g7:linear-gradient(135deg,#0D9488,#14B8A6);
 }
+/* On reload while on the Enquiries page, cover the builder instantly so it
+   doesn't flash before the Enquiries overlay opens. Removed once it opens. */
+html.enq-boot::before{content:"";position:fixed;inset:0;background:#F4F6FC;z-index:2199}
 
 /* HEADER */
 .hdr{height:58px;background:var(--surface);display:flex;align-items:center;padding:0 20px;gap:16px;flex-shrink:0;border-bottom:1px solid var(--border);position:relative;z-index:50;box-shadow:var(--sh-s)}
@@ -2370,78 +2373,111 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closePrevi
     '.enq-ov.open{display:flex;animation:enqFade .16s ease}',
     '.enq-open .aiw-fab{display:none !important}',
     '@keyframes enqFade{from{opacity:0}to{opacity:1}}',
-    // top bar
-    '.enq-topbar{flex-shrink:0;height:60px;display:flex;align-items:center;gap:14px;padding:0 20px;background:#0D1E35;color:#fff}',
-    '.enq-back{width:36px;height:36px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:9px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#fff;cursor:pointer;transition:background .15s}',
-    '.enq-back:hover{background:rgba(255,255,255,.16)}',
-    '.enq-back svg{width:16px;height:16px}',
-    '.enq-brand{display:flex;flex-direction:column;line-height:1.2;margin-right:auto;min-width:0}',
-    '.enq-brand b{font-size:15px;font-weight:800;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}',
-    '.enq-brand b svg{width:17px;height:17px;color:#E6A62A}',
-    '.enq-brand span{font-size:11px;color:rgba(255,255,255,.55)}',
-    '.enq-search{width:min(320px,38vw);padding:9px 13px;border:1px solid rgba(255,255,255,.16);border-radius:9px;font:400 13px "Segoe UI",system-ui,sans-serif;color:#fff;outline:none;background:rgba(255,255,255,.08);transition:border-color .15s,background .15s}',
-    '.enq-search::placeholder{color:rgba(255,255,255,.5)}',
-    '.enq-search:focus{border-color:#3B82F6;background:rgba(255,255,255,.14)}',
-    '.enq-ibtn{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:9px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:#fff;font:600 12.5px "Segoe UI",system-ui,sans-serif;cursor:pointer;transition:background .15s;flex-shrink:0}',
-    '.enq-ibtn:hover{background:rgba(255,255,255,.16)}',
-    '.enq-ibtn svg{width:14px;height:14px}',
-    // filter bar (status chips with dots + counts)
-    '.enq-filterbar{flex-shrink:0;display:flex;align-items:center;gap:8px;padding:12px 20px;background:#fff;border-bottom:1px solid #E2E8F4;overflow-x:auto}',
-    '.enq-tab{flex-shrink:0;display:inline-flex;align-items:center;gap:8px;padding:7px 13px;border-radius:10px;border:1px solid #E2E8F4;background:#fff;color:#5A7A9B;font:600 12.5px "Segoe UI",system-ui,sans-serif;cursor:pointer;transition:border-color .15s,background .15s,color .15s}',
-    '.enq-tab:hover{border-color:#CDD6E8;background:#F8FAFF}',
-    '.enq-tab.act{background:#EAF0FB;color:#1D4ED8;border-color:#BFD4F7}',
-    '.enq-tab-n{font-size:11px;font-weight:700;background:rgba(90,122,155,.13);color:inherit;border-radius:999px;padding:1px 7px;min-width:18px;text-align:center}',
-    '.enq-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}',
-    '.d-new{background:#3B82F6}.d-contacted{background:#D9930B}.d-in-progress{background:#8B5CF6}.d-converted{background:#12855A}.d-closed{background:#94A3B8}',
-    // status colours (badge + status dropdown)
+    // top bar (light, to sit cleanly above the grid)
+    '.enq-topbar{flex-shrink:0;height:62px;display:flex;align-items:center;gap:14px;padding:0 22px;background:#fff;border-bottom:1px solid #E4E9F2}',
+    '.enq-back{height:36px;flex-shrink:0;display:inline-flex;align-items:center;gap:5px;padding:0 14px 0 10px;border-radius:9px;border:1px solid #DFE4EE;background:#fff;color:#42526E;font:600 13px "Segoe UI",system-ui,sans-serif;cursor:pointer;transition:background .15s,border-color .15s}',
+    '.enq-back:hover{background:#F4F6FC;border-color:#CDD6E8}',
+    '.enq-back svg{width:17px;height:17px;color:#7A8FA6}',
+    '.enq-brand{display:flex;flex-direction:column;line-height:1.25;margin-right:auto;min-width:0;padding-left:16px;border-left:1px solid #E8ECF3}',
+    '.enq-brand b{font-size:15.5px;font-weight:800;letter-spacing:-.01em;color:#172B4D;display:flex;align-items:center;gap:8px}',
+    '.enq-brand b svg{width:17px;height:17px;color:#C4830A}',
+    '.enq-brand span{font-size:11.5px;color:#7A8FA6;margin-top:1px}',
+    '.enq-search{width:min(340px,36vw);padding:9px 13px;border:1px solid #DDE5EF;border-radius:9px;font:400 13px "Segoe UI",system-ui,sans-serif;color:#172B4D;outline:none;background:#F7F9FC;transition:border-color .15s,background .15s,box-shadow .15s}',
+    '.enq-search::placeholder{color:#9AA7BD}',
+    '.enq-search:focus{border-color:#1D4ED8;background:#fff;box-shadow:0 0 0 3px rgba(29,78,216,.1)}',
+    '.enq-ibtn{display:inline-flex;align-items:center;gap:6px;padding:9px 13px;border-radius:9px;border:1px solid #DDE5EF;background:#fff;color:#42526E;font:600 12.5px "Segoe UI",system-ui,sans-serif;cursor:pointer;transition:background .15s,border-color .15s;flex-shrink:0}',
+    '.enq-ibtn:hover{background:#F4F6FC;border-color:#CDD6E8}',
+    '.enq-ibtn svg{width:15px;height:15px;color:#7A8FA6}',
+    '.enq-ibtn.primary{background:#1D4ED8;border-color:#1D4ED8;color:#fff}',
+    '.enq-ibtn.primary:hover{background:#1842B8;border-color:#1842B8}',
+    '.enq-ibtn.primary svg{color:#fff}',
+    // status colours (used by the per-row status dropdown)
     '.st-new{color:#1D4ED8;background:#EAF0FB;border-color:#CFE0FA}',
     '.st-contacted{color:#8A5A00;background:#FDF3E2;border-color:#F0DBB4}',
     '.st-in-progress{color:#6D28D9;background:#F2ECFC;border-color:#DFCFF7}',
     '.st-converted{color:#0F6B45;background:#E7F3EE;border-color:#CFE7DC}',
     '.st-closed{color:#5A7A9B;background:#EEF2F7;border-color:#DCE4EF}',
-    // main area (column: count strip + scrolling table)
+    // contextual bulk-action bar (only visible when rows are selected)
+    '.enq-bulkbar{flex-shrink:0;display:flex;align-items:center;gap:12px;padding:10px 22px;background:#EAF0FB;border-bottom:1px solid #CFE0FA}',
+    '.enq-bulkbar[hidden]{display:none}',
+    '.enq-bulk-n{font-size:12.5px;font-weight:700;color:#1D4ED8;margin-right:auto}',
+    '.enq-filter{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:#94A3B8}',
+    '.enq-filter.blue{color:#3557A8}',
+    '.enq-filter select{font:600 12.5px "Segoe UI",system-ui,sans-serif;color:#1A2B4A;border:1px solid #C7D6F0;border-radius:9px;padding:7px 11px;background:#fff;outline:none;cursor:pointer}',
+    '.enq-filter select:focus{border-color:#1D4ED8}',
+    '.enq-bulk-btn{padding:7px 13px;border-radius:9px;border:1px solid #1D4ED8;background:#1D4ED8;color:#fff;font:600 12px "Segoe UI",system-ui,sans-serif;cursor:pointer;transition:background .15s}',
+    '.enq-bulk-btn:hover{background:#1842B8}',
+    '.enq-bulk-btn.ghost{background:#fff;color:#5A7A9B;border-color:#C7D6F0}',
+    '.enq-bulk-btn.ghost:hover{background:#F4F6FC;color:#1A2B4A}',
+    // column filter (funnel in the Status header + its dropdown menu)
+    '.enq-colfilter{margin-left:6px;width:22px;height:22px;padding:0;border:none;background:transparent;color:#B4C0D3;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;vertical-align:middle}',
+    '.enq-colfilter:hover{background:#EDF1F7;color:#5E6C84}',
+    '.enq-colfilter svg{width:13px;height:13px}',
+    '.enq-colfilter.on{color:#1D4ED8;background:#EAF0FB}',
+    '.enq-colmenu{position:fixed;z-index:2300;width:196px;background:#fff;border:1px solid #E2E8F4;border-radius:12px;box-shadow:0 16px 40px rgba(26,43,74,.18);padding:6px}',
+    '.enq-colmenu-item{display:flex;align-items:center;gap:9px;width:100%;text-align:left;padding:8px 10px;border:none;background:transparent;border-radius:8px;font:600 12.5px "Segoe UI",system-ui,sans-serif;color:#374E6A;cursor:pointer}',
+    '.enq-colmenu-item:hover{background:#F4F6FC}',
+    '.enq-colmenu-item.act{background:#EAF0FB;color:#1D4ED8}',
+    '.enq-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}',
+    '.d-new{background:#3B82F6}.d-contacted{background:#D9930B}.d-in-progress{background:#8B5CF6}.d-converted{background:#12855A}.d-closed{background:#94A3B8}',
+    // footer: count + pagination
+    '.enq-foot{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 24px;background:#fff;border-top:1px solid #E4E9F2}',
+    '.enq-foot-info{font-size:12.5px;color:#7A8FA6;font-weight:600}',
+    '.enq-pager{display:flex;align-items:center;gap:10px}',
+    '.enq-pg{display:inline-flex;align-items:center;gap:4px;padding:7px 12px;border-radius:9px;border:1px solid #DDE5EF;background:#fff;color:#42526E;font:600 12.5px "Segoe UI",system-ui,sans-serif;cursor:pointer;transition:background .15s,border-color .15s}',
+    '.enq-pg:hover{background:#F4F6FC;border-color:#CDD6E8}',
+    '.enq-pg[disabled]{opacity:.45;cursor:default}',
+    '.enq-pg svg{width:14px;height:14px;color:#7A8FA6}',
+    '.enq-pg-n{font-size:12px;color:#5E6C84;font-weight:600;min-width:96px;text-align:center}',
+    // table — Jira "List" style grid inside a rounded card
     '.enq-main{flex:1;display:flex;flex-direction:column;min-height:0}',
-    '.enq-tabletop{flex-shrink:0;padding:10px 22px;font-size:12px;font-weight:600;color:#7A8FA6;background:#fff;border-bottom:1px solid #EEF2F8}',
-    '.enq-tablewrap{flex:1;overflow:auto}',
-    '.enq-table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:760px}',
-    '.enq-table thead th{position:sticky;top:0;z-index:1;background:#F8FAFC;text-align:left;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#94A3B8;padding:11px 16px;border-bottom:1px solid #E2E8F4;white-space:nowrap}',
-    '.enq-tr{border-bottom:1px solid #EEF2F8;background:#fff;cursor:pointer;transition:background .12s}',
-    '.enq-tr:hover{background:#F8FAFF}',
-    '.enq-tr.open{background:#F4F8FF}',
-    '.enq-tr>td{padding:12px 16px;vertical-align:top}',
-    '.enq-lead-nm{font-weight:700;color:#1A2B4A;font-size:14px}',
-    '.enq-lead-sub{font-size:11px;color:#94A3B8;margin-top:2px}',
-    '.enq-clink{display:block;color:#374E6A;text-decoration:none;font-size:12.5px;white-space:nowrap}',
-    '.enq-clink+.enq-clink{margin-top:3px;color:#5A7A9B}',
-    '.enq-clink:hover{color:#1D4ED8;text-decoration:underline}',
-    '.enq-svc{display:inline-block;font-size:12px;font-weight:600;color:#0F6B45;background:#E7F3EE;border:1px solid #CFE7DC;padding:4px 10px;border-radius:7px}',
-    '.enq-status{font:700 12px "Segoe UI",system-ui,sans-serif;border-radius:8px;padding:6px 10px;border:1px solid;outline:none;cursor:pointer;max-width:150px}',
-    '.enq-td-date{white-space:nowrap;color:#374E6A;font-size:12.5px}',
-    '.enq-td-date .muted{color:#94A3B8;font-size:11px;margin-top:2px}',
-    '.enq-td-exp{text-align:right;width:44px}',
-    '.enq-expbtn{width:30px;height:30px;border-radius:8px;border:1px solid #E2E8F4;background:#fff;color:#7A8FA6;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:border-color .14s,color .14s,background .14s}',
-    '.enq-expbtn:hover{border-color:#1D4ED8;color:#1D4ED8}',
-    '.enq-expbtn svg{width:15px;height:15px;transition:transform .18s}',
-    '.enq-tr.open .enq-expbtn{background:#EAF0FB;border-color:#BFD4F7;color:#1D4ED8}',
-    '.enq-tr.open .enq-expbtn svg{transform:rotate(180deg)}',
-    // expanded detail row
-    '.enq-detailrow>td{padding:0;background:#F8FAFC;border-bottom:1px solid #EEF2F8}',
-    '.enq-expand{padding:18px 22px;display:grid;grid-template-columns:1fr 320px;gap:26px}',
-    '.enq-label{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#94A3B8;margin:0 0 9px}',
-    '.enq-msg{font-size:13.5px;line-height:1.6;color:#374E6A;white-space:pre-wrap;word-break:break-word;background:#fff;border:1px solid #EEF2F8;border-radius:11px;padding:13px 15px}',
-    '.enq-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}',
-    '.enq-abtn{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:9px;border:1px solid #E2E8F4;background:#fff;color:#374E6A;font:600 12.5px "Segoe UI",system-ui,sans-serif;text-decoration:none;transition:border-color .15s,box-shadow .15s,color .15s}',
-    '.enq-abtn:hover{border-color:#1D4ED8;color:#1D4ED8;box-shadow:0 2px 10px rgba(29,78,216,.1)}',
-    '.enq-abtn svg{width:15px;height:15px;color:#7A8FA6}',
-    '.enq-abtn.wa{border-color:#CDEBD8;color:#0B7A44}.enq-abtn.wa svg{color:#25D366}',
-    '.enq-abtn.wa:hover{border-color:#25D366;box-shadow:0 2px 10px rgba(37,211,102,.15)}',
-    '.enq-note{width:100%;min-height:84px;resize:vertical;padding:11px 13px;border:1.5px solid #DDE5EF;border-radius:10px;font:400 13px "Segoe UI",system-ui,sans-serif;color:#374E6A;outline:none;background:#fff;box-sizing:border-box;transition:border-color .15s,box-shadow .15s}',
-    '.enq-note:focus{border-color:#1D4ED8;box-shadow:0 0 0 3px rgba(29,78,216,.1)}',
-    '.enq-noteact{margin-top:10px}',
-    '.enq-note-save{padding:8px 18px;border-radius:9px;border:none;background:#1D4ED8;color:#fff;font:600 12.5px "Segoe UI",system-ui,sans-serif;cursor:pointer;transition:background .15s}',
-    '.enq-note-save:hover{background:#1842B8}',
-    '.enq-note-save.ok{background:#0F6B45}',
-    '.enq-note-save[disabled]{opacity:.6;cursor:default}',
+    '.enq-tablewrap{flex:1;overflow:auto;padding:20px 22px}',
+    '.enq-card{background:#fff;border:1px solid #E4E9F2;border-radius:14px;box-shadow:0 1px 3px rgba(26,43,74,.06);overflow:hidden;min-width:1080px}',
+    '.enq-table{width:100%;border-collapse:collapse;font-size:13px}',
+    '.enq-th{display:inline-flex;align-items:center;gap:8px}',
+    '.enq-th svg{width:15px;height:15px;color:#9AA7BD}',
+    '.enq-sort{cursor:pointer;user-select:none;border-radius:6px;padding:2px 4px;margin:-2px -4px;transition:color .14s,background .14s}',
+    '.enq-sort:hover{color:#1D4ED8;background:#EDF1F7}',
+    '.enq-sort svg:last-child{width:13px;height:13px;color:#1D4ED8}',
+    '.enq-table thead th{text-align:left;font-size:12px;font-weight:700;color:#5E6C84;padding:13px 16px;border-bottom:1px solid #E4E9F2;border-right:1px solid #EDF1F7;white-space:nowrap;background:#fff}',
+    '.enq-table thead th:last-child{border-right:none}',
+    '.enq-th-check{width:46px;text-align:center !important;padding:0 !important}',
+    '.enq-check,#enqCheckAll{width:16px;height:16px;accent-color:#1D4ED8;cursor:pointer;vertical-align:middle}',
+    '.enq-tr{border-bottom:1px solid #EDF1F7;background:#fff}',
+    '.enq-tr:hover{background:#F7F9FD}',
+    '.enq-tr.sel{background:#F0F5FF}',
+    '.enq-tr>td{padding:13px 16px;vertical-align:middle;border-right:1px solid #EDF1F7}',
+    '.enq-tr>td:last-child{border-right:none}',
+    '.enq-td-check{text-align:center;padding:0 !important}',
+    '.enq-lead-nm{font-weight:700;color:#172B4D;font-size:13.5px}',
+    '.enq-lead-c{font-size:11.5px;color:#5A7A9B;margin-top:3px;white-space:nowrap}',
+    '.enq-lead-sub{font-size:10.5px;color:#B4C0D3;margin-top:4px}',
+    '.enq-svc{display:inline-block;font-size:11.5px;font-weight:600;color:#0F6B45;background:#E7F3EE;border:1px solid #CFE7DC;padding:4px 9px;border-radius:7px;white-space:nowrap}',
+    '.enq-status{font:700 11px "Segoe UI",system-ui,sans-serif;text-transform:uppercase;letter-spacing:.04em;border-radius:6px;padding:6px 9px;border:1px solid;outline:none;cursor:pointer}',
+    '.enq-td-date{white-space:nowrap}',
+    '.enq-datechip{display:inline-block;background:#EDF0F5;color:#42526E;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;white-space:nowrap}',
+    // Enquiry cell: bold service line on top, message below (2-line clamp, click to expand)
+    '.enq-mcell{max-width:380px;min-width:250px}',
+    '.enq-msvc{font-weight:700;color:#172B4D;font-size:13px;margin-bottom:3px}',
+    '.enq-msg-cell{font-size:12.5px;line-height:1.5;color:#5A6B85;cursor:pointer;white-space:pre-wrap;word-break:break-word;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}',
+    '.enq-msg-cell.full{-webkit-line-clamp:unset;display:block}',
+    '.enq-msg-empty{color:#B4C0D3;font-size:12.5px}',
+    // notes shown as text (like the message) with a pencil; click to edit inline
+    '.enq-notecell{min-width:190px;max-width:260px}',
+    '.enq-noteview{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;color:#374E6A;cursor:pointer;line-height:1.45}',
+    '.enq-noteview>span{overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}',
+    '.enq-noteview svg{width:13px;height:13px;color:#C0CAD9;flex-shrink:0;margin-left:auto;margin-top:1px}',
+    '.enq-noteview.empty{color:#9AA7BD}',
+    '.enq-noteview:hover{color:#1D4ED8}.enq-noteview:hover svg{color:#1D4ED8}',
+    '.enq-note{width:100%;min-height:62px;resize:vertical;padding:8px 10px;border:1.5px solid #1D4ED8;border-radius:8px;font:400 12.5px "Segoe UI",system-ui,sans-serif;color:#374E6A;outline:none;background:#fff;box-sizing:border-box;box-shadow:0 0 0 3px rgba(29,78,216,.1)}',
+    // action icons (brand colours)
+    '.enq-acts{display:flex;gap:6px}',
+    '.enq-iconbtn{width:32px;height:32px;flex-shrink:0;border-radius:8px;border:1px solid #E2E8F4;background:#fff;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;transition:border-color .14s,box-shadow .14s}',
+    '.enq-iconbtn:hover{border-color:currentColor;box-shadow:0 2px 8px rgba(26,43,74,.1)}',
+    '.enq-iconbtn svg{width:17px;height:17px}',
+    '.enq-iconbtn.call{color:#2563EB}',
+    '.enq-iconbtn.wa{color:#25D366}',
+    '.enq-iconbtn.mail{color:#5A7A9B}',
     // shared states
     '.enq-state{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:340px;padding:30px;color:#7A8FA6}',
     '.enq-ic{width:60px;height:60px;border-radius:16px;background:#EAF0FB;display:flex;align-items:center;justify-content:center;margin-bottom:16px;color:#1D4ED8}',
@@ -2451,7 +2487,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closePrevi
     '.enq-state .enq-ibtn{margin-top:16px;background:#1D4ED8;border-color:#1D4ED8}',
     '.enq-spin{width:34px;height:34px;border-radius:50%;border:3px solid #E2E8F0;border-top-color:#1D4ED8;animation:auSpin .8s linear infinite}',
     // responsive
-    '@media(max-width:820px){.enq-brand span{display:none}.enq-search{width:32vw}.enq-ibtn span{display:none}.enq-expand{grid-template-columns:1fr;gap:16px}}'
+    '@media(max-width:820px){.enq-brand span{display:none}.enq-search{width:32vw}.enq-ibtn span{display:none}}'
   ].join('');
   document.head.appendChild(css);
 
@@ -2565,6 +2601,8 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closePrevi
     ov.classList.remove('open');
     updateProfile(sess.user);
     loadCloudSite(sess);
+    // restore the Enquiries page after a reload (URL hash persists it)
+    if(location.hash.slice(1)==='enquiries'){ try{ openEnquiries(); }catch(e){} }
   }
   /* Pull the user's saved website from Supabase so their data appears on any
      device after login (localStorage alone is per-browser). Applied unless a
@@ -2661,7 +2699,8 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closePrevi
   window.openProfile = function(){ togglePop(); };   // fallback if the inline onclick still runs
 
   // ---- Enquiries (leads inbox) ----
-  var enqOv=null, enqData=[], enqLoaded=false, enqFilter='all', enqSelId=null;
+  var enqOv=null, enqData=[], enqLoaded=false, enqFilter='all', enqSelIds={}, enqPage=1, enqSort='desc';
+  var ENQ_PAGE_SIZE=10;
   var ENQ_STATUSES=[
     {k:'new',label:'New'},
     {k:'contacted',label:'Contacted'},
@@ -2686,7 +2725,17 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closePrevi
       wa:'<path d="M15.4 8.9a6 6 0 01-8.7 5.4L3 15.4l1.1-3.6A6 6 0 1115.4 8.9z"/><path d="M6.6 6.4c.5 2.7 2.3 4.5 5 5"/>',
       search:'<circle cx="8" cy="8" r="5"/><path d="M15.5 15.5l-3.5-3.5"/>',
       chevleft:'<path d="M11 4l-5 5 5 5"/>',
-      chevdown:'<path d="M4 7l5 5 5-5"/>'
+      chevdown:'<path d="M4 7l5 5 5-5"/>',
+      lines:'<path d="M3 5h12M3 9h8M3 13h5"/>',
+      user:'<circle cx="9" cy="6" r="3"/><path d="M3.5 15c0-2.8 2.5-4.6 5.5-4.6s5.5 1.8 5.5 4.6"/>',
+      tag:'<path d="M9.4 2.5H3.5a1 1 0 00-1 1v5.9a1 1 0 00.3.7l5.6 5.6a1 1 0 001.4 0l4.9-4.9a1 1 0 000-1.4L9.1 2.8a1 1 0 00-.7-.3z"/><circle cx="6" cy="6" r=".9"/>',
+      statuscircle:'<circle cx="9" cy="9" r="6.5"/><path d="M6.5 9.2l1.7 1.7 3.3-3.6"/>',
+      calendar:'<rect x="2.6" y="3.6" width="12.8" height="11.8" rx="1.6"/><path d="M2.6 7.2h12.8M6 2.2v2.6M12 2.2v2.6"/>',
+      pencil:'<path d="M12.4 3.1l2.5 2.5-8.2 8.2-3.1.6.6-3.1z"/>',
+      funnel:'<path d="M2.5 4h13l-5 6v4.2l-3 1.3V10z"/>',
+      chevright:'<path d="M7 4l5 5-5 5"/>',
+      arrowdown:'<path d="M9 3.2v11M4.6 9.6L9 14l4.4-4.4"/>',
+      arrowup:'<path d="M9 14.8v-11M4.6 8.4L9 4l4.4 4.4"/>'
     };
     return '<svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">'+(p[name]||'')+'</svg>';
   }
@@ -2707,41 +2756,66 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closePrevi
     return {svc:svc, msg:msg};
   }
 
+  var ENQ_ACT_ICONS={
+    call:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2a1 1 0 011-.24c1.1.37 2.3.57 3.5.57a1 1 0 011 1V20a1 1 0 01-1 1C10.6 21 3 13.4 3 4a1 1 0 011-1h3.6a1 1 0 011 1c0 1.2.2 2.4.57 3.5a1 1 0 01-.24 1z"/></svg>',
+    wa:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>',
+    mail:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.5 4h17A1.5 1.5 0 0122 5.5v13a1.5 1.5 0 01-1.5 1.5h-17A1.5 1.5 0 012 18.5v-13A1.5 1.5 0 013.5 4zM4 7.3V18h16V7.3l-8 5-8-5zM18.9 6H5.1L12 10.3 18.9 6z"/></svg>'
+  };
+  function noteView(l){
+    var n=String((l&&l.notes)||'').trim();
+    if(n) return '<div class="enq-noteview" title="Click to edit"><span>'+esc(n)+'</span>'+enqIcon('pencil')+'</div>';
+    return '<div class="enq-noteview empty" title="Click to add a note"><span>Add note</span>'+enqIcon('pencil')+'</div>';
+  }
+
   function buildEnqOverlay(){
     enqOv=document.createElement('div'); enqOv.className='enq-ov'; enqOv.setAttribute('role','dialog'); enqOv.setAttribute('aria-label','Enquiries');
+    var filterOpts='<option value="all">All statuses</option>'+ENQ_STATUSES.map(function(s){ return '<option value="'+s.k+'">'+s.label+'</option>'; }).join('');
+    var bulkOpts='<option value="">Change status…</option>'+ENQ_STATUSES.map(function(s){ return '<option value="'+s.k+'">'+s.label+'</option>'; }).join('');
     enqOv.innerHTML=
       '<div class="enq-topbar">'+
-        '<button class="enq-back" id="enqClose" aria-label="Close">'+enqIcon('x')+'</button>'+
-        '<div class="enq-brand"><b>'+enqIcon('inbox')+'Enquiries</b><span>Leads from your website contact form</span></div>'+
+        '<button class="enq-back" id="enqClose" aria-label="Back">'+enqIcon('chevleft')+'<span>Back</span></button>'+
+        '<div class="enq-brand"><b>'+enqIcon('inbox')+'Enquiries</b><span>Leads from your website</span></div>'+
         '<input class="enq-search" id="enqSearch" placeholder="Search leads…" aria-label="Search leads">'+
-        '<button class="enq-ibtn" id="enqExport" title="Download as CSV">'+enqIcon('download')+'<span>Export</span></button>'+
-        '<button class="enq-ibtn" id="enqRefresh" title="Refresh">'+enqIcon('refresh')+'<span>Refresh</span></button>'+
+        '<button class="enq-ibtn primary" id="enqExport" title="Download as Excel">'+enqIcon('download')+'<span>Export</span></button>'+
       '</div>'+
-      '<div class="enq-filterbar" id="enqFilters"></div>'+
+      '<div class="enq-bulkbar" id="enqBulk" hidden>'+
+        '<span class="enq-bulk-n" id="enqBulkN"></span>'+
+        '<label class="enq-filter blue">Mark as <select id="enqBulkStatus" aria-label="Set status for selected">'+bulkOpts+'</select></label>'+
+        '<button class="enq-bulk-btn" id="enqBulkExport">Export selected</button>'+
+        '<button class="enq-bulk-btn ghost" id="enqBulkClear">Clear</button>'+
+      '</div>'+
       '<div class="enq-main" id="enqMain"></div>';
     document.body.appendChild(enqOv);
     enqOv.querySelector('#enqClose').onclick=closeEnquiries;
-    enqOv.querySelector('#enqRefresh').onclick=function(){ loadEnquiries(true); };
-    enqOv.querySelector('#enqExport').onclick=exportEnquiries;
-    enqOv.querySelector('#enqSearch').addEventListener('input',function(){ renderList(); });
-    // status is a <select> — listen for change on the container (rows re-render)
+    enqOv.querySelector('#enqExport').onclick=function(){ exportEnquiries(false); };
+    enqOv.querySelector('#enqSearch').addEventListener('input',function(){ enqPage=1; renderList(); });
     enqOv.addEventListener('change',function(e){
-      var t=e.target;
-      if(t && t.classList && t.classList.contains('enq-status')){ onStatusChange(t.getAttribute('data-id'), t.value, t); }
+      var t=e.target; if(!t||!t.classList) return;
+      if(t.id==='enqBulkStatus'){ bulkSetStatus(t.value); return; }
+      if(t.id==='enqCheckAll'){ enqToggleAll(t.checked); return; }
+      if(t.classList.contains('enq-check')){ enqRowCheck(t); return; }
+      if(t.classList.contains('enq-status')){ onStatusChange(t.getAttribute('data-id'), t.value, t); return; }
     });
     enqOv.addEventListener('click',function(e){
-      var tab=e.target.closest && e.target.closest('.enq-tab');
-      if(tab){ enqFilter=tab.getAttribute('data-f'); renderFilters(); renderList(); return; }
-      var save=e.target.closest && e.target.closest('.enq-note-save');
-      if(save){ onNoteSave(save.getAttribute('data-id'), save); return; }
-      var retry=e.target.closest && e.target.closest('#enqRetry');
-      if(retry){ loadEnquiries(true); return; }
-      var exp=e.target.closest && e.target.closest('.enq-expbtn');
-      var tr=e.target.closest && e.target.closest('.enq-tr');
-      if(exp && tr){ toggleExpand(tr.getAttribute('data-id')); return; }
-      // a click anywhere else on the main row (not an input/link) toggles the detail
-      if(tr && !(e.target.closest && e.target.closest('select, a, button, textarea'))){ toggleExpand(tr.getAttribute('data-id')); return; }
+      var ds=e.target.closest && e.target.closest('#enqDateSort');
+      if(ds){ enqSort=(enqSort==='desc')?'asc':'desc'; renderEnquiries(); return; }
+      var cf=e.target.closest && e.target.closest('.enq-colfilter');
+      if(cf){ toggleColMenu(cf); return; }
+      var mi=e.target.closest && e.target.closest('.enq-colmenu-item');
+      if(mi){ enqFilter=mi.getAttribute('data-f'); enqPage=1; closeColMenu(); renderEnquiries(); return; }
+      closeColMenu();
+      var nv=e.target.closest && e.target.closest('.enq-noteview');
+      if(nv){ enqNoteEdit(nv.closest('.enq-notecell')); return; }
+      var msg=e.target.closest && e.target.closest('.enq-msg-cell');
+      if(msg && !msg.classList.contains('empty')){ msg.classList.toggle('full'); return; }
+      var pv=e.target.closest && e.target.closest('#enqPrev'); if(pv){ if(enqPage>1){ enqPage--; renderList(); } return; }
+      var nx=e.target.closest && e.target.closest('#enqNext'); if(nx){ enqPage++; renderList(); return; }
+      var be=e.target.closest && e.target.closest('#enqBulkExport'); if(be){ exportEnquiries(true); return; }
+      var bc=e.target.closest && e.target.closest('#enqBulkClear'); if(bc){ enqSelIds={}; renderList(); return; }
+      var retry=e.target.closest && e.target.closest('#enqRetry'); if(retry){ loadEnquiries(true); return; }
     });
+    // save an inline note when its editor loses focus
+    enqOv.addEventListener('focusout',function(e){ var t=e.target; if(t && t.classList && t.classList.contains('enq-note')) enqNoteBlur(t); });
   }
 
   function enqState(icon,title,text,retry,tone){
@@ -2752,80 +2826,124 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closePrevi
   function enqQuery(){ var s=enqOv&&enqOv.querySelector('#enqSearch'); return ((s&&s.value)||'').trim().toLowerCase(); }
   function enqVisible(){
     var q=enqQuery();
-    return enqData.filter(function(l){
+    var list=enqData.filter(function(l){
       if(enqFilter!=='all' && (l.status||'new')!==enqFilter) return false;
       if(q) return ((l.name||'')+' '+(l.phone||'')+' '+(l.email||'')+' '+(l.message||'')+' '+(l.notes||'')+' '+(l._site||'')).toLowerCase().indexOf(q)>=0;
       return true;
     });
+    list.sort(function(a,b){ var ta=Date.parse(a.created_at||'')||0, tb=Date.parse(b.created_at||'')||0; return enqSort==='asc'?(ta-tb):(tb-ta); });
+    return list;
   }
+  function renderFoot(total,start,shown,pages){
+    var f=enqOv&&enqOv.querySelector('#enqFoot'); if(!f) return;
+    if(!total){ f.innerHTML='<span class="enq-foot-info">No leads to show</span>'; return; }
+    f.innerHTML='<span class="enq-foot-info">Showing '+(start+1)+' to '+(start+shown)+' of '+total+' lead'+(total===1?'':'s')+'</span>'+
+      '<div class="enq-pager">'+
+        '<button class="enq-pg" id="enqPrev"'+(enqPage<=1?' disabled':'')+'>'+enqIcon('chevleft')+'Prev</button>'+
+        '<span class="enq-pg-n">Page '+enqPage+' of '+pages+'</span>'+
+        '<button class="enq-pg" id="enqNext"'+(enqPage>=pages?' disabled':'')+'>Next'+enqIcon('chevright')+'</button>'+
+      '</div>';
+  }
+  function toggleColMenu(btn){
+    var ex=enqOv.querySelector('#enqColMenu'); if(ex){ ex.remove(); return; }
+    var menu=document.createElement('div'); menu.className='enq-colmenu'; menu.id='enqColMenu';
+    var opts=[{k:'all',label:'All statuses'}].concat(ENQ_STATUSES);
+    menu.innerHTML=opts.map(function(o){ return '<button class="enq-colmenu-item'+(enqFilter===o.k?' act':'')+'" data-f="'+o.k+'">'+(o.k!=='all'?'<span class="enq-dot '+enqDotCls(o.k)+'"></span>':'<span class="enq-dot" style="background:#B4C0D3"></span>')+esc(o.label)+'</button>'; }).join('');
+    enqOv.appendChild(menu);
+    var r=btn.getBoundingClientRect();
+    menu.style.top=(r.bottom+6)+'px';
+    menu.style.left=Math.max(12,Math.min(r.left-8, window.innerWidth-206))+'px';
+  }
+  function closeColMenu(){ var m=enqOv&&enqOv.querySelector('#enqColMenu'); if(m) m.remove(); }
   function renderEnquiries(){
     if(!enqOv) return;
-    var fb=enqOv.querySelector('#enqFilters'), main=enqOv.querySelector('#enqMain');
-    if(!enqData.length){ fb.style.display='none'; main.innerHTML=enqState('inbox','No enquiries yet','When a visitor submits the contact form on your published website, their enquiry appears here. Share your site link to start receiving leads.',false); return; }
-    fb.style.display='';
-    renderFilters();
-    main.innerHTML='<div class="enq-tabletop" id="enqCount"></div>'+
-      '<div class="enq-tablewrap"><table class="enq-table"><thead><tr>'+
-        '<th>Lead</th><th>Contact</th><th>Service</th><th>Status</th><th>Received</th><th></th>'+
-      '</tr></thead><tbody id="enqTbody"></tbody></table></div>';
+    var tb=enqOv.querySelector('#enqToolbar'), main=enqOv.querySelector('#enqMain');
+    if(!enqData.length){ if(tb) tb.style.display='none'; main.innerHTML=enqState('inbox','No enquiries yet','When a visitor submits the contact form on your published website, their enquiry appears here. Share your site link to start receiving leads.',false); return; }
+    if(tb) tb.style.display='';
+    main.innerHTML='<div class="enq-tablewrap"><div class="enq-card"><table class="enq-table"><thead><tr>'+
+        '<th class="enq-th-check"><input type="checkbox" id="enqCheckAll" aria-label="Select all"></th>'+
+        '<th><span class="enq-th">'+enqIcon('user')+'Lead</span></th>'+
+        '<th><span class="enq-th">'+enqIcon('lines')+'Enquiry</span></th>'+
+        '<th><span class="enq-th">'+enqIcon('statuscircle')+'Status'+
+          '<button class="enq-colfilter'+(enqFilter!=='all'?' on':'')+'" id="enqStatusFilterBtn" aria-label="Filter by status" title="Filter by status">'+enqIcon('funnel')+'</button>'+
+        '</span></th>'+
+        '<th><span class="enq-th enq-sort" id="enqDateSort" role="button" tabindex="0" title="Sort by date">'+enqIcon('calendar')+'Received'+enqIcon(enqSort==='asc'?'arrowup':'arrowdown')+'</span></th>'+
+        '<th><span class="enq-th">'+enqIcon('pencil')+'Notes</span></th>'+
+        '<th>Actions</th>'+
+      '</tr></thead><tbody id="enqTbody"></tbody></table></div></div>'+
+      '<div class="enq-foot" id="enqFoot"></div>';
     renderList();
   }
-  function renderFilters(){
-    var el=enqOv && enqOv.querySelector('#enqFilters'); if(!el) return;
-    var counts={all:enqData.length};
-    ENQ_STATUSES.forEach(function(s){ counts[s.k]=0; });
-    enqData.forEach(function(l){ var k=l.status||'new'; if(counts[k]!=null) counts[k]++; });
-    var tabs=[{k:'all',label:'All'}].concat(ENQ_STATUSES);
-    el.innerHTML=tabs.map(function(t){
-      var dot=(t.k!=='all')?'<span class="enq-dot '+enqDotCls(t.k)+'"></span>':'';
-      return '<button class="enq-tab'+(enqFilter===t.k?' act':'')+'" data-f="'+t.k+'">'+dot+esc(t.label)+'<span class="enq-tab-n">'+(counts[t.k]||0)+'</span></button>';
-    }).join('');
-  }
   function rowHtml(l){
-    var sp=enqSplit(l.message); var st=l.status||'new';
+    var sp=enqSplit(l.message); var st=l.status||'new', sel=!!enqSelIds[l.id];
     var phone=String(l.phone||'').trim(), digits=phone.replace(/\D/g,''), email=String(l.email||'').trim();
     var opts=ENQ_STATUSES.map(function(s){ return '<option value="'+s.k+'"'+(s.k===st?' selected':'')+'>'+s.label+'</option>'; }).join('');
-    var contact='';
-    if(phone) contact+='<a class="enq-clink" href="tel:'+esc(phone)+'">'+esc(phone)+'</a>';
-    if(email) contact+='<a class="enq-clink" href="mailto:'+esc(email)+'">'+esc(email)+'</a>';
-    if(!contact) contact='<span class="enq-clink" style="color:#B4C0D3">No contact</span>';
+    var lead='<div class="enq-lead-nm">'+esc(l.name||'Someone')+'</div>'+
+      (phone?'<div class="enq-lead-c">'+esc(phone)+'</div>':'')+
+      (email?'<div class="enq-lead-c">'+esc(email)+'</div>':'');
+    // service (bold) + message combined in one cell
+    var svcLine=sp.svc?'<div class="enq-msvc">'+esc(sp.svc)+'</div>':'';
+    var msgLine=sp.msg?'<div class="enq-msg-cell" title="'+esc(sp.msg)+'">'+esc(sp.msg)+'</div>':(sp.svc?'':'<span class="enq-msg-empty">No message</span>');
+    var mcell='<div class="enq-mcell">'+svcLine+msgLine+'</div>';
     var acts='';
-    if(phone) acts+='<a class="enq-abtn" href="tel:'+esc(phone)+'">'+enqIcon('phone')+esc(phone)+'</a>';
-    if(digits.length>=8) acts+='<a class="enq-abtn wa" href="https://wa.me/'+esc(digits)+'" target="_blank" rel="noopener">'+enqIcon('wa')+'WhatsApp</a>';
-    if(email) acts+='<a class="enq-abtn" href="mailto:'+esc(email)+'">'+enqIcon('mail')+esc(email)+'</a>';
-    var cAt=Date.parse(l.created_at||'')||0, uAt=Date.parse(l.updated_at||'')||0;
-    var updated=(uAt && uAt-cAt>60000)?'<div class="muted">updated '+esc(enqTimeAgo(l.updated_at))+'</div>':'';
-    var main='<tr class="enq-tr" data-id="'+esc(l.id)+'">'+
-      '<td><div class="enq-lead-nm">'+esc(l.name||'Someone')+'</div>'+(l._site?'<div class="enq-lead-sub">via '+esc(l._site)+'</div>':'')+'</td>'+
-      '<td>'+contact+'</td>'+
-      '<td>'+(sp.svc?'<span class="enq-svc">'+esc(sp.svc)+'</span>':'<span style="color:#B4C0D3">None</span>')+'</td>'+
+    if(phone) acts+='<a class="enq-iconbtn call" href="tel:'+esc(phone)+'" title="Call" aria-label="Call">'+ENQ_ACT_ICONS.call+'</a>';
+    if(digits.length>=8) acts+='<a class="enq-iconbtn wa" href="https://wa.me/'+esc(digits)+'" target="_blank" rel="noopener" title="WhatsApp" aria-label="WhatsApp">'+ENQ_ACT_ICONS.wa+'</a>';
+    if(email) acts+='<a class="enq-iconbtn mail" href="mailto:'+esc(email)+'" title="Email" aria-label="Email">'+ENQ_ACT_ICONS.mail+'</a>';
+    if(!acts) acts='<span style="color:#B4C0D3;font-size:12px">None</span>';
+    return '<tr class="enq-tr'+(sel?' sel':'')+'" data-id="'+esc(l.id)+'">'+
+      '<td class="enq-td-check"><input type="checkbox" class="enq-check" data-id="'+esc(l.id)+'"'+(sel?' checked':'')+' aria-label="Select lead"></td>'+
+      '<td>'+lead+'</td>'+
+      '<td>'+mcell+'</td>'+
       '<td><select class="enq-status '+enqStatusCls(st)+'" data-id="'+esc(l.id)+'" aria-label="Status">'+opts+'</select></td>'+
-      '<td class="enq-td-date"><div>'+esc(enqFullDate(l.created_at))+'</div><div class="muted">'+esc(enqTimeAgo(l.created_at))+'</div>'+updated+'</td>'+
-      '<td class="enq-td-exp"><button class="enq-expbtn" aria-label="Show message and notes">'+enqIcon('chevdown')+'</button></td>'+
+      '<td class="enq-td-date"><div class="enq-datechip">'+esc(enqFullDate(l.created_at))+'</div></td>'+
+      '<td class="enq-notecell" data-id="'+esc(l.id)+'">'+noteView(l)+'</td>'+
+      '<td><div class="enq-acts">'+acts+'</div></td>'+
     '</tr>';
-    var detail='<tr class="enq-detailrow" data-for="'+esc(l.id)+'" hidden><td colspan="6"><div class="enq-expand">'+
-      '<div><div class="enq-label">Message</div>'+(sp.msg?'<div class="enq-msg">'+esc(sp.msg)+'</div>':'<div class="enq-msg" style="color:#94A3B8">No message left.</div>')+
-        (acts?'<div class="enq-actions">'+acts+'</div>':'')+'</div>'+
-      '<div><div class="enq-label">Private notes</div>'+
-        '<textarea class="enq-note" data-id="'+esc(l.id)+'" placeholder="Add a private note, only you can see this…">'+esc(l.notes||'')+'</textarea>'+
-        '<div class="enq-noteact"><button class="enq-note-save" data-id="'+esc(l.id)+'">Save note</button></div>'+
-      '</div>'+
-    '</div></td></tr>';
-    return main+detail;
   }
   function renderList(){
     var tb=enqOv && enqOv.querySelector('#enqTbody'); if(!tb) return;
-    var list=enqVisible(), q=enqQuery();
-    var countEl=enqOv.querySelector('#enqCount');
-    if(countEl) countEl.textContent=(q||enqFilter!=='all')?(list.length+' of '+enqData.length+' leads'):(enqData.length+(enqData.length===1?' lead':' leads'));
-    if(!list.length){ tb.innerHTML='<tr><td colspan="6">'+enqState('search','Nothing to show','No leads match this filter or search. Try clearing the search or picking a different tab.',false)+'</td></tr>'; return; }
-    tb.innerHTML=list.map(rowHtml).join('');
+    var list=enqVisible();
+    var total=list.length, pages=Math.max(1,Math.ceil(total/ENQ_PAGE_SIZE));
+    if(enqPage>pages) enqPage=pages; if(enqPage<1) enqPage=1;
+    var start=(enqPage-1)*ENQ_PAGE_SIZE, pageItems=list.slice(start,start+ENQ_PAGE_SIZE);
+    if(!total){ tb.innerHTML='<tr><td colspan="7">'+enqState('search','Nothing to show','No leads match this search or filter. Clear the search or reset the status filter.',false)+'</td></tr>'; renderFoot(0,0,0,1); syncMaster(); updateBulkBar(); return; }
+    tb.innerHTML=pageItems.map(rowHtml).join('');
+    renderFoot(total,start,pageItems.length,pages);
+    syncMaster(); updateBulkBar();
   }
-  function toggleExpand(id){
-    var tr=enqOv.querySelector('.enq-tr[data-id="'+id+'"]'), dr=enqOv.querySelector('.enq-detailrow[data-for="'+id+'"]');
-    if(!tr||!dr) return;
-    if(dr.hasAttribute('hidden')){ dr.removeAttribute('hidden'); tr.classList.add('open'); }
-    else { dr.setAttribute('hidden',''); tr.classList.remove('open'); }
+  function syncMaster(){
+    var m=enqOv&&enqOv.querySelector('#enqCheckAll'); if(!m) return;
+    var all=enqOv.querySelectorAll('.enq-check'), chk=enqOv.querySelectorAll('.enq-check:checked');
+    m.checked=all.length>0 && chk.length===all.length; m.indeterminate=chk.length>0 && chk.length<all.length;
+  }
+  function updateBulkBar(){
+    var bulk=enqOv&&enqOv.querySelector('#enqBulk'), main=enqOv&&enqOv.querySelector('#enqToolMain'); if(!bulk||!main) return;
+    var n=Object.keys(enqSelIds).length;
+    if(n>0){ bulk.hidden=false; main.style.display='none'; var nn=enqOv.querySelector('#enqBulkN'); if(nn) nn.textContent=n+' selected'; }
+    else { bulk.hidden=true; main.style.display=''; }
+  }
+  function enqToggleAll(on){
+    Array.prototype.forEach.call(enqOv.querySelectorAll('.enq-check'),function(c){ c.checked=on; var id=c.getAttribute('data-id'); if(on) enqSelIds[id]=true; else delete enqSelIds[id]; var tr=c.closest('.enq-tr'); if(tr) tr.classList.toggle('sel',on); });
+    syncMaster(); updateBulkBar();
+  }
+  function enqRowCheck(cb){
+    var id=cb.getAttribute('data-id'); if(cb.checked) enqSelIds[id]=true; else delete enqSelIds[id];
+    var tr=cb.closest('.enq-tr'); if(tr) tr.classList.toggle('sel',cb.checked);
+    syncMaster(); updateBulkBar();
+  }
+  function enqNoteEdit(cell){
+    if(!cell) return; var id=cell.getAttribute('data-id'); var item=enqFind(id); if(!item) return;
+    cell.innerHTML='<textarea class="enq-note" data-id="'+esc(id)+'" rows="3" placeholder="Add a note, only you can see this…">'+esc(item.notes||'')+'</textarea>';
+    var ta=cell.querySelector('.enq-note'); if(ta){ ta.focus(); try{ ta.setSelectionRange(ta.value.length,ta.value.length); }catch(e){} }
+  }
+  function enqNoteBlur(ta){
+    var id=ta.getAttribute('data-id'); var item=enqFind(id); if(!item) return;
+    var cell=ta.closest('.enq-notecell'); var val=(ta.value||'').trim();
+    if(val!==String(item.notes||'')){
+      item.notes=val; item.updated_at=new Date().toISOString();
+      patchLead(id,{notes:val||null},function(ok){ if(!ok && window.toast) window.toast('Could not save the note.'); });
+    }
+    if(cell) cell.innerHTML=noteView(item);
   }
   function patchLead(id,patch,cb){
     var sess=getSession();
@@ -2836,66 +2954,104 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closePrevi
   }
   function onStatusChange(id,val,sel){
     var item=enqFind(id); if(!item) return;
+    // if this row is part of a multi-row selection, apply the new status to all selected
+    if(enqSelIds[id] && Object.keys(enqSelIds).length>1){ applyStatusToSelected(val); return; }
     var prev=item.status||'new';
     if(val===prev) return;
     item.status=val; item.updated_at=new Date().toISOString();
     if(sel) sel.className='enq-status '+enqStatusCls(val);
-    renderFilters();
     if(enqFilter!=='all' && enqFilter!==val){
-      var tr=enqOv.querySelector('.enq-tr[data-id="'+id+'"]'), dr=enqOv.querySelector('.enq-detailrow[data-for="'+id+'"]');
-      if(dr) dr.setAttribute('hidden','');
-      if(tr){ tr.style.transition='opacity .18s'; tr.style.opacity='0'; }
-      setTimeout(function(){ renderList(); },190);
+      var tr=enqOv.querySelector('.enq-tr[data-id="'+id+'"]');
+      if(tr){ tr.style.transition='opacity .18s'; tr.style.opacity='0'; setTimeout(function(){ renderList(); },190); }
     }
-    patchLead(id,{status:val},function(ok){ if(!ok){ item.status=prev; renderFilters(); renderList(); if(window.toast) window.toast('Could not update status. Please try again.'); } });
+    patchLead(id,{status:val},function(ok){ if(!ok){ item.status=prev; renderList(); if(window.toast) window.toast('Could not update status. Please try again.'); } });
   }
-  function onNoteSave(id,btn){
-    var item=enqFind(id); if(!item) return;
-    var dr=enqOv.querySelector('.enq-detailrow[data-for="'+id+'"]'); var ta=dr && dr.querySelector('.enq-note');
-    var val=((ta&&ta.value)||'').trim();
-    item.notes=val; item.updated_at=new Date().toISOString();
-    btn.disabled=true; btn.textContent='Saving…'; btn.classList.remove('ok');
-    patchLead(id,{notes:val||null},function(ok){
-      btn.disabled=false;
-      if(ok){ btn.textContent='Saved'; btn.classList.add('ok'); setTimeout(function(){ if(btn){ btn.textContent='Save note'; btn.classList.remove('ok'); } },1600); }
-      else { btn.textContent='Retry'; if(window.toast) window.toast('Could not save the note. Please try again.'); }
-    });
+  function applyStatusToSelected(val){
+    if(!val) return; var ids=Object.keys(enqSelIds); if(!ids.length) return;
+    var n=0;
+    ids.forEach(function(id){ var it=enqFind(id); if(it && (it.status||'new')!==val){ it.status=val; it.updated_at=new Date().toISOString(); patchLead(id,{status:val}); n++; } });
+    renderList();
+    if(window.toast) window.toast(n+' lead'+(n===1?'':'s')+' set to '+enqStatusLabel(val));
+  }
+  function bulkSetStatus(val){
+    if(!val) return;
+    applyStatusToSelected(val);
+    var b=enqOv.querySelector('#enqBulkStatus'); if(b) b.value='';
   }
   function loadEnquiries(force){
     if(!enqOv) return;
-    var main=enqOv.querySelector('#enqMain'), fb=enqOv.querySelector('#enqFilters');
+    var main=enqOv.querySelector('#enqMain'), tb=enqOv.querySelector('#enqToolbar');
     var sess=getSession();
-    if(!sess || !sess.access_token){ if(fb) fb.style.display='none'; main.innerHTML=enqState('x','Please sign in again','Your session has expired. Sign in again to view your enquiries.',false,'err'); return; }
+    if(!sess || !sess.access_token){ if(tb) tb.style.display='none'; main.innerHTML=enqState('x','Please sign in again','Your session has expired. Sign in again to view your enquiries.',false,'err'); return; }
     if(enqLoaded && !force){ renderEnquiries(); return; }
-    if(fb) fb.style.display='none';
+    if(tb) tb.style.display='none';
     main.innerHTML='<div class="enq-state"><div class="enq-spin"></div></div>';
     authFetch('/rest/v1/wb_leads?select=id,name,email,phone,message,status,notes,created_at,updated_at,wb_websites(subdomain)&order=created_at.desc&limit=500',
       {headers:{Authorization:'Bearer '+sess.access_token}}).then(function(res){
       if(!res.ok){ main.innerHTML=enqState('x','Could not load enquiries','The server returned an error ('+res.status+'). Please try again.',true,'err'); return; }
       var rows=Array.isArray(res.body)?res.body:[];
       enqData=rows.map(function(r){ var w=r.wb_websites; r._site=(w&&(w.subdomain||(w[0]&&w[0].subdomain)))||''; return r; });
-      enqLoaded=true; renderEnquiries();
+      enqLoaded=true; enqSelIds={}; renderEnquiries();
     }).catch(function(){ main.innerHTML=enqState('x','Network error','Could not reach the server. Check your connection and try again.',true,'err'); });
   }
-  function exportEnquiries(){
-    if(!enqData.length) return;
-    function cell(v){ return '"'+String(v==null?'':v).replace(/"/g,'""')+'"'; }
-    var head=['Name','Phone','Email','Service','Message','Status','Notes','Site','Received','Last updated'];
-    var lines=enqData.map(function(l){ var sp=enqSplit(l.message);
-      return [l.name,l.phone,l.email,sp.svc,sp.msg,enqStatusLabel(l.status||'new'),l.notes,l._site,enqFullDate(l.created_at),enqFullDate(l.updated_at)].map(cell).join(','); });
-    var csv='﻿'+head.map(cell).join(',')+'\r\n'+lines.join('\r\n');
-    var blob=new Blob([csv],{type:'text/csv;charset=utf-8'}), url=URL.createObjectURL(blob);
-    var a=document.createElement('a'); a.href=url; a.download='enquiries.csv';
+  // Export a styled Excel workbook (HTML-based .xls): coloured header, borders,
+  // zebra rows, colour-coded status cells, and a frozen header row.
+  function exportEnquiries(selOnly){
+    var data=(selOnly===true)?enqData.filter(function(l){ return enqSelIds[l.id]; }):enqData;
+    if(!data.length) return;
+    function e(v){ return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function eb(v){ return e(v).replace(/\r?\n/g,'<br>'); }
+    var STC={ 'new':['#1D4ED8','#EAF0FB'],'contacted':['#8A5A00','#FDF3E2'],'in_progress':['#6D28D9','#F2ECFC'],'converted':['#0F6B45','#E7F3EE'],'closed':['#5A7A9B','#EEF2F7'] };
+    var cols=[['Name',140],['Phone',130],['Email',180],['Service',160],['Message',340],['Status',120],['Notes',220],['Site',150],['Received',150],['Last updated',150]];
+    var thead='<tr>'+cols.map(function(c){ return '<th style="width:'+c[1]+'px">'+e(c[0])+'</th>'; }).join('')+'</tr>';
+    var body=data.map(function(l){ var sp=enqSplit(l.message); var st=l.status||'new'; var c=STC[st]||STC['new'];
+      return '<tr>'+
+        '<td class="nm">'+e(l.name)+'</td>'+
+        '<td>'+e(l.phone)+'</td>'+
+        '<td>'+e(l.email)+'</td>'+
+        '<td>'+e(sp.svc)+'</td>'+
+        '<td>'+eb(sp.msg)+'</td>'+
+        '<td style="color:'+c[0]+';background:'+c[1]+';font-weight:700;text-align:center">'+e(enqStatusLabel(st))+'</td>'+
+        '<td>'+eb(l.notes)+'</td>'+
+        '<td>'+e(l._site)+'</td>'+
+        '<td>'+e(enqFullDate(l.created_at))+'</td>'+
+        '<td>'+e(enqFullDate(l.updated_at))+'</td>'+
+      '</tr>';
+    }).join('');
+    var freeze='<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>'+
+      '<x:Name>Enquiries</x:Name><x:WorksheetOptions><x:FreezePanes/><x:FrozenNoSplit/>'+
+      '<x:SplitHorizontal>1</x:SplitHorizontal><x:TopRowBottomPane>1</x:TopRowBottomPane><x:ActivePane>2</x:ActivePane>'+
+      '<x:Panes><x:Pane><x:Number>3</x:Number></x:Pane><x:Pane><x:Number>2</x:Number></x:Pane></x:Panes>'+
+      '</x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->';
+    var style='table{border-collapse:collapse;font-family:Calibri,Arial,sans-serif;font-size:11pt}'+
+      'th{background:#0D1E35;color:#fff;font-weight:700;border:1px solid #24344F;padding:8px 10px;text-align:left}'+
+      'td{border:1px solid #D5DCE8;padding:6px 10px;vertical-align:top;mso-number-format:"\\@"}'+
+      'tr:nth-child(even) td{background:#F6F8FC}'+
+      'td.nm{font-weight:700;color:#172B4D}';
+    var html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel">'+
+      '<head><meta charset="utf-8">'+freeze+'<style>'+style+'</style></head>'+
+      '<body><table><thead>'+thead+'</thead><tbody>'+body+'</tbody></table></body></html>';
+    var blob=new Blob(['﻿'+html],{type:'application/vnd.ms-excel'});
+    var url=URL.createObjectURL(blob); var a=document.createElement('a'); a.href=url; a.download='enquiries.xls';
     document.body.appendChild(a); a.click();
     setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); },120);
   }
-  function openEnquiries(){ if(!enqOv) buildEnqOverlay(); enqOv.classList.add('open'); document.body.classList.add('enq-open'); document.body.style.overflow='hidden'; loadEnquiries(false); }
-  function closeEnquiries(){ if(enqOv){ enqOv.classList.remove('open'); enqOv.classList.remove('show-detail'); } document.body.classList.remove('enq-open'); document.body.style.overflow=''; }
+  function openEnquiries(){ if(!enqOv) buildEnqOverlay(); enqOv.classList.add('open'); document.documentElement.classList.remove('enq-boot'); document.body.classList.add('enq-open'); document.body.style.overflow='hidden';
+    if(location.hash.slice(1)!=='enquiries'){ try{ history.pushState(null,'','#enquiries'); }catch(e){ location.hash='enquiries'; } }
+    loadEnquiries(false); }
+  function closeEnquiries(){ if(enqOv){ enqOv.classList.remove('open'); enqOv.classList.remove('show-detail'); } document.body.classList.remove('enq-open'); document.body.style.overflow='';
+    if(location.hash.slice(1)==='enquiries'){ try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){ location.hash=''; } } }
   document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ closeEnquiries(); } });
+  // keep the page across browser back/forward + reload (the hash is restored on load)
+  window.addEventListener('hashchange',function(){
+    var onEnq=location.hash.slice(1)==='enquiries';
+    if(onEnq && !(enqOv&&enqOv.classList.contains('open'))) openEnquiries();
+    else if(!onEnq && enqOv && enqOv.classList.contains('open')) closeEnquiries();
+  });
   window.openEnquiries=openEnquiries;
 
   /* ---- boot ---- */
-  function showLogin(){ clearSession(); window.KDK_USER=null; window.KDK_TOKEN=null; document.body.classList.remove('kdk-authed'); ov.classList.add('open'); mode='signin'; render(); }
+  function showLogin(){ clearSession(); window.KDK_USER=null; window.KDK_TOKEN=null; document.documentElement.classList.remove('enq-boot'); document.body.classList.remove('kdk-authed'); ov.classList.add('open'); mode='signin'; render(); }
   var sess=getSession();
   if(sess && sess.access_token){
     // Returning user: skip the splash + login entirely, show the app instantly,
