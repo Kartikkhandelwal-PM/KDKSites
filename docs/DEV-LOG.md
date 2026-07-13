@@ -4,6 +4,27 @@
 
 ---
 
+## 2026-07-13 — Session 11 (Enquiries UI redesign: full-page master/detail)
+
+### Session Summary
+Reworked the Enquiries UI from a centered modal with stacked cards into a proper **full-page master/detail app screen**, per feedback that the dialog/cards/filters looked unorganised. No new backend — same data, RLS, and edit flow as Session 10. Branch `feature/ai-website-writer`.
+
+### What Was Done
+- **Full-page layout:** dark top bar (title + search + Export + Refresh + close), a full-width **filter bar** (All + per-status chips, each with a colour dot and live count), and a **master/detail split** below.
+- **Left list:** compact lead rows — avatar initials, name, service/message snippet, relative time, and a colour-coded status badge; selected row highlighted with a blue rail.
+- **Right detail pane:** big name + avatar, full date/time (+ "updated" note), source site, a **status segmented control** (click to change), prominent **Contact actions** (Call / WhatsApp / Email), the service chip, the full message in a card, and a large **private-notes** editor with Save.
+- **Interactions:** status changes update in place (buttons + list badge + filter counts) without wiping an unsaved note; note save and status change both PATCH to Supabase; search + filter combine and auto-adjust the selection. Responsive: on narrow screens the list is full-width and the detail slides over with a "Back to list" control.
+- Hides the AI-writer floating button while the Enquiries page is open (`body.enq-open`).
+- Rewrote the render module (buildEnqOverlay/renderEnquiries/renderFilters/renderList/rowHtml/renderDetail/onStatusChange/onNoteSave); dropped the old card/select markup. Export CSV unchanged.
+
+### Verified
+- Headless Chrome (http, seeded session + stub): top bar + 6 filter tabs + 4 rows render; first lead auto-selects; clicking a row swaps the detail; the 5 status buttons show; changing status → `PATCH {"status":"converted"}`, saving a note → `PATCH {"notes":"…"}`; filtering to "New" narrows the list to the one matching lead. Screenshot confirmed the layout reads cleanly in both list and detail.
+
+### Blockers / Next Steps (user)
+- Unchanged from Sessions 8/10: run `supabase db push` (status/notes columns + update policy) and set `SUPABASE_ANON_KEY` in Netlify.
+
+---
+
 ## 2026-07-13 — Session 10 (Enquiries: status, notes, date/time)
 
 ### Session Summary
