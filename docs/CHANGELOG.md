@@ -4,6 +4,27 @@
 
 ---
 
+## [0.9.2] 2026-07-25 — frontend/ + backend/ split
+
+> Structure only. No product behaviour, UI, or feature change. **Zero application code paths changed** — the browser-facing tree moved as a unit and is served as the site root, so all its relative paths still resolve.
+
+### Added
+- **`.github/workflows/pages.yml`** — publishes `frontend/` as the GitHub Pages site root via `actions/upload-pages-artifact@v3`. This is what makes a real `frontend/` folder possible: Pages' branch mode can only serve the repo root or `/docs`.
+- **`frontend/README.md`** — documents `templates/` vs `design-samples/`, including that `design-samples/` is currently loaded by nothing and has drifted from what ships.
+- **`backend/README.md`** — what is built (`supabase/`, `netlify/`) vs never built (`spec/`), the Supabase CLI working-directory change, and the required Netlify env vars.
+
+### Changed
+- **`frontend/`** — `index.html`, `app-config.js`, `local-ai-config.js`, `assets/`, `templates/`, `design-samples/`.
+- **`backend/`** — `supabase/`, `netlify/edge-functions/`, and `spec/` (moved back out of `docs/`, now that a real backend folder exists to hold it).
+- **`netlify.toml`** — `publish = "frontend"`, `edge_functions = "backend/netlify/edge-functions"`. Still at the repo root, which Netlify requires.
+- **Root `index.html`** is no longer the builder; it is a fallback redirect to `frontend/`, so the live URL survives until the Pages source is switched. Safe to delete afterwards.
+
+### Action required
+- **GitHub Pages:** Settings -> Pages -> Source -> **GitHub Actions**, otherwise Pages keeps serving the branch root and visitors take a redirect hop to `/frontend/`.
+- **Supabase CLI:** run `cd backend && supabase …` or `supabase --workdir backend …`; `config.toml` is no longer at the repo root.
+
+---
+
 ## [0.9.1] 2026-07-25 — Repository reorganisation
 
 > Housekeeping only. No product behaviour, UI, or feature change. All moves used `git mv`, so file history is preserved.

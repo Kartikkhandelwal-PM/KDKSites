@@ -4,7 +4,53 @@
 
 ---
 
-## 2026-07-25 — Session 14 (Repo reorganisation: folder cleanup + renames)
+## 2026-07-25 — Session 14b (frontend/ + backend/ split)
+
+### Session Summary
+Second pass on the reorg, at the user's request: an explicit `frontend/` + `backend/` + `docs/` split. In Session 14a I had said a literal `frontend/` folder was not possible because GitHub Pages only serves the repo root or `/docs` from a branch. The user asked for it anyway, and there **is** a clean way: Pages' GitHub Actions source can publish any directory. Done that way. No product behaviour changed.
+
+### What Was Done
+- **`frontend/`** now holds everything the browser downloads: `index.html` (the builder), `app-config.js`, `local-ai-config.js`, `assets/`, `templates/`, `design-samples/`.
+- **`backend/`** now holds all server-side code: `supabase/` (migrations + `ai-generate`), `netlify/edge-functions/render.ts`, and `spec/` (the never-built Golang + MySQL design, moved back out of `docs/`).
+- **`.github/workflows/pages.yml`** (new) uploads `frontend/` as the Pages artifact via `actions/upload-pages-artifact@v3`, making it the **site root**.
+- **`netlify.toml`**: `publish = "frontend"`, `edge_functions = "backend/netlify/edge-functions"`. Stays at the repo root; Netlify reads it from nowhere else.
+- **Root `index.html`** is now a small fallback redirect to `frontend/`, not the builder.
+- **New `frontend/README.md`** and **`backend/README.md`** documenting each area (see below).
+
+### Why zero code paths needed rewriting
+The whole browser-facing tree moved **as a unit**, and `frontend/` is served as the site root on both hosts. So every relative path inside it still resolves untouched:
+- `index.html` favicon `assets/ca-india-logo.png` — unchanged
+- `<script src="app-config.js">` — unchanged
+- `DESIGNS` array `templates/<k>/index.html` + `design-samples/<k>/index.html` — unchanged
+- each template's `../../assets/ca-india-logo.png` — unchanged
+- `render.ts` fetching `${url.origin}/templates/<k>/index.html` — unchanged, because Netlify's publish root is now `frontend/`
+
+Only two config files changed. **Keep paths inside `frontend/` relative** — a leading `/` would break local `python3 -m http.server` previews served from the repo root.
+
+### Answering "what does design-samples do?"
+Investigated properly and documented in `frontend/README.md`. Short version: **it is loaded by nothing.**
+- Each `DESIGNS` entry has `path:` (design-samples) and `live:` (templates). Both consumers resolve `d.live || d.path` — the Step 2 preview iframe (`index.html:1141`) and `openPreview()` (`index.html:1694`). All four designs have a `live:`, so `path:` never wins.
+- Even the magnifier button, which calls `openPreview(key, true)` ("sample mode"), loads the **live** template. Sample mode only relabels the URL bar to "(sample design)" and skips applying the user's edits (`if(pvSample) return;`).
+- What it *is*: the pristine original of each design. `templates/<k>` = that same file **plus a binding script** defining `window.__applyConfig(config)` (~360 added lines for Apex).
+- **It has drifted.** For Apex, ~75 lines differ *beyond* the binding script, so the "pristine original" no longer matches what ships. Still unresolved: re-sync from `templates/` (stripping the binding) or retire the folder and delete the dead `path:` field.
+
+### Verification
+- Grepped all HTML/JS/TS/TOML/YML for `New Design`, `New%20Design`, `CA%20India`, `Live/` → zero hits.
+- **Prod layout:** served `frontend/` as root → `/`, `/assets/ca-india-logo.png`, `/app-config.js`, all four `/templates/<k>/index.html`, `/design-samples/apex/index.html` → all **200**. Those `/templates/` 200s are exactly what `render.ts` fetches.
+- **Fallback layout:** served the repo root → `/` returns the redirect page (target `url=frontend/`), and `/frontend/`, `/frontend/assets/...`, `/frontend/templates/apex/index.html` → all **200**. So the live URL survives even with Pages left on branch mode.
+- Parsed `netlify.toml` and confirmed `publish` dir exists, `edge_functions` dir contains `render.ts`, and the `/s/*` route maps to `render`.
+- Structurally checked `pages.yml`: permissions, `path: frontend`, and `environment.url` correctly referencing step id `deployment`.
+- Confirmed the Supabase CLI exposes `--workdir`, so `backend/supabase/` is workable.
+
+### Blockers / Next Steps (IMPORTANT)
+1. **GitHub Pages source must be switched by hand:** repo Settings -> Pages -> Build and deployment -> Source -> **GitHub Actions**. Until then Pages serves the branch root and visitors get one redirect hop to `/frontend/`. Delete the root `index.html` once switched. Note this branch is not merged to `main`, so the live site is unaffected for now.
+2. **Netlify:** still needs connecting (repo access + `SUPABASE_URL` / `SUPABASE_SERVICE_KEY` / `SUPABASE_ANON_KEY`). It will pick up `publish = "frontend"` automatically.
+3. **Supabase CLI invocation changed:** `cd backend && supabase …` or `supabase --workdir backend …`. Bare `supabase db push` from the repo root no longer finds the project.
+4. Still open: the drifted `design-samples/` (see above).
+
+---
+
+## 2026-07-25 — Session 14a (Repo reorganisation: folder cleanup + renames)
 
 ### Session Summary
 Housekeeping only, no product behaviour changed. Deleted a stale duplicate folder, renamed the two confusingly-named template folders, grouped loose assets, and folded paper-only specs into `docs/`. All moves used `git mv` so file history follows. Branch `feature/ai-website-writer`.

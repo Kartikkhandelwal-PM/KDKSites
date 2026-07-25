@@ -1,0 +1,48 @@
+# Publishes frontend/ as the GitHub Pages site root.
+#
+# WHY THIS EXISTS: Pages' "Deploy from a branch" option can only serve the repo
+# root or /docs. After the 2026-07-25 reorg the builder lives in frontend/, so
+# serving it at the site root requires the Actions-based deploy below.
+#
+# ONE-TIME SETUP (required): GitHub repo -> Settings -> Pages -> Build and
+# deployment -> Source -> "GitHub Actions". Until that is switched, this
+# workflow runs but Pages keeps serving the branch root (see the fallback
+# redirect in the root index.html).
+
+name: Deploy builder to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never let two Pages deploys race; let a running one finish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/configure-pages@v5
+
+      # No build step: the prototype is self-contained static HTML.
+      # Uploading frontend/ makes it the site root, so index.html's
+      # relative paths (assets/, templates/, design-samples/) resolve as-is.
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

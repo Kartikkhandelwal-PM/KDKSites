@@ -1,9 +1,13 @@
-# Netlify config — serves the repo as static (builder + templates/ renderers) and
-# runs the render Edge Function for published sites at /s/<subdomain>.
+# Netlify config — must live at the repo root; Netlify reads it from nowhere else.
+#
+# Serves frontend/ as the site root (so /templates/<key>/index.html resolves the
+# way render.ts expects) and runs the render Edge Function for published sites.
 
 [build]
-  publish = "."
+  publish = "frontend"
   command = ""
+  # Edge functions moved under backend/ during the 2026-07-25 reorg.
+  edge_functions = "backend/netlify/edge-functions"
 
 # Published client sites: kdksites.netlify.app/s/<subdomain>
 [[edge_functions]]

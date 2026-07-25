@@ -10,28 +10,42 @@ The prototype is live at:
 
 **https://kartikkhandelwal-pm.github.io/KDKSites/**
 
-The site opens directly on the **6-step website builder** (it is the root `index.html`).
+The site opens directly on the **6-step website builder** (`frontend/index.html`).
 
-- **Published templates:** `templates/apex`, `templates/nova`, `templates/heritage`, `templates/zenith`
+- **Published templates:** `frontend/templates/` — apex, nova, heritage, zenith
 
 ## Repository structure
 
 ```
-index.html          6-step website builder (the entry point)
-app-config.js       Public Supabase config (URL + anon key)
-assets/             Brand images (logos, favicon)
-templates/          The 4 published site renderers (apex, nova, heritage, zenith)
-design-samples/     Pristine design iterations, reference only
-supabase/           Migrations + the ai-generate Edge Function
-netlify/            render Edge Function, serves published sites at /s/<subdomain>
-docs/               PRD, changelog, dev log, backend spec
+frontend/           Everything the browser downloads = the published site root
+  index.html          The 6-step website builder
+  app-config.js       Public Supabase config (URL + anon key)
+  assets/             Brand images (logos, favicon)
+  templates/          The 4 published site renderers
+  design-samples/     Pristine originals of those designs, reference only
+backend/
+  supabase/           BUILT: Postgres migrations + the ai-generate Edge Function
+  netlify/            BUILT: render Edge Function, serves published sites at /s/<subdomain>
+  spec/               NEVER BUILT: the planned Golang + MySQL backend
+docs/               PRD, changelog, dev log, admin notes
+netlify.toml        Pinned to the repo root; Netlify reads it from nowhere else
+index.html          Not the builder. Fallback redirect to frontend/ (see below)
 ```
 
-`index.html`, `app-config.js` and `netlify.toml` must stay at the repo root: the
-first two are the GitHub Pages entry point and its root-relative script, and
-Netlify only reads its config from the root.
+`frontend/` is served as the **site root** on both hosts, so paths inside it need
+no rewriting: GitHub Pages uploads it via `.github/workflows/pages.yml`, and
+Netlify publishes it via `publish = "frontend"`.
+
+## Setup notes
+
+- **GitHub Pages needs one settings change:** Settings -> Pages -> Source ->
+  **GitHub Actions**. Pages' branch mode can only serve the repo root or `/docs`,
+  which is why the workflow exists. The root `index.html` redirects to `frontend/`
+  so the live URL keeps working until you flip that setting; delete it afterwards.
+- **Supabase CLI:** `config.toml` now lives at `backend/supabase/`, so run
+  `cd backend && supabase …` or `supabase --workdir backend …`.
 
 ## Notes
 
 - All prototypes are self-contained single-file HTML: no build step, no external CDN.
-- Open any `.html` file directly in a browser, or view the hosted version above.
+- Preview locally with `cd frontend && python3 -m http.server 8765`.

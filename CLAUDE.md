@@ -17,14 +17,15 @@ A **website builder product** embedded inside the KDK Software desktop/web app. 
 - **Live prototype:** https://kartikkhandelwal-pm.github.io/KDKSites/
 - **Repo:** https://github.com/Kartikkhandelwal-PM/KDKSites (branch: `main`)
 - The site opens **directly on the 6-step builder**. There is no landing dashboard.
-- The root **`index.html` IS the builder.** It was moved up from `Admin Panel/website-builder-admin-v4.html` on 2026-07-03, and its `../` asset paths were rewritten to be root-relative.
-- **Hosting:** GitHub Pages (static), serving the root of `main`. Every push triggers a Pages rebuild (typically 1 to 3 minutes) followed by a CDN cache refresh.
-- The four published website templates live in `templates/` (apex, nova, heritage, zenith). `design-samples/` holds the pristine design iterations. **Renamed on 2026-07-25** from `Live/` and `New Design/`; the stale `New Design copy/` duplicate was deleted, and `Admin Panel/` + `backend/` were folded into `docs/`.
+- **`frontend/index.html` IS the builder.** It lived at the repo root until the 2026-07-25 reorg moved it into `frontend/`. The `index.html` still at the root is only a fallback redirect. Originally moved up from `Admin Panel/website-builder-admin-v4.html` on 2026-07-03.
+- **Hosting:** GitHub Pages (static) off `main`. **Action required:** set Settings -> Pages -> Source to **GitHub Actions** so `.github/workflows/pages.yml` serves `frontend/` as the site root. Every push triggers a rebuild (typically 1 to 3 minutes) followed by a CDN cache refresh.
+- The four published website templates live in `frontend/templates/` (apex, nova, heritage, zenith). `frontend/design-samples/` holds the pristine originals, and is currently **loaded by nothing** (dead fallback). See [frontend/README.md](frontend/README.md).
+- **2026-07-25 reorg:** `Live/` -> `frontend/templates/`, `New Design/` -> `frontend/design-samples/`, logos -> `frontend/assets/`, `supabase/` + `netlify/` -> `backend/`, spec -> `backend/spec/`, `Admin Panel/` notes -> `docs/`. The stale `New Design copy/` duplicate was deleted.
 - **AI Writer + Auth + Supabase + Netlify (prototype, on branch `feature/ai-website-writer`, not yet merged to `main`):**
   - **AI Writer** — a floating button runs a short interview and an LLM drafts the whole site. The AI key is now **server-side** in a Supabase Edge Function (`ai-generate`); the browser calls that, never the provider directly.
   - **Auth** — Supabase Auth (email/password) gates the builder with an animated login; the profile menu has Sign Out.
-  - **Supabase** — project `hlhtopqbzfzlxxmolkok`; `wb_websites`/`wb_leads` tables + RLS applied; `ai-generate` function deployed. Public config (URL + anon key) is in committed `app-config.js`; local AI overrides in gitignored `local-ai-config.js`.
-  - **Publishing** — `netlify.toml` + `netlify/edge-functions/render.ts` serve published sites at `kdksites.netlify.app/s/<subdomain>` (no domain needed). Publish saves config to Supabase. **Pending: user connects Netlify** (repo access + `SUPABASE_URL`/`SUPABASE_SERVICE_KEY` env vars).
+  - **Supabase** — project `hlhtopqbzfzlxxmolkok`; `wb_websites`/`wb_leads` tables + RLS applied; `ai-generate` function deployed. Public config (URL + anon key) is in committed `frontend/app-config.js`; local AI overrides in gitignored `frontend/local-ai-config.js`.
+  - **Publishing** — root `netlify.toml` + `backend/netlify/edge-functions/render.ts` serve published sites at `kdksites.netlify.app/s/<subdomain>` (no domain needed). Publish saves config to Supabase. **Pending: user connects Netlify** (repo access + `SUPABASE_URL`/`SUPABASE_SERVICE_KEY` env vars).
   - Full detail: [docs/DEV-LOG.md](docs/DEV-LOG.md) 2026-07-11 (Sessions 5 & 6).
 
 ### Deploy a change
@@ -33,8 +34,10 @@ git add -A && git commit -m "your message" && git push
 ```
 Then wait 1 to 3 minutes for the Pages rebuild. Preview locally without deploying:
 ```
-python3 -m http.server 8765     # then open http://localhost:8765/
+cd frontend && python3 -m http.server 8765    # then open http://localhost:8765/
 ```
+Serve from `frontend/`, not the repo root, so paths match production. (From the
+root it also works, at `http://localhost:8765/frontend/`.)
 
 ### GitHub auth
 Auth uses the `gh` CLI (installed via Homebrew). If a push fails with no credentials, run `gh auth login` (GitHub.com, HTTPS, login with a web browser) then `gh auth setup-git`.
@@ -56,55 +59,62 @@ Any new session should **START** by reading this file, then the top entry of [do
 
 ## Project Structure
 
-Reorganised on 2026-07-25. Four folders are **pinned to the repo root by tooling**
-and must not be moved: `index.html` (GitHub Pages entry point), `app-config.js` +
-`local-ai-config.js` (loaded root-relative by `index.html`), `netlify.toml`
-(Netlify reads config from the root only), and `supabase/` (the Supabase CLI
-resolves the project from `supabase/config.toml` at the root).
+Split into `frontend/` + `backend/` + `docs/` on 2026-07-25. **`frontend/` is the
+published site root on both hosts** (GitHub Pages uploads it, Netlify publishes
+it), so paths inside it stay relative and resolve unchanged.
+
+Only `netlify.toml` is pinned to the repo root: Netlify reads its config from
+nowhere else. The root `index.html` is **not** the builder any more, just a
+fallback redirect (see the note under the tree).
 
 ```
-KDKSites/                             # repo root (this is what GitHub Pages serves)
-├── index.html                        # THE 6-step builder wizard (site entry point) [PINNED]
-├── app-config.js                     # Public Supabase config: URL + anon key [PINNED]
-├── local-ai-config.js                # Local AI overrides — gitignored, holds a key [PINNED]
-├── netlify.toml                      # Netlify static + edge-function config [PINNED]
+KDKSites/
+├── netlify.toml                      # [PINNED to root] publish=frontend, edge_functions=backend/...
+├── index.html                        # NOT the builder — fallback redirect to frontend/
 ├── README.md                         # Repo readme + live URL
 ├── CLAUDE.md                         # This file — start here
 ├── .gitignore                        # Excludes .claude/, "* copy/", OS files, local-ai-config.js
+├── .github/workflows/pages.yml       # Publishes frontend/ as the Pages site root
 │
-├── assets/                           # Shared brand images
-│   ├── ca-india-logo.png             # Favicon for builder + all templates
-│   └── kdk-sites-logo.png            # KDK Sites brand logo (icon + wordmark)
+├── frontend/                         # EVERYTHING THE BROWSER DOWNLOADS = the site root
+│   ├── README.md                     # templates/ vs design-samples/, explained
+│   ├── index.html                    # THE 6-step builder wizard (real entry point)
+│   ├── app-config.js                 # Public Supabase config: URL + anon key
+│   ├── local-ai-config.js            # Local AI overrides — gitignored, holds a key
+│   ├── assets/
+│   │   ├── ca-india-logo.png         # Favicon for builder + all templates
+│   │   └── kdk-sites-logo.png        # KDK Sites brand logo (icon + wordmark)
+│   ├── templates/                    # The 4 PUBLISHED renderers (was Live/)
+│   │   └── apex|nova|heritage|zenith/index.html
+│   └── design-samples/               # Pristine originals (was New Design/)
+│       └── apex|nova|heritage|zenith|zenith-v2/index.html
 │
-├── templates/                        # The 4 PUBLISHED renderers (was Live/)
-│   ├── apex/index.html               # render.ts fetches /templates/<key>/index.html
-│   ├── nova/index.html
-│   ├── heritage/index.html
-│   └── zenith/index.html
-│
-├── design-samples/                   # Pristine design iterations (was New Design/)
-│   ├── apex/  nova/  heritage/  zenith/  zenith-v2/
-│                                     # Reference only: the builder prefers templates/
-│
-├── supabase/                         # BACKEND, built [PINNED]
-│   ├── config.toml
-│   ├── functions/ai-generate/        # Server-side AI call (keeps the API key off the browser)
-│   └── migrations/                   # wb_websites, wb_leads, RLS, lead status/notes
-│
-├── netlify/                          # BACKEND, built
-│   └── edge-functions/render.ts      # Serves published sites at /s/<subdomain>
+├── backend/
+│   ├── README.md                     # What is built vs spec-only; CLI + env vars
+│   ├── supabase/                     # BUILT: config.toml, migrations/, functions/ai-generate/
+│   ├── netlify/edge-functions/       # BUILT: render.ts — serves /s/<subdomain>
+│   └── spec/                         # NEVER BUILT: the planned Golang + MySQL backend
 │
 └── docs/
     ├── PRD - Website Builder.md      # Full product requirements (note: still lists older 3-template lineup)
     ├── CHANGELOG.md                  # Version history & change log
     ├── DEV-LOG.md                    # Detailed daily dev log
-    ├── ADMIN-PANEL-UNDERSTANDING.md  # Notes on admin/builder behaviour (was Admin Panel/)
-    └── backend-spec/                 # SPEC ONLY, never built (was backend/)
-        ├── api-spec.md               # 12 REST endpoints (Golang)
-        └── database-schema.sql       # MySQL schema, 5 tables + seed
+    └── ADMIN-PANEL-UNDERSTANDING.md  # Notes on admin/builder behaviour
 ```
-> `docs/backend-spec/` is paper only. The schema that actually runs is
-> `supabase/migrations/` (Postgres), not `database-schema.sql` (MySQL).
+
+### Three things that will bite you
+
+1. **`backend/spec/` is paper only.** The schema that actually runs is
+   `backend/supabase/migrations/` (Postgres), *not* `spec/database-schema.sql` (MySQL).
+2. **The Supabase CLI needs the right working directory** now that `config.toml`
+   sits at `backend/supabase/`: run `cd backend && supabase …` or
+   `supabase --workdir backend …`. Bare `supabase db push` from the root will not
+   find the project.
+3. **GitHub Pages needs a one-time settings change** to serve `frontend/` at the
+   site root: Settings -> Pages -> Source -> **GitHub Actions**. Until that is
+   flipped, Pages serves the branch root and the fallback `index.html` forwards
+   visitors to `/frontend/` so the live URL keeps working. Delete that fallback
+   once Pages is on GitHub Actions.
 
 ---
 
@@ -199,7 +209,7 @@ Base: `POST /api/v1/website-builder/` — all endpoints require JWT from KDK app
 
 12 endpoints covering: get-website, create, update-info, update-services, update-theme, publish, check-subdomain, get-leads, analytics, delete, preview, list-professions.
 
-Full spec in [docs/backend-spec/api-spec.md](docs/backend-spec/api-spec.md).
+Full spec in [backend/spec/api-spec.md](backend/spec/api-spec.md).
 
 ---
 
@@ -207,7 +217,7 @@ Full spec in [docs/backend-spec/api-spec.md](docs/backend-spec/api-spec.md).
 
 5 MySQL tables: `websites`, `website_business_info`, `website_services`, `website_leads`, `website_analytics`.
 
-Full schema + seed data for all 6 professions in [docs/backend-spec/database-schema.sql](docs/backend-spec/database-schema.sql).
+Full schema + seed data for all 6 professions in [backend/spec/database-schema.sql](backend/spec/database-schema.sql).
 
 ---
 
@@ -223,8 +233,8 @@ Full schema + seed data for all 6 professions in [docs/backend-spec/database-sch
 
 ## Working With This Project
 
-- **To open the builder:** open `index.html` in a browser, or visit the live URL above
-- **To view a template:** open any `templates/<name>/index.html`
+- **To open the builder:** open `frontend/index.html` in a browser, or visit the live URL above
+- **To view a template:** open any `frontend/templates/<name>/index.html`
 - **To understand the product:** read `docs/PRD - Website Builder.md`
 - **To know the current state / how to continue:** read the **Current State** and **Session Handoff Protocol** sections at the top of this file, then the top entry of `docs/DEV-LOG.md`
 - **To track changes:** see `docs/CHANGELOG.md` and `docs/DEV-LOG.md`
