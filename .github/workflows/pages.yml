@@ -39,7 +39,7 @@ jobs:
 
       # No build step: the prototype is self-contained static HTML.
       # Uploading frontend/ makes it the site root, so index.html's
-      # relative paths (assets/, templates/, design-samples/) resolve as-is.
+      # relative paths (assets/, templates/) resolve as-is.
       - uses: actions/upload-pages-artifact@v3
         with:
           path: frontend

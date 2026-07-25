@@ -4,6 +4,37 @@
 
 ---
 
+## 2026-07-25 — Session 14c (Deleted design-samples/, removed the dead code path)
+
+### Session Summary
+Closed the long-standing "retire or sync `New Design/`" question that had been open since Session 3. **Deleted the folder** (by then `frontend/design-samples/`) and removed the dead `path` field it fed. Roughly 340 KB and five stale HTML copies gone. No user-visible change.
+
+### Why it went rather than getting re-synced
+- **Nothing loaded it.** Each `DESIGNS` entry had both `path` (samples) and `live` (templates). The only two consumers resolved `d.live || d.path`: the Step 2 thumbnail iframe and `openPreview()`. All four designs had a `live`, so `path` never won.
+- **The one place that looked like an exception was not one.** The magnifier button calls `openPreview(key, true)` and the UI labels it "(sample design)", but it loaded the **live** renderer too. Sample mode only means "send no config", so the renderer shows its own built-in demo content.
+- **It had drifted anyway.** Fixes landed in the renderers only; Apex differed by ~75 lines beyond the binding script. Re-syncing would have been real work to restore a folder nothing reads.
+
+### What Was Done
+- Deleted `frontend/design-samples/` (apex, nova, heritage, zenith, zenith-v2).
+- Removed `path:'design-samples/<key>/index.html'` from all four `DESIGNS` entries in `frontend/index.html`.
+- Simplified the two consumers: the thumbnail `src` and `openPreview`'s `target` now read `d.live` directly instead of `d.live || d.path`.
+- Removed a dead branch in the preview URL label: `(d.live?'':' (sample: this design is not wired to your edits yet)')` could never fire once every design has a `live`.
+- **Kept sample mode.** `pvSample` still works and never depended on the deleted folder.
+- Cleaned stale comments in the three template files that pointed at the old sample location, plus the `design-samples/` mention in `pages.yml`.
+- Rewrote the `frontend/README.md` section, and updated `CLAUDE.md`, `README.md`, and `docs/ADMIN-PANEL-UNDERSTANDING.md`. In the admin notes, the old "Sample templates are pristine and never modified" rule is struck through and marked **SUPERSEDED 2026-07-25** rather than silently deleted, since it was a stated design principle.
+
+### Verification
+- Extracted and syntax-checked all **4 inline `<script>` blocks** in `frontend/index.html` with `new vm.Script` → **0 errors**, confirming the `sed` that stripped the `path` field broke nothing.
+- Evaluated the `DESIGNS` array in a VM sandbox: 4 entries, no `path` field on any, every `live` equal to `templates/<key>/index.html` and pointing at a file that exists, and `sw`/`primary`/`accent` colour data intact.
+- Simulated both consumers for all four designs: neither the thumbnail `src` nor the preview `target` can now yield `undefined`; each resolves to a real file.
+- Grepped all HTML/JS/TS/TOML/YML plus the living docs for `design-samples` and `d.path` → zero hits.
+
+### Notes / Next Steps
+- If a fifth design is ever added, keep any pre-binding reference copy **outside** the repo. `frontend/README.md` now says so, with the reasoning.
+- Carried over and still outstanding: switch GitHub Pages Source to **GitHub Actions**, and connect Netlify. See Session 14b.
+
+---
+
 ## 2026-07-25 — Session 14b (frontend/ + backend/ split)
 
 ### Session Summary

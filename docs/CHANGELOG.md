@@ -4,6 +4,25 @@
 
 ---
 
+## [0.9.3] 2026-07-25 — Removed the unused design-samples/ folder
+
+> Closes the "retire or sync `New Design/`" question open since Session 3. No user-visible change.
+
+### Removed
+- **`frontend/design-samples/`** (apex, nova, heritage, zenith, zenith-v2) — a second copy of every design without the binding script. **Nothing loaded it:** each `DESIGNS` entry had a `path` (samples) and a `live` (templates), both consumers resolved `d.live || d.path`, and all four designs had a `live`. It had also drifted from the shipping renderers by ~75 lines for Apex, so it was no longer a faithful original.
+- The dead `path` field on all four `DESIGNS` entries in `frontend/index.html`.
+- A dead branch in the preview URL label that could only fire for a design with no `live` renderer.
+
+### Changed
+- The Step 2 thumbnail `src` and `openPreview`'s target now read `d.live` directly instead of `d.live || d.path`.
+- Stale comments in the heritage/nova/zenith renderers that pointed at the old sample location.
+- `frontend/README.md` rewritten; `CLAUDE.md`, `README.md` and `docs/ADMIN-PANEL-UNDERSTANDING.md` updated. The admin notes' "sample templates are pristine" rule is struck through and marked SUPERSEDED rather than deleted, since it was a stated design principle.
+
+### Unaffected
+- **"Sample mode" still works.** The magnifier button on a design card loads the normal `templates/<key>` renderer and deliberately sends it no config, so it shows its own demo content. It never used the deleted folder.
+
+---
+
 ## [0.9.2] 2026-07-25 — frontend/ + backend/ split
 
 > Structure only. No product behaviour, UI, or feature change. **Zero application code paths changed** — the browser-facing tree moved as a unit and is served as the site root, so all its relative paths still resolve.

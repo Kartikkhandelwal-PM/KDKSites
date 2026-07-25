@@ -912,10 +912,10 @@ try{['kdk_wb_config','kdk_apex_config','kdk_heritage_v2_config','kdk_heritage_co
 
 /* ---------- DESIGN + THEME DATA ---------- */
 const DESIGNS = [
-  {key:'apex',name:'Apex',desc:'CA, Tax & Financial Consultants',badge:'Most Popular',badgeBg:'rgba(29,78,216,.85)',path:'design-samples/apex/index.html',live:'templates/apex/index.html',sw:['#1D4ED8','#C4830A','#F8FAFC'],primary:'#1D4ED8',accent:'#C4830A'},
-  {key:'heritage',name:'Heritage',desc:'Advocates & Legal Consultants',badge:'Advocates',badgeBg:'rgba(107,58,31,.8)',path:'design-samples/heritage/index.html',live:'templates/heritage/index.html',sw:['#6B3A1F','#C4830A','#F9F4EC'],primary:'#6B3A1F',accent:'#C4830A'},
-  {key:'nova',name:'Nova',desc:'Tax Consultants, GST Practitioners',badge:'Modern',badgeBg:'rgba(234,88,12,.85)',path:'design-samples/nova/index.html',live:'templates/nova/index.html',sw:['#0F1E3C','#EA580C','#F7F9FC'],primary:'#1A44C0',accent:'#EA580C'},
-  {key:'zenith',name:'Zenith',desc:'Company Secretaries, Corporate',badge:'Corporate',badgeBg:'rgba(109,40,217,.85)',path:'design-samples/zenith/index.html',live:'templates/zenith/index.html',sw:['#0D0A14','#7C3AED','#A78BFA'],primary:'#7C3AED',accent:'#A78BFA'}
+  {key:'apex',name:'Apex',desc:'CA, Tax & Financial Consultants',badge:'Most Popular',badgeBg:'rgba(29,78,216,.85)',live:'templates/apex/index.html',sw:['#1D4ED8','#C4830A','#F8FAFC'],primary:'#1D4ED8',accent:'#C4830A'},
+  {key:'heritage',name:'Heritage',desc:'Advocates & Legal Consultants',badge:'Advocates',badgeBg:'rgba(107,58,31,.8)',live:'templates/heritage/index.html',sw:['#6B3A1F','#C4830A','#F9F4EC'],primary:'#6B3A1F',accent:'#C4830A'},
+  {key:'nova',name:'Nova',desc:'Tax Consultants, GST Practitioners',badge:'Modern',badgeBg:'rgba(234,88,12,.85)',live:'templates/nova/index.html',sw:['#0F1E3C','#EA580C','#F7F9FC'],primary:'#1A44C0',accent:'#EA580C'},
+  {key:'zenith',name:'Zenith',desc:'Company Secretaries, Corporate',badge:'Corporate',badgeBg:'rgba(109,40,217,.85)',live:'templates/zenith/index.html',sw:['#0D0A14','#7C3AED','#A78BFA'],primary:'#7C3AED',accent:'#A78BFA'}
 ];
 /* 3-4 curated palettes PER design. Primaries are dark enough for text/buttons on
    the light designs; Zenith (dark UI) uses light accents so text stays legible. */
@@ -1138,7 +1138,7 @@ function buildTemplates(){
     g.insertAdjacentHTML('beforeend',
       '<div class="tpl-card'+(d.key===S.template?' sel':'')+'" data-k="'+d.key+'" onclick="pickTpl(\''+d.key+'\')">'+
         '<div class="tpl-prev" style="background:linear-gradient(150deg,'+d.sw[0]+','+shade(d.sw[0],20)+')">'+
-          '<iframe class="tpl-shot" data-k="'+d.key+'" src="'+(d.live||d.path)+'" scrolling="no" loading="lazy" tabindex="-1" aria-hidden="true" title="'+d.name+' preview" onload="thumbLoaded(this)"></iframe>'+
+          '<iframe class="tpl-shot" data-k="'+d.key+'" src="'+d.live+'" scrolling="no" loading="lazy" tabindex="-1" aria-hidden="true" title="'+d.name+' preview" onload="thumbLoaded(this)"></iframe>'+
           '<div class="tpl-ov"><button class="tpl-pv-btn" onclick="event.stopPropagation();openPreview(\''+d.key+'\',true)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z"/><circle cx="8" cy="8" r="2"/></svg>Preview</button></div>'+
         '</div>'+
         '<div class="tpl-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6l3 3 5-5"/></svg></div>'+
@@ -1689,11 +1689,11 @@ function openPreview(keyOverride,sampleMode){
   pvPreviewKey=key;
   pvSample=!!sampleMode;
   const d=DESIGNS.find(function(x){return x.key===key;});
-  // Preview renders a SEPARATE live copy (never the pristine sample). Designs
-  // without a live renderer yet fall back to the sample (edits not applied).
-  const target=d.live||d.path;
+  // Every design has a renderer in templates/, which is always what we load.
+  // Sample mode changes only what we send it: nothing, so it shows its own demo.
+  const target=d.live;
   const sub=siteSlug(document.getElementById('subIn').value||'your-site');
-  document.getElementById('pvUrl').textContent=pvSample?(d.name+' (sample design)'):(prettyUrl(sub)+(d.live?'':'  (sample: this design is not wired to your edits yet)'));
+  document.getElementById('pvUrl').textContent=pvSample?(d.name+' (sample design)'):prettyUrl(sub);
   document.getElementById('pvOpen2').href=target;
   const fr=document.getElementById('pvFrame');
   pushConfig();

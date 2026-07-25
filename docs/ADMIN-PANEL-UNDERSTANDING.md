@@ -1,6 +1,6 @@
 # Admin Panel — Understanding & Spec Reference
 
-> Working understanding of the Website Builder admin panel, grounded in the actual design files in `frontend/design-samples/` and the current prototype `Admin Panel/website-builder-admin-v4.html`.
+> Working understanding of the Website Builder admin panel, grounded in the actual design files in `frontend/templates/` and the current prototype `Admin Panel/website-builder-admin-v4.html`.
 > Current build state (authoritative) is in §4a. Sections 2–3 below are earlier design context.
 > Last reviewed: 2026-07-01
 
@@ -43,7 +43,7 @@ Gaps against the new requirements:
 - Form fields are hardcoded to a single "Sharma & Associates" CA example, not driven by the selected design or profession.
 - No real image upload wiring, no per-section customisation for services descriptions, stats, testimonials, process steps, or footer.
 
-### The four website designs: `frontend/design-samples/`
+### The four website designs: `frontend/templates/`
 | Design | Folder | Style / Target | Sections |
 |---|---|---|---|
 | **Apex** | `apex/` | Dark, premium, blue+gold. CA / Tax / Financial consultants | Nav, Hero (SVG art), Stats strip, 8 Services, About+Founder, 3-step Process, 5 Testimonials, Contact, Footer, WhatsApp |
@@ -51,7 +51,7 @@ Gaps against the new requirements:
 | **Nova** | `nova/` | Light, modern, navy+coral. Tax consultants / GST. **Has hero image carousel** | Nav, Hero (image carousel), Stats strip, 8 Services, About+Founder, 3-step Process, 5 Testimonials, Contact, Footer, WhatsApp |
 | **Zenith** | `zenith/` | Dark indigo/purple, neon, corporate/fintech. Company Secretaries / Corporate | Hero (canvas particles), 8 Services, About+Founder, 4-step Process, 5 Testimonials, Contact (split), Footer, WhatsApp |
 
-There is also a `frontend/design-samples/zenith-v2/` variant. The earlier prestige/clarity/heritage/meridian set is superseded and no longer in the repo.
+A `zenith-v2/` variant and a pristine-samples folder both existed once; both were removed on 2026-07-25 (nothing loaded them). The earlier prestige/clarity/heritage/meridian set is likewise superseded and gone.
 
 ---
 
@@ -138,7 +138,7 @@ Admin-panel UI itself uses its own light token system (see prototype `:root`): `
   5. About & Story — about text, founder (name/bio/photo/credentials), highlights, process, **testimonials (editable star rating each)**
   6. Publish — subdomain + launch
 - **Colour themes are per-design (6 each):** `THEMES_BY_DESIGN` holds 6 curated, clearly-distinct palettes per design, chosen so text/sections stay legible (dark primaries on the light designs; light accents on the dark Zenith UI). Picking a design refreshes the palette list. Colour changes push to the preview live if it's open (`livePush()`). The old "Fine-tune" custom colour pickers were removed.
-- **Theme 0 is the design's ORIGINAL palette:** the config carries `nativeTheme:(S.theme===0)`. When true, each binding **removes** its colour/gradient overrides (`root.style.removeProperty(...)`, empties injected `<style>`s) so the design falls back to its own stylesheet and renders exactly like the pristine `frontend/design-samples/` sample — including Heritage's hero crosshatch/rings. Themes 1–5 recolor the **whole** site.
+- **Theme 0 is the design's ORIGINAL palette:** the config carries `nativeTheme:(S.theme===0)`. When true, each binding **removes** its colour/gradient overrides (`root.style.removeProperty(...)`, empties injected `<style>`s) so the design falls back to its own stylesheet and renders exactly like the design's own untouched look — including Heritage's hero crosshatch/rings. Themes 1–5 recolor the **whole** site.
 - **Deep theming (whole-site recolor), because designs hardcode their brand colour in many places:**
   - **Apex** injects a `<style id="kdkTheme">` overriding hero/stats/process/footer/service-bar gradients + the `.hl` highlight.
   - **Nova** overrides `--blue`/`--coral` and retints `--navy` (its dark strips/footer/buttons).
@@ -151,12 +151,12 @@ Admin-panel UI itself uses its own light token system (see prototype `:root`): `
 - **Testimonial carousels** (Apex/Heritage/Nova) re-run their boot function after a short delay (`setTimeout(bootTesti*, 140/420)`) so they compute widths after the preview iframe has laid out — otherwise the cards can render blank until a resize.
 - **Hero images support multiple uploads** (Nova rotates through them as its hero carousel; add/remove in a gallery). All uploads (logo/founder/hero) have a remove (×) control.
 - **Verification:** jsdom round-trip tests in the scratchpad cover each design + admin (content, theming, native revert, ratings). Current: Apex 33, Heritage 30, Nova 32, Zenith 33, native 6, rating 8 — all passing.
-- **Sample templates are pristine and never modified.** `frontend/design-samples/<template>/index.html` are the read-only samples the "Open sample" links point to. They must not contain binding code and must not be mutated by the builder.
+- **~~Sample templates are pristine and never modified.~~ SUPERSEDED 2026-07-25.** The pristine-samples folder was deleted; nothing loaded it and it had drifted. "Sample mode" now loads the normal `frontend/templates/<key>` renderer with **no config sent**, so it shows its own built-in demo content.
 - **Customized rendering lives in a separate copy.** Rendered/customized output goes to `frontend/templates/<template>/index.html` — a copy of the pristine sample **plus** a binding script. The admin **Preview** loads the Live copy; it never points at the sample. (In production this maps to the server rendering a per-subdomain instance; the sample template stays untouched.)
 - **Data binding:** the panel emits one shared config object (`collectConfig()`) and delivers it two ways: a `postMessage` to the Live preview iframe (primary), and a single `localStorage` key `kdk_wb_config` (fallback). **The panel must never write keys the pristine samples read** (e.g. `kdk_heritage_v2_config`, `kdk_zenith_config`) or the samples change.
 - **All four designs are fully wired** (`frontend/templates/apex`, `frontend/templates/heritage`, `frontend/templates/nova`, `frontend/templates/zenith`): each binding populates nav, hero, stats, services, about, founder, process, testimonials, contact, footer, social, WhatsApp, colours, and title from the shared config. Each verified with a jsdom round-trip test (Apex 33, Heritage 30, Nova 30, Zenith 33 checks — all pass). Design-specific handling: Nova's hero image carousel (user image replaces slides) + overlay stats; Zenith's JS-array testimonial rotator (`window.__zTesti` + re-runnable `bootTestiZ()`) and `dl/dt/dd` highlights; Heritage/Apex/Nova DOM testimonial carousels refactored to re-runnable `bootTesti*()` functions.
 - **Design switching:** details are entered once into the shared config; switching the template in Step 1 only changes which Live copy renders — all text/services/founder/etc. persist. (Switching does reset the colour palette to the newly chosen design's default; the user can re-tune in Step 6.)
-- **Adding a NEW template later:** (1) drop the design in `frontend/design-samples/<key>/`, (2) copy it to `frontend/templates/<key>/` and append a binding `<script>` following the Apex pattern (remap selectors), (3) add one entry to the `DESIGNS` array in the admin with `path` + `live`. No other changes needed.
+- **Adding a NEW template later:** (1) put the design in `frontend/templates/<key>/`, (2) and append a binding `<script>` following the Apex pattern (remap selectors), (3) add one entry to the `DESIGNS` array in the admin with `path` + `live`. No other changes needed.
 - **Per-user output (future):** Preview currently renders a single shared `frontend/templates/<key>` copy. Real publishing should render a per-subdomain instance (server-side, or `frontend/templates/<subdomain>/`) so users don't overwrite each other.
 
 ## 5. Preview / Data-Binding Mechanism (KEY architectural finding)

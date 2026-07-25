@@ -19,8 +19,8 @@ A **website builder product** embedded inside the KDK Software desktop/web app. 
 - The site opens **directly on the 6-step builder**. There is no landing dashboard.
 - **`frontend/index.html` IS the builder.** It lived at the repo root until the 2026-07-25 reorg moved it into `frontend/`. The `index.html` still at the root is only a fallback redirect. Originally moved up from `Admin Panel/website-builder-admin-v4.html` on 2026-07-03.
 - **Hosting:** GitHub Pages (static) off `main`. **Action required:** set Settings -> Pages -> Source to **GitHub Actions** so `.github/workflows/pages.yml` serves `frontend/` as the site root. Every push triggers a rebuild (typically 1 to 3 minutes) followed by a CDN cache refresh.
-- The four published website templates live in `frontend/templates/` (apex, nova, heritage, zenith). `frontend/design-samples/` holds the pristine originals, and is currently **loaded by nothing** (dead fallback). See [frontend/README.md](frontend/README.md).
-- **2026-07-25 reorg:** `Live/` -> `frontend/templates/`, `New Design/` -> `frontend/design-samples/`, logos -> `frontend/assets/`, `supabase/` + `netlify/` -> `backend/`, spec -> `backend/spec/`, `Admin Panel/` notes -> `docs/`. The stale `New Design copy/` duplicate was deleted.
+- The four published website templates live in `frontend/templates/` (apex, nova, heritage, zenith). Each is the design plus a binding script defining `window.__applyConfig(config)`. See [frontend/README.md](frontend/README.md).
+- **2026-07-25 reorg:** `Live/` -> `frontend/templates/`, logos -> `frontend/assets/`, `supabase/` + `netlify/` -> `backend/`, spec -> `backend/spec/`, `Admin Panel/` notes -> `docs/`. The stale `New Design copy/` duplicate was deleted.
 - **AI Writer + Auth + Supabase + Netlify (prototype, on branch `feature/ai-website-writer`, not yet merged to `main`):**
   - **AI Writer** — a floating button runs a short interview and an LLM drafts the whole site. The AI key is now **server-side** in a Supabase Edge Function (`ai-generate`); the browser calls that, never the provider directly.
   - **Auth** — Supabase Auth (email/password) gates the builder with an animated login; the profile menu has Sign Out.
@@ -77,17 +77,15 @@ KDKSites/
 ├── .github/workflows/pages.yml       # Publishes frontend/ as the Pages site root
 │
 ├── frontend/                         # EVERYTHING THE BROWSER DOWNLOADS = the site root
-│   ├── README.md                     # templates/ vs design-samples/, explained
+│   ├── README.md                     # How templates/ works; adding a 5th design
 │   ├── index.html                    # THE 6-step builder wizard (real entry point)
 │   ├── app-config.js                 # Public Supabase config: URL + anon key
 │   ├── local-ai-config.js            # Local AI overrides — gitignored, holds a key
 │   ├── assets/
 │   │   ├── ca-india-logo.png         # Favicon for builder + all templates
 │   │   └── kdk-sites-logo.png        # KDK Sites brand logo (icon + wordmark)
-│   ├── templates/                    # The 4 PUBLISHED renderers (was Live/)
-│   │   └── apex|nova|heritage|zenith/index.html
-│   └── design-samples/               # Pristine originals (was New Design/)
-│       └── apex|nova|heritage|zenith|zenith-v2/index.html
+│   └── templates/                    # The 4 PUBLISHED renderers (was Live/)
+│       └── apex|nova|heritage|zenith/index.html
 │
 ├── backend/
 │   ├── README.md                     # What is built vs spec-only; CLI + env vars

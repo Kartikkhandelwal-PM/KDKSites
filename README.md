@@ -22,7 +22,6 @@ frontend/           Everything the browser downloads = the published site root
   app-config.js       Public Supabase config (URL + anon key)
   assets/             Brand images (logos, favicon)
   templates/          The 4 published site renderers
-  design-samples/     Pristine originals of those designs, reference only
 backend/
   supabase/           BUILT: Postgres migrations + the ai-generate Edge Function
   netlify/            BUILT: render Edge Function, serves published sites at /s/<subdomain>
