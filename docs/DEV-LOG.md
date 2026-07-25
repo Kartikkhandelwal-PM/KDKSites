@@ -4,6 +4,37 @@
 
 ---
 
+## 2026-07-25 — Session 14 (Repo reorganisation: folder cleanup + renames)
+
+### Session Summary
+Housekeeping only, no product behaviour changed. Deleted a stale duplicate folder, renamed the two confusingly-named template folders, grouped loose assets, and folded paper-only specs into `docs/`. All moves used `git mv` so file history follows. Branch `feature/ai-website-writer`.
+
+### What Was Done
+- **Deleted `New Design copy/`** — verified byte-identical to `New Design/` (only `.DS_Store` differed), untracked and already gitignored. It was the leftover Finder duplicate flagged as an open question back in Session 3.
+- **`Live/` → `templates/`** — these are the four published renderers. Updated the three places that reference them: the `live:` fields in the `DESIGNS` array (`index.html`), the server fetch in `netlify/edge-functions/render.ts`, and the `netlify.toml` comment.
+- **`New Design/` → `design-samples/`** — matches the "pristine sample" language already used in the docs and template comments. `zenith V2/` → `zenith-v2/`. Updated the `path:` fields in `DESIGNS`.
+- **Killed the `%20` escaping** — folder and asset names no longer contain spaces. `CA India Logo.png` → `assets/ca-india-logo.png`, `KDK Sites.png` → `assets/kdk-sites-logo.png`. Updated the favicon link in `index.html` and in all four templates (`../../assets/ca-india-logo.png`).
+- **`Admin Panel/`** held one notes file → moved to `docs/ADMIN-PANEL-UNDERSTANDING.md`, empty folder removed. Its internal path references were updated too.
+- **`backend/` → `docs/backend-spec/`** — see the decision note below.
+- **`.gitignore`**: replaced the now-dead `New Design copy/` line with the general patterns `* copy/` and `* copy */` so future Finder duplicates are ignored automatically.
+- Removed all `.DS_Store` files from the working tree.
+
+### Decisions
+- **`backend/` was renamed to `docs/backend-spec/` rather than kept at the root.** It contained only never-built paper: a Golang REST spec and an unapplied **MySQL** schema. Meanwhile the schema that actually runs is `supabase/migrations/` (**Postgres**). Having an unbuilt MySQL schema sitting at the top level next to the live Postgres migrations was the single most misleading thing in the tree. Now `docs/` = paper, `supabase/` + `netlify/` = running backend code.
+- **A literal `frontend/` folder is not possible here.** GitHub Pages only serves the repo root or `/docs`, so `index.html` must stay at the root, and `app-config.js` / `local-ai-config.js` must stay beside it because it loads them with root-relative `<script src>`. `netlify.toml` is root-only by Netlify's design, and the Supabase CLI resolves its project from a root-level `supabase/config.toml`. These four are now marked `[PINNED]` in the CLAUDE.md structure diagram so nobody tries to move them later.
+
+### Verification
+- Grepped all `.html`/`.js`/`.ts`/`.toml` for `New Design`, `New%20Design`, `CA%20India`, `KDK Sites.png`, `Live/` → zero hits remaining.
+- Served the repo on `python3 -m http.server 8791` and curled every path: `/`, `/assets/ca-india-logo.png`, `/app-config.js`, all four `/templates/<key>/index.html`, and `/design-samples/...` → all **200**. Old paths `/Live/apex/index.html` and `/CA%20India%20Logo.png` → **404** as expected.
+- Confirmed each template's `../../assets/ca-india-logo.png` resolves from its own directory.
+
+### Notes / Next Steps
+- **Historical entries below were deliberately left unedited** — they describe the tree as it was on the day, so `Live/` and `New Design/` still appear in them. Only living documents (`CLAUDE.md`, `README.md`, `docs/ADMIN-PANEL-UNDERSTANDING.md`) were rewritten to the new paths.
+- Netlify still needs connecting by the user (repo access + `SUPABASE_URL` / `SUPABASE_SERVICE_KEY` / `SUPABASE_ANON_KEY` env vars). **When it is connected, re-check `/s/<subdomain>`** — `render.ts` now fetches `/templates/<key>/index.html`, so a deploy serving the old `Live/` layout would 502 with "Template missing". Deploy the renamed tree and the function together.
+- Still open from earlier sessions: `design-samples/` copies have drifted from `templates/` (the four renderers carry fixes the samples do not). Decide whether to re-sync them or retire the folder.
+
+---
+
 ## 2026-07-13 — Session 13 (Enquiries table: Jira-style grid, filters, pagination, Excel)
 
 ### Session Summary

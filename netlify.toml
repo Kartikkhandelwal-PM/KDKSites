@@ -1,4 +1,4 @@
-# Netlify config — serves the repo as static (builder + Live/ templates) and
+# Netlify config — serves the repo as static (builder + templates/ renderers) and
 # runs the render Edge Function for published sites at /s/<subdomain>.
 
 [build]

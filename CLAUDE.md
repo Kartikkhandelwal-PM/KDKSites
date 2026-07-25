@@ -19,7 +19,7 @@ A **website builder product** embedded inside the KDK Software desktop/web app. 
 - The site opens **directly on the 6-step builder**. There is no landing dashboard.
 - The root **`index.html` IS the builder.** It was moved up from `Admin Panel/website-builder-admin-v4.html` on 2026-07-03, and its `../` asset paths were rewritten to be root-relative.
 - **Hosting:** GitHub Pages (static), serving the root of `main`. Every push triggers a Pages rebuild (typically 1 to 3 minutes) followed by a CDN cache refresh.
-- The four published website templates live in `Live/` (apex, nova, heritage, zenith). `New Design/` holds design iterations. `Admin Panel/` now holds only its notes file.
+- The four published website templates live in `templates/` (apex, nova, heritage, zenith). `design-samples/` holds the pristine design iterations. **Renamed on 2026-07-25** from `Live/` and `New Design/`; the stale `New Design copy/` duplicate was deleted, and `Admin Panel/` + `backend/` were folded into `docs/`.
 - **AI Writer + Auth + Supabase + Netlify (prototype, on branch `feature/ai-website-writer`, not yet merged to `main`):**
   - **AI Writer** — a floating button runs a short interview and an LLM drafts the whole site. The AI key is now **server-side** in a Supabase Edge Function (`ai-generate`); the browser calls that, never the provider directly.
   - **Auth** — Supabase Auth (email/password) gates the builder with an animated login; the profile menu has Sign Out.
@@ -56,31 +56,55 @@ Any new session should **START** by reading this file, then the top entry of [do
 
 ## Project Structure
 
+Reorganised on 2026-07-25. Four folders are **pinned to the repo root by tooling**
+and must not be moved: `index.html` (GitHub Pages entry point), `app-config.js` +
+`local-ai-config.js` (loaded root-relative by `index.html`), `netlify.toml`
+(Netlify reads config from the root only), and `supabase/` (the Supabase CLI
+resolves the project from `supabase/config.toml` at the root).
+
 ```
 KDKSites/                             # repo root (this is what GitHub Pages serves)
-├── index.html                        # THE 6-step builder wizard (site entry point)
+├── index.html                        # THE 6-step builder wizard (site entry point) [PINNED]
+├── app-config.js                     # Public Supabase config: URL + anon key [PINNED]
+├── local-ai-config.js                # Local AI overrides — gitignored, holds a key [PINNED]
+├── netlify.toml                      # Netlify static + edge-function config [PINNED]
 ├── README.md                         # Repo readme + live URL
 ├── CLAUDE.md                         # This file — start here
-├── .gitignore                        # Excludes .claude/, New Design copy/, OS files
-├── CA India Logo.png                 # Logo asset used by builder + templates
-├── KDK Sites.png                     # KDK Sites brand logo (icon + wordmark)
-├── Admin Panel/
-│   └── ADMIN-PANEL-UNDERSTANDING.md  # Notes on admin/builder behaviour
-├── Live/                             # Published website templates (live renderers)
-│   ├── apex/index.html
+├── .gitignore                        # Excludes .claude/, "* copy/", OS files, local-ai-config.js
+│
+├── assets/                           # Shared brand images
+│   ├── ca-india-logo.png             # Favicon for builder + all templates
+│   └── kdk-sites-logo.png            # KDK Sites brand logo (icon + wordmark)
+│
+├── templates/                        # The 4 PUBLISHED renderers (was Live/)
+│   ├── apex/index.html               # render.ts fetches /templates/<key>/index.html
 │   ├── nova/index.html
 │   ├── heritage/index.html
 │   └── zenith/index.html
-├── New Design/                       # Design iterations (apex, nova, heritage, zenith, zenith V2)
-├── docs/
-│   ├── PRD - Website Builder.md      # Full product requirements (note: still lists older 3-template lineup)
-│   ├── CHANGELOG.md                  # Version history & change log
-│   └── DEV-LOG.md                    # Detailed daily dev log
-└── backend/
-    ├── api-spec.md                   # 12 REST endpoints (Golang) — SPEC ONLY, not built
-    └── database-schema.sql           # MySQL schema, 5 tables + seed — SPEC ONLY, not built
+│
+├── design-samples/                   # Pristine design iterations (was New Design/)
+│   ├── apex/  nova/  heritage/  zenith/  zenith-v2/
+│                                     # Reference only: the builder prefers templates/
+│
+├── supabase/                         # BACKEND, built [PINNED]
+│   ├── config.toml
+│   ├── functions/ai-generate/        # Server-side AI call (keeps the API key off the browser)
+│   └── migrations/                   # wb_websites, wb_leads, RLS, lead status/notes
+│
+├── netlify/                          # BACKEND, built
+│   └── edge-functions/render.ts      # Serves published sites at /s/<subdomain>
+│
+└── docs/
+    ├── PRD - Website Builder.md      # Full product requirements (note: still lists older 3-template lineup)
+    ├── CHANGELOG.md                  # Version history & change log
+    ├── DEV-LOG.md                    # Detailed daily dev log
+    ├── ADMIN-PANEL-UNDERSTANDING.md  # Notes on admin/builder behaviour (was Admin Panel/)
+    └── backend-spec/                 # SPEC ONLY, never built (was backend/)
+        ├── api-spec.md               # 12 REST endpoints (Golang)
+        └── database-schema.sql       # MySQL schema, 5 tables + seed
 ```
-> `New Design copy/` exists locally but is gitignored (not published).
+> `docs/backend-spec/` is paper only. The schema that actually runs is
+> `supabase/migrations/` (Postgres), not `database-schema.sql` (MySQL).
 
 ---
 
@@ -175,7 +199,7 @@ Base: `POST /api/v1/website-builder/` — all endpoints require JWT from KDK app
 
 12 endpoints covering: get-website, create, update-info, update-services, update-theme, publish, check-subdomain, get-leads, analytics, delete, preview, list-professions.
 
-Full spec in [backend/api-spec.md](backend/api-spec.md).
+Full spec in [docs/backend-spec/api-spec.md](docs/backend-spec/api-spec.md).
 
 ---
 
@@ -183,7 +207,7 @@ Full spec in [backend/api-spec.md](backend/api-spec.md).
 
 5 MySQL tables: `websites`, `website_business_info`, `website_services`, `website_leads`, `website_analytics`.
 
-Full schema + seed data for all 6 professions in [backend/database-schema.sql](backend/database-schema.sql).
+Full schema + seed data for all 6 professions in [docs/backend-spec/database-schema.sql](docs/backend-spec/database-schema.sql).
 
 ---
 
@@ -200,7 +224,7 @@ Full schema + seed data for all 6 professions in [backend/database-schema.sql](b
 ## Working With This Project
 
 - **To open the builder:** open `index.html` in a browser, or visit the live URL above
-- **To view a template:** open any `Live/<name>/index.html`
+- **To view a template:** open any `templates/<name>/index.html`
 - **To understand the product:** read `docs/PRD - Website Builder.md`
 - **To know the current state / how to continue:** read the **Current State** and **Session Handoff Protocol** sections at the top of this file, then the top entry of `docs/DEV-LOG.md`
 - **To track changes:** see `docs/CHANGELOG.md` and `docs/DEV-LOG.md`

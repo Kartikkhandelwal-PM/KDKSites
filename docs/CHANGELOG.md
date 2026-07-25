@@ -4,6 +4,29 @@
 
 ---
 
+## [0.9.1] 2026-07-25 — Repository reorganisation
+
+> Housekeeping only. No product behaviour, UI, or feature change. All moves used `git mv`, so file history is preserved.
+
+### Removed
+- **`New Design copy/`** — a stale Finder duplicate, byte-identical to `New Design/` and already gitignored.
+- All `.DS_Store` files from the working tree.
+
+### Changed
+- **`Live/` → `templates/`** (the four published renderers). Updated `index.html`, `netlify/edge-functions/render.ts`, and `netlify.toml`.
+- **`New Design/` → `design-samples/`**, and `zenith V2/` → `zenith-v2/`.
+- **Loose logos → `assets/`**, renamed to remove spaces: `ca-india-logo.png`, `kdk-sites-logo.png`. No path in the repo needs `%20` escaping any more.
+- **`Admin Panel/ADMIN-PANEL-UNDERSTANDING.md` → `docs/ADMIN-PANEL-UNDERSTANDING.md`**; the empty folder was removed.
+- **`backend/` → `docs/backend-spec/`** — it holds only the never-built Golang + MySQL spec. The backend that actually runs is `supabase/` + `netlify/`.
+- **`.gitignore`** now ignores `* copy/` and `* copy */` generally instead of one hardcoded folder name.
+- `CLAUDE.md` and `README.md` structure sections rewritten, and the four tooling-pinned root files (`index.html`, `app-config.js`, `local-ai-config.js`, `netlify.toml`, plus `supabase/`) marked `[PINNED]` so they are not moved in future cleanups.
+
+### Notes
+- A literal `frontend/` folder is not possible: GitHub Pages serves only the repo root or `/docs`, so the builder's `index.html` and its root-relative scripts must remain at the root.
+- **Deploy note:** `render.ts` now fetches `/templates/<key>/index.html`. The renamed tree and the Edge Function must deploy together, or published sites return "Template missing".
+
+---
+
 ## [0.9.0] 2026-07-11 — User auth + Supabase backend + Netlify publishing
 
 > Branch `feature/ai-website-writer`. Adds login, a Supabase backend, and Netlify hosting so published sites can actually go live (no domain needed). The AI key moves server-side.

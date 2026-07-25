@@ -6,8 +6,9 @@ Thumbs.db
 .claude/
 .vscode/
 
-# Working duplicates (not for publishing)
-New Design copy/
+# Finder duplicates (never publish these)
+* copy/
+* copy */
 
 # Local AI test config (contains API key — NEVER commit)
 local-ai-config.js

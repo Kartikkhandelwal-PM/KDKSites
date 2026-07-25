@@ -1,6 +1,6 @@
 // Renders a published KDK site at /s/<subdomain>.
 // Reads the saved config from Supabase (service key, server-side) and injects
-// it into the chosen Live/ template, which applies it via window.__applyConfig.
+// it into the chosen templates/ renderer, which applies it via window.__applyConfig.
 //
 // Netlify env vars required (Site settings -> Environment variables):
 //   SUPABASE_URL          e.g. https://hlhtopqbzfzlxxmolkok.supabase.co
@@ -42,7 +42,7 @@ export default async (request: Request) => {
   // Fetch the template from this same deploy
   let html = "";
   try {
-    const tpl = await fetch(`${url.origin}/Live/${template}/index.html`);
+    const tpl = await fetch(`${url.origin}/templates/${template}/index.html`);
     if (!tpl.ok) return page("Template missing", `Could not load the ${template} template.`, 502);
     html = await tpl.text();
   } catch {

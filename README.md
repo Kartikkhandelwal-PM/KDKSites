@@ -12,17 +12,24 @@ The prototype is live at:
 
 The site opens directly on the **6-step website builder** (it is the root `index.html`).
 
-- **Published templates:** `Live/apex`, `Live/nova`, `Live/heritage`, `Live/zenith`
+- **Published templates:** `templates/apex`, `templates/nova`, `templates/heritage`, `templates/zenith`
 
 ## Repository structure
 
 ```
 index.html          6-step website builder (the entry point)
-Live/               Published website templates (apex, nova, heritage, zenith)
-New Design/         Template design iterations
-backend/            API spec + database schema
-docs/               PRD, changelog, dev log
+app-config.js       Public Supabase config (URL + anon key)
+assets/             Brand images (logos, favicon)
+templates/          The 4 published site renderers (apex, nova, heritage, zenith)
+design-samples/     Pristine design iterations, reference only
+supabase/           Migrations + the ai-generate Edge Function
+netlify/            render Edge Function, serves published sites at /s/<subdomain>
+docs/               PRD, changelog, dev log, backend spec
 ```
+
+`index.html`, `app-config.js` and `netlify.toml` must stay at the repo root: the
+first two are the GitHub Pages entry point and its root-relative script, and
+Netlify only reads its config from the root.
 
 ## Notes
 
