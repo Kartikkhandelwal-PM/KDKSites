@@ -4,6 +4,31 @@
 
 ---
 
+## [0.9.9] 2026-07-28: Live-site polish, a confirmation before going offline, and palettes you can tell apart
+
+> On branch `feature/ai-website-writer`. Everything here came from looking at the running builder and reporting what was wrong.
+
+### Added
+- **Unpublish now asks before taking your site down.** It is the only action in the builder a stranger can notice, and it was a single click. The dialog names the link people actually hold, says what survives (your address, content and every enquiry are all kept), and starts with the focus on **Keep it online**, so a double-click or a habitual Enter cannot take your site offline. Escape, clicking outside and Cancel all mean no.
+- **The builder header now shows the KDK Sites mark and name.** It read "KDK | Software | KDK Sites", three fragments for one name, where only the greyed-out tail said what the product is. The wordmark is drawn as text in the brand's own navy and coral, sampled from the logo file, so it stays crisp at any size. The second line says "Website Builder".
+- **A proper favicon.** The builder was borrowing the generic CA logo; it now uses the product mark, with a 1.7 KB tab icon and a separate Apple touch icon flattened onto white so it does not disappear on a dark iOS background.
+
+### Fixed
+- **The colour swatches under each design never changed when you picked a colour.** They were hardcoded to the design's factory palette, so choosing a theme recoloured the preview and left the three squares showing the old colours. The one thing on that screen whose job is to report the colour was the only thing that never reported it.
+- **The selected-design tick sat on top of the website preview,** so on a dark hero a white tick on a blue disc had almost nothing to separate it from the page behind. Both it and the colour-theme tick now sit in the white strip below.
+- **Heritage's six colour themes were nearly four.** Four of the six primaries were the same warm dark red-brown, and three of the six accents were the identical gold, so cards with different primaries still read as the same palette. Measured properly in CIELAB, the closest two were less than half the distance apart that counts as "different". Rebuilt to six distinct hue families with six distinct accents.
+- **Apex, nova and zenith had the same problem** and got the same treatment. All 24 accents across the four designs are now distinct values, and no two palettes within a design look alike.
+- **"Charcoal & Bronze" was not charcoal.** It was a dark brown, which is also why it collided with Walnut. It is now an actual neutral slate.
+- **The first unpublish dialog named an address that does not resolve** (`sharma.kdksites.in` needs wildcard DNS that is not set up yet). It now names the working link. A dialog that warns about an address the visitor never had is worse than no dialog.
+- One Escape used to both answer the unpublish question and close the publish screen behind it.
+
+### Technical notes
+- Every palette change respects a contrast floor **measured from the set it replaced**, so each is a no-regression guarantee rather than a standard invented after the fact. The floors differ per design and assuming otherwise would have shipped unreadable text: apex never uses its accent as a text colour, heritage uses it once, nova three times, and zenith **twenty-one times on a dark background**, which inverts the constraint entirely. Two candidate palettes that measured better on separation were rejected for failing their design's floor.
+- Where measurement and taste disagreed, taste won: a raw search on apex hit a separation score three times higher by pairing it with pink and lime accents, which look wrong on a chartered accountant's website.
+- Eight jsdom suites cover all of it, with palette separation and both contrast floors written as assertions so a future edit cannot quietly undo them.
+
+---
+
 ## [0.9.8] 2026-07-28: The AI Writer starts from the website you already have
 
 > On branch `feature/ai-website-writer`. Answers "does an existing user have to retype everything?" The answer was yes, and now it is no.

@@ -4,6 +4,75 @@
 
 ---
 
+## 2026-07-28 (Session 20): Live-site polish, and colour palettes that were measured rather than eyeballed
+
+### Session shape
+All of this came from the user looking at the running builder and reporting what was wrong. Six commits, each one a reported defect plus whatever the investigation turned up underneath it.
+
+### 1. Header said the wrong product name (`a3b856e`)
+It read "KDK | Software | KDK Sites": three fragments for one name, where the gold tile and the word "Software" were the parent company and only the greyed-out tail said what the product is. Now the real mark plus "KDK Sites" over "Website Builder".
+
+**The wordmark is set as text, not pictured.** `assets/kdk-sites-logo.png` is 1823x863 and 787 KB, and at header height its second line is unreadable. Both colours are sampled out of that PNG so the header and the brand asset agree exactly: navy `#09558E`, coral `#FB5B51`.
+
+Second line says "Website Builder" rather than the logo's "Build. Personalize. Publish." tagline, because this is a tool someone works in, not a landing page. Sentence case and grey, since the centre of the bar already carries an uppercase tracked label ("STEP 1 OF 6") and two would compete.
+
+The mark is 40px in a 58px bar. Its artwork has generous internal padding so it reads smaller than its box: 30px looked lost, 46px crowded. Favicon now comes from the product mark with `logo-32.png` (1.7 KB) for the tab and `logo-180.png` for Apple touch, both generated from `assets/logo.png`. The touch icon is flattened onto white, because iOS gives transparent icons no background and this mark's navy half vanishes on black.
+
+### 2. Unpublish had no confirmation (`454b6eb`, `92c3d2a`)
+Taking a live site down was one click. It is the only action in the builder a stranger can notice.
+
+`askConfirm()` is a small reusable dialog, not `window.confirm()`, which prints "localhost:8765 says" on the screen the user is most likely to be demoing. Two details decide whether a confirm helps or just nags: **focus lands on Cancel**, so a double-click or a habitual Enter cannot complete the action being asked about; and Escape, backdrop and Cancel all resolve false.
+
+**The first body was wrong and the user caught it.** It named `sharma.kdksites.in`, which is the pretty form the domain pool is built FOR but which needs wildcard DNS that does not exist, so nothing resolves there. The link people actually hold is `liveSiteUrl()`, the path form the live card and Copy link already use. A dialog that warns about an address the visitor never had is worse than none, because it teaches the user the wrong URL for their own site. Also corrected "not published" to "site unavailable", the heading `render.ts` really serves.
+
+**The second version was too cluttered and the user caught that too.** The 44-character URL set bold mid-sentence wrapped across three lines and became the loudest thing on the card, and a three-tick panel gave a reversible action the visual weight of a destructive one. The address now sits in its own quiet row with the scheme stripped and the last path segment emphasised; the ticks collapse to one grey line.
+
+All three "kept" claims were verified, not assumed: `wb_subdomain_available` counts an `unpublished` row as still holding the name, so the address really is reserved.
+
+Found while wiring: the publish/preview Escape handler had to stand down while a confirm is open, or one Escape both answered the question and closed the screen that asked it.
+
+### 3. Step 1 swatches never followed the colour picker (`82dcdb3`)
+The three squares under each design name were hardcoded to `DESIGNS[].sw`, so picking a palette recoloured the live thumbnail and left the squares showing the factory blue. The one element whose entire job is to report the colour was the only one that never did.
+
+`swatchColors()` reuses the exact rule `pushThumbOne` already had, so the squares and the thumbnail cannot disagree. `paintSwatches()` repaints in place rather than calling `buildTemplates`, because each card holds a live iframe and rebuilding would reload all four thumbnails on every colour click. Wired into all four paths that change the answer, including `pickTpl` (where the card **losing** selection must revert) and the restore path.
+
+The selected-design tick was absolutely positioned over the preview, so it sat on whatever the website rendered there. Moved into the white meta row.
+
+### 4. Palettes: the same defect in all four designs (`8d11035`, `ef04666`)
+Reported that heritage 1, 2, 4 and 5 looked almost identical. Measured in CIELAB instead of judged by eye, and the accents turned out worse than the primaries.
+
+| design | min primary dE | min accent dE | duplicate accents |
+|---|---|---|---|
+| heritage | 10.5 -> 19.7 | 0.0 -> 8.2 | 3 -> 0 |
+| apex | 12.6 -> 24.8 | 0.0 -> 13.4 | 2 -> 0 |
+| nova | 14.4 -> 25.9 | 0.0 -> 15.5 | 2 -> 0 |
+| zenith | 14.4 -> 27.2 | 11.3 -> 18.9 | 0 -> 0 |
+
+**The contrast floors are per design, and assuming otherwise would have shipped illegible text.** Every floor was measured off the original array, so each assertion is "no regression" rather than an invented standard:
+
+- **apex** accent is never a text colour (0 uses of `color:var(--gold)`), floor 2.38:1 on white.
+- **heritage** accent IS text: `.s-eye` is a 10px uppercase label. An earlier candidate scored better on separation using pale champagnes at 2.0:1 and was rejected; the floor instead improved 2.4 -> 3.2:1.
+- **nova** accent is text 3 times, floor 3.09:1. A candidate pairing Graphite with sky `#0EA5E9` at 2.77:1 was rejected for a darker steel blue.
+- **zenith** accent is text 21 times on the DARK `--ink #0D0A14`, so its contrast is measured against that, not white. Its accents must stay PALE while the other three stay dark. Measuring zenith against white would have inverted the entire constraint.
+
+**Taste overrode the search where they disagreed.** A raw max-separation pass on apex reached dE 48 by pairing it with pink and lime, which measure beautifully and look wrong on a chartered accountant's website. Apex keeps golds, bronzes, teals and skies and settles for 13.4. Nova is where brighter accents belong.
+
+"Charcoal & Bronze" in heritage was renamed because it lied: `#3E2723` is a dark brown, which is also why it collided with Walnut. It is now an actual neutral slate.
+
+The theme-card tick had the same defect as the template tick and was missed in the first pass: a translucent white disc on the colour band, where heritage's cream third swatch all but erased it. Now a solid gold disc in the white meta row.
+
+### Verification
+Eight jsdom suites, all green, run against the real file rather than by inspection:
+`palettes` (28 checks over all four designs), `heritage`, `swatch`, `confirm` (27), `ui2`, `ui3`, `seed`, `seed2`. The palette separation and both contrast floors are written as assertions, so a future palette edit cannot quietly reintroduce any of this.
+
+### Notes for whoever is next
+- **`image.png` (1.07 MB) and `kdk-sites-logo.png` (787 KB) in `frontend/assets/` are referenced by nothing.** `image.png` looks like a stray upload; the lockup is worth keeping as a source asset. Neither was deleted without asking.
+- **Heritage's `.s-eye` is a 10px label at about 3:1**, below WCAG AA for small text. Pre-existing, not introduced here, and fixing it means touching heritage's typography.
+- The four published templates still use `ca-india-logo.png` as their favicon. A client's site showing a generic CA logo in the tab is arguably wrong; using the firm's own uploaded logo would be better.
+- `stats` / `highlights` / `process` keep the demo-content exposure from Session 18 if emptied by hand in the builder.
+
+---
+
 ## 2026-07-28 (Session 19): The AI Writer now starts from the site the user already has
 
 ### The question that started it
