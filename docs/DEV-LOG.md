@@ -4,6 +4,52 @@
 
 ---
 
+## 2026-07-28 (Session 19): The AI Writer now starts from the site the user already has
+
+### The question that started it
+"When a user's website is already published and they click AI Writer, do we show prefilled content or do they enter everything from scratch?"
+
+**From scratch.** The interview seeded exactly one field from the app, `profession`, and never looked at the published site at all. Everything else opened blank: firm name, city, years, phone, email, address, partners. Meanwhile `applyConfigToBuilder` loads the published config into Steps 2 to 5 the moment the user signs in, so those facts were sitting two panels away the whole time.
+
+The only prefill that existed was `restore()` reading `localStorage['kdk_aiw_answers']`, which holds the **previous interview's answers, not the published site**. And `signOut()` calls `clearLocalDraft()`, which deletes that key, so signing out, changing device or building the site by hand through Steps 2 to 5 all meant a completely blank interview.
+
+The mandatory answers added in Session 18 made this materially worse: a returning user now had to retype years, 2 differentiators, 2 client types, 3 workflow steps, a partner name and role, city, phone, email and address, nearly all of which was already in their live site.
+
+### What is seeded, and what is deliberately not
+**Seeded (hard facts the user typed):** firm name, city, years (derived from Founded Year), phone, email, office address, office hours, social links, and partner names + roles + photos from `S.people`.
+
+**Left empty on purpose:** "what you are best known for", typical clients, key numbers, the workflow lines, and the review notes. The builder holds only the **polished prose the model wrote** from those answers, never the rough notes the user gave. Feeding that prose back in as a brief has the model paraphrasing itself, and the copy loses specificity on every pass.
+
+**Reviews get left alone for a second, stronger reason.** Skipping that screen sends an empty `clientReviews` list, the model returns no testimonials, and `apply()` then leaves `S.testimonials` **untouched**, so a returning user keeps the reviews already on their site. Seeding names without notes would have done the opposite: `rowReq:['name','note']` would reject those rows, forcing the user to rewrite notes for reviews that are already live, or delete them.
+
+### The bug this introduced, and how it was caught
+Prefilling makes `anyAnswered()` true before the user has typed anything, and **three** separate places used that to decide whether to skip the interview and drop the user on the review list: the intro button's label, `__aiwStart`, and `openW`. So any user with a published site would have been sent straight to a summary of questions nobody had asked them. Caught by the first prefill test run, which reported screen 1 as "Check it over before we write".
+
+Fixed by separating two ideas that had been conflated:
+- `A.__touched`, set in `saveCurrent()` when a real screen is read back, means **the user** has been on a screen.
+- `hasResumableAnswers()` = `userHasEngaged() && anyAnswered()` is now the single resume test, used by all three sites. `userHasEngaged()` falls back to checking the fields seeding never sets, so drafts saved before `__touched` existed still resume correctly.
+
+### What Was Done
+**`frontend/index.html`**
+- `seedFromSite()`, run from `openW()` and from `__aiwReset()`. Guarded by a persisted `A.__seeded` so it runs **once**: a field the user deliberately emptied is not helpfully refilled behind them on the next open. Only fills fields that are still blank, so a saved draft always wins per field.
+- Office hours only take a saved value if `A.hours` is still the default, so the prefill and the default do not fight.
+- `SEEDED` tracks which keys were prefilled. Those inputs render with `.aiw-seeded` (tinted fill, green rather than blue so they are not mistaken for focus, and no side stripe) and the screen shows a `.aiw-seednote` line naming where the values came from. The tint clears the moment the user edits the value, since it is then their answer, not ours.
+- List rows carried over from the site are tinted the same way, so the note is true on the partners screen too.
+- `hasResumableAnswers()` replaces three separate `anyAnswered()` resume decisions.
+- `__aiwReset` now also restores `hours` to its default, clears `__seeded` / `__touched` / `SEEDED`, re-seeds immediately rather than waiting for the next open, and creates **3** workflow and review rows instead of 1, matching what a fresh interview opens with.
+- The reviews screen hint now says that skipping keeps the reviews already on the site, which was true but invisible.
+
+### Verification
+Two new jsdom suites, and the five from Session 18 re-run green:
+- **`seed`**: a returning user with a full published config. Firm, years (from Founded Year 2011), both partners with roles, city, phone, email, address, the saved office hours and LinkedIn all arrive prefilled and tinted; screens 1, 4 and 6 each pass with **no typing at all**; the judgement fields are confirmed empty; the intro still appears and screen 1 is still where they land. Net typing left for the user: 4 pills and 3 workflow lines.
+- **`seed2`**: two regression halves. A brand new user sees an untouched interview ("Start writing my website", lands on screen 1, nothing tinted, still blocked on empty required fields). And an existing user with 2 live testimonials runs the whole writer with reviews skipped: both testimonials survive with their names, the 4-star rating is not reset to 5, the partner name is not wiped, and the existing office hours are not overwritten by the default.
+
+### Next Steps
+- Still not pushed. Waiting on one answer: **does the Netlify site build only `main`, or all branches?** That decides whether pushing this branch costs a build. `netlify.toml` cannot tell us, since branch-deploy settings live in the Netlify UI.
+- Unchanged from Session 18: 6 stats in the hero strip is now reachable and may wrap; worth an eyeball. `stats` / `highlights` / `process` keep the demo-content exposure if emptied by hand in the builder.
+
+---
+
 ## 2026-07-28 (Session 18): Mandatory answers in the AI Writer, and the demo data that was reaching live sites
 
 ### Why this session happened

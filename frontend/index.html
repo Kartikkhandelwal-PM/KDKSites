@@ -3768,7 +3768,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closeAddre
        `rowReq:['name','note']` because the note is the raw material the model
        rewrites: a name on its own makes it invent the entire quote. */
     {k:'reviews',short:'Client reviews',type:'list',q:'What do your clients say?',
-      hint:'Either skip this entirely, or add at least 3. The AI writes the review from your notes.',
+      hint:'Either skip this entirely, or add at least 3. The AI writes the review from your notes. Skipping keeps any reviews already on your site.',
       addLabel:'Add another review',itemLabel:'Review',max:6,minRows:3,optRows:true,rowReq:['name','note'],
       item:{photo:{k:'img',box:'avatar',label:'Add photo'},stars:{k:'stars',label:'Rating'},aside:['name','role'],asideCols:2,fields:[
         {k:'name',label:'Client name',ph:[
@@ -3848,7 +3848,14 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closeAddre
     workflow:seedRows(freshStep,3),
     reviews:seedRows(freshReview,3),
     partners:[freshPartner()],
-    phone:'',email:'',address:'',hours:HOURS_DEFAULT,social:freshSocial(),extra:''};
+    phone:'',email:'',address:'',hours:HOURS_DEFAULT,social:freshSocial(),extra:'',
+    /* `__seeded`  the prefill from the user's existing site has already run once.
+       `__touched` the USER has typed on a real screen, as opposed to us filling
+                   facts in for them. Only the second one may send a returning
+                   visitor straight to the review list. Both are persisted, so
+                   they must be declared here: `restore` only copies keys that
+                   already exist on A. */
+    __seeded:false, __touched:false};
   var step = 0;
   var PILL_KEYS=['edge','clients','numbers'];
   /* Free text to pills: split on newlines, commas and semicolons, trim, drop blanks
@@ -3946,6 +3953,13 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closeAddre
        the icon inline reads as one object instead of a card with a stripe on it. */
     '.aiw-emsg{display:none;align-items:center;gap:7px;margin:12px 0 2px;padding:9px 12px;border-radius:9px;background:#FEF2F2;border:1px solid #FECACA;color:#B42318;font-size:12.5px;font-weight:600;line-height:1.45}',
     '.aiw-emsg.on{display:flex}',
+    /* A prefilled answer: tinted fill, not a coloured edge, so it reads as one control.
+       Green rather than blue because blue is the focus colour and every prefilled box
+       would otherwise look like the one with the caret in it. */
+    '.aiw-seeded{background:#F2FBF6;border-color:#BFE3CF}',
+    '.aiw-seeded:focus{background:#fff}',
+    '.aiw-seednote{display:flex;align-items:center;gap:7px;margin:0 0 16px;padding:9px 12px;border-radius:9px;background:#F2FBF6;border:1px solid #CFE9DA;color:#0F6B45;font-size:12.5px;font-weight:600;line-height:1.45}',
+    '.aiw-seednote::before{content:"\\2713";flex:0 0 15px;height:15px;border-radius:50%;background:#0F6B45;color:#fff;font-size:9.5px;font-weight:800;display:flex;align-items:center;justify-content:center}',
     '.aiw-emsg::before{content:"!";flex:0 0 15px;height:15px;border-radius:50%;background:#DC2626;color:#fff;font-size:10.5px;font-weight:800;display:flex;align-items:center;justify-content:center}',
     '.aiw-ft{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:16px 34px 22px;border-top:1px solid #EEF2F8;background:#fff}',
     '.aiw-btn{padding:11px 20px;border-radius:11px;border:none;cursor:pointer;font:600 13.5px "Segoe UI",system-ui,sans-serif}',
@@ -4502,7 +4516,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closeAddre
         '<h2 class="aiw-ih1">Tell us about your practice.<br><em>We write the website.</em></h2>'+
         '<p class="aiw-isub">A few short questions, about three minutes. Every line comes back into the builder for you to change.</p>'+
         '<button type="button" class="aiw-istart" onclick="__aiwStart()">'+ic(IC_SPARK)+
-          (anyAnswered()?'Back to my answers':'Start writing my website')+'</button>'+
+          (hasResumableAnswers()?'Back to my answers':'Start writing my website')+'</button>'+
         '<span class="aiw-ifnote">'+ic('<path d="M10 2.6l6 2.4v4.6c0 3.5-2.5 6.3-6 7.8-3.5-1.5-6-4.3-6-7.8V5z"/><path d="M7.4 9.9l1.9 1.9 3.5-3.6"/>')+
           'Nothing goes live until you publish it yourself.</span>'+
       '</div>'+
@@ -4567,17 +4581,95 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closeAddre
   window.__aiwIntro = function(){ saveCurrent(); persist(); showIntro(); };
   window.__aiwStart = function(){
     introOn = false;
-    step = anyAnswered() ? summaryStep() : 0;
+    step = hasResumableAnswers() ? summaryStep() : 0;
     render();
   };
 
+  /* ── PREFILL FROM THE SITE THE USER ALREADY HAS ─────────────────────────────
+     A returning user's firm name, city, phone, email, address, hours, social links
+     and partners are ALREADY in the app: `applyConfigToBuilder` loads their published
+     config into Steps 2 to 5 the moment they sign in. The interview ignored every bit
+     of it and opened blank, so somebody with a live site retyped facts the builder was
+     holding two panels away, and the mandatory answers added on 2026-07-28 made that
+     retyping considerably longer.
+
+     ONLY HARD FACTS are seeded. The judgement fields are deliberately left empty:
+     "what you are best known for", typical clients, key numbers, how you work and the
+     review notes. The builder stores only the POLISHED PROSE the model wrote from those
+     answers, never the rough notes the user actually gave, so feeding it back in as a
+     brief would have the model paraphrasing itself and the copy loses a little of its
+     specificity on every pass.
+
+     Reviews are left alone for a second reason: skipping that screen sends an empty
+     clientReviews list, the model returns no testimonials, and `apply` then leaves
+     `S.testimonials` UNTOUCHED. So a returning user who skips it keeps the reviews
+     already on their site, which is the right default. Seeding names without notes
+     would instead force them to rewrite notes for reviews that are already live.
+
+     Runs once, tracked by `A.__seeded`, so a field the user deliberately emptied is
+     not helpfully refilled behind them on the next open. */
+  var SEEDED = {};        // key -> the value we put there, so the tint can clear on edit
+  function seedFromSite(){
+    if(A.__seeded) return;
+    A.__seeded = true;
+    var fv=function(id){ var e=document.getElementById(id); return e?String(e.value||'').trim():''; };
+    var put=function(k,val){ if(val && !String(A[k]||'').trim()){ A[k]=val; SEEDED[k]=val; } };
+    put('firm',    fv('fFirmName'));
+    put('city',    fv('fCity'));
+    put('phone',   fv('fPhone'));
+    put('email',   fv('fEmail'));
+    put('address', fv('fAddress'));
+    /* hours already carries a default, so only a real saved value should displace it */
+    var hrs=fv('fHours');
+    if(hrs && String(A.hours||'')===HOURS_DEFAULT){ A.hours=hrs; SEEDED.hours=hrs; }
+    /* the interview asks how many years; the builder stores the year founded */
+    var fy=parseInt(fv('fFounded'),10), now=new Date().getFullYear();
+    if(fy>1900 && fy<=now && !String(A.years||'').trim()){
+      A.years=String(now-fy); SEEDED.years=A.years;
+    }
+    if(!A.social || typeof A.social!=='object') A.social=freshSocial();
+    var SOC_ID={linkedin:'fLinkedin',facebook:'fFacebook',instagram:'fInstagram',youtube:'fYoutube'};
+    Object.keys(SOC_ID).forEach(function(k){
+      var url=fv(SOC_ID[k]);
+      if(url && !String(A.social[k]||'').trim()){ A.social[k]=url; SEEDED.social=1; }
+    });
+    /* Partner names and roles are the user's own facts and the AI rewrites only the bio
+       and credentials, so carrying them over costs nothing and saves the most typing.
+       Photos ride along, or running the writer would drop portraits already uploaded. */
+    var ppl=(window.S && Array.isArray(S.people))?S.people:[];
+    var named=ppl.filter(function(p){ return String((p&&p.name)||'').trim(); });
+    if(named.length && !fieldAnswered('partners')){
+      var cap=(typeof PTR_MAX==='number')?PTR_MAX:4;
+      A.partners=named.slice(0,cap).map(function(p){
+        return {name:String(p.name||'').trim(), role:String(p.role||'').trim(), photo:String(p.photo||'')};
+      });
+      SEEDED.partners=1;
+    }
+    persist();
+  }
+  /* Has the USER engaged, as opposed to us prefilling their facts? Seeding alone must
+     not skip the interview: landing a first-time writer on the review list would show
+     them a list of things they have never been asked. */
+  function userHasEngaged(){
+    if(A.__touched) return true;
+    /* drafts saved before __touched existed: infer it from the fields seeding never
+       sets, since only the user can have filled one of those */
+    return ['edge','clients','numbers','workflow','reviews','extra'].some(fieldAnswered);
+  }
+  /* THE resume test, and it must be the only one. Three places decide whether to drop
+     the user on the review list instead of walking the interview (the intro button's
+     label, the intro's start action, and open), and prefilling made `anyAnswered()`
+     true on its own, so any site with a published config sent a first-time writer
+     straight to a summary of questions nobody had asked them. */
+  function hasResumableAnswers(){ return userHasEngaged() && anyAnswered(); }
   function openW(){
     /* follow the builder's profession until the user picks one here themselves */
     if(window.S&&S.profession && !A.profChosen) A.profession=S.profession;
+    seedFromSite();
     ov.classList.add('open');
     /* coming back with answers already in hand: skip the intro and land on the review
        list so a single item can be changed, instead of walking the whole interview */
-    if(anyAnswered()){ step=summaryStep(); render(); return; }
+    if(hasResumableAnswers()){ step=summaryStep(); render(); return; }
     step = 0; showIntro();
   }
   function closeW(){ saveCurrent(); persist(); ov.classList.remove('open'); delete ov.dataset.busy; }
@@ -4587,11 +4679,21 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closeAddre
     if(!window.confirm('Clear every answer and start the interview again?')) return;
     ['firm','city','years','phone','email','address','extra'].forEach(function(k){ A[k]=''; });
     PILL_KEYS.forEach(function(k){ A[k]=[]; });
-    A.workflow=[freshStep()];
+    /* the same row counts a fresh interview opens with, so Reset and a first run look
+       identical: 3 workflow steps and 3 review rows, both of which ask for 3 */
+    A.workflow=seedRows(freshStep,3);
     A.partners=[freshPartner()];
-    A.reviews=[freshReview()];
+    A.reviews=seedRows(freshReview,3);
     A.social=freshSocial();
+    A.hours=HOURS_DEFAULT;
+    /* Clearing the answers also clears the record of having prefilled them, so the
+       user's own facts come straight back from their site. "Start again" means a fresh
+       interview, not a fresh interview with the easy half deleted, so this re-seeds
+       here and now rather than waiting for the next open. */
+    A.__seeded=false; A.__touched=false;
+    SEEDED={};
     try{ localStorage.removeItem(AIW_KEY); }catch(e){}
+    seedFromSite();
     /* back to a blank slate means back to the start of the story, intro included */
     step=0; showIntro();
   };
@@ -4601,6 +4703,9 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closeAddre
     if(introOn){ persist(); return; }
     var q = QS[step];
     if(!q || q.type==='summary'){ persist(); return; }
+    /* Reading a real screen back means the user has been on it. This is what separates
+       "we prefilled your phone number" from "you have started the interview". */
+    A.__touched = true;
     if(q.type==='group'){
       q.fields.forEach(function(f){
         /* pills are committed to A the moment they are added, so there is nothing to
@@ -4615,7 +4720,12 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closeAddre
           return;
         }
         var el=document.getElementById('aiwField_'+f.k);
-        if(el){ A[f.k]=el.value; }
+        if(el){
+          A[f.k]=el.value;
+          /* once the user changes a prefilled answer it is theirs, so the "from your
+             site" tint has to go: leaving it on would keep crediting us for their edit */
+          if(SEEDED[f.k] && String(el.value)!==String(SEEDED[f.k])) delete SEEDED[f.k];
+        }
       });
       persist();
       return;
@@ -4820,6 +4930,11 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closeAddre
     }
     var isLast = step===QS.length-1;
     var needed = screenRequired(q);
+    /* Say it once, on the screens it actually applies to, rather than a global banner
+       the user reads on every screen including the ones that were left blank. */
+    var seededHere = (q.type==='group')
+      ? q.fields.some(function(f){ return !!SEEDED[f.k]; })
+      : !!SEEDED[q.k];
     var main =
       /* Heading + one supporting line. Nothing else.
          What used to sit here: an icon tile, a "STEP 6 OF 8 · CONTACT DETAILS" eyebrow,
@@ -4830,6 +4945,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closeAddre
       '<div class="aiw-body">'+
         '<h2 class="aiw-q">'+q.q+'</h2>'+
         (q.hint?'<p class="aiw-hint">'+q.hint+'</p>':'<div style="height:14px"></div>')+
+        (seededHere?'<div class="aiw-seednote">The highlighted answers are from the website you already published. Change anything that is out of date.</div>':'')+
         field+
         /* One message slot per screen, empty until something is rejected. It sits with
            the fields rather than in the footer because a list screen has no single
@@ -4878,10 +4994,13 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closeAddre
         '</div>';
       }).join('')+'</div>';
     }
+    /* A prefilled answer is tinted, so nobody assumes the interview invented their own
+       phone number, and so it is obvious which boxes are worth checking. */
+    var sd=SEEDED[f.k]?' aiw-seeded':'';
     if(f.type==='ta'){
-      return '<textarea class="aiw-ta aiw-gfield" id="aiwField_'+f.k+'" placeholder="'+escAttr(f.ph||'')+'">'+escAttr(A[f.k]||'')+'</textarea>';
+      return '<textarea class="aiw-ta aiw-gfield'+sd+'" id="aiwField_'+f.k+'" placeholder="'+escAttr(f.ph||'')+'">'+escAttr(A[f.k]||'')+'</textarea>';
     }
-    return '<input class="aiw-in aiw-gfield" id="aiwField_'+f.k+'" placeholder="'+escAttr(f.ph||'')+'" value="'+escAttr(A[f.k]||'')+'">';
+    return '<input class="aiw-in aiw-gfield'+sd+'" id="aiwField_'+f.k+'" placeholder="'+escAttr(f.ph||'')+'" value="'+escAttr(A[f.k]||'')+'">';
   }
   /* The pills themselves plus the input that creates them, all inside one box so it
      reads as a single control rather than a list next to a text field. */
@@ -4925,9 +5044,12 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closeAddre
     var aside=(q.item.aside||[]);
     function fieldHTML(f){
       var id='aiwL_'+ri+'_'+f.k, ph=phFor(f.ph,ri);   // a different example per row
+      /* rows carried over from the published site are tinted like the group fields, so
+         the note about highlighted answers is true on this screen too */
+      var sd=(SEEDED[q.k] && String(rv[f.k]||'').trim())?' aiw-seeded':'';
       var inp = f.ta
-        ? '<textarea class="aiw-ta aiw-lfield" id="'+id+'" placeholder="'+escAttr(ph)+'">'+escAttr(rv[f.k]||'')+'</textarea>'
-        : '<input class="aiw-in aiw-lfield" id="'+id+'" placeholder="'+escAttr(ph)+'" value="'+escAttr(rv[f.k]||'')+'">';
+        ? '<textarea class="aiw-ta aiw-lfield'+sd+'" id="'+id+'" placeholder="'+escAttr(ph)+'">'+escAttr(rv[f.k]||'')+'</textarea>'
+        : '<input class="aiw-in aiw-lfield'+sd+'" id="'+id+'" placeholder="'+escAttr(ph)+'" value="'+escAttr(rv[f.k]||'')+'">';
       /* each label+input pair is one cell, so a two-up aside grid puts the pair in a
          column rather than splitting label and input across two cells */
       return '<div class="aiw-lfcell">'+(f.label?'<label class="aiw-flabel" for="'+id+'">'+f.label+'</label>':'')+inp+'</div>';

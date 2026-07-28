@@ -4,6 +4,28 @@
 
 ---
 
+## [0.9.8] 2026-07-28: The AI Writer starts from the website you already have
+
+> On branch `feature/ai-website-writer`. Answers "does an existing user have to retype everything?" The answer was yes, and now it is no.
+
+### Added
+- **The AI Writer prefills the facts from your published site.** Firm name, city, years practising (worked out from your Founded Year), phone, email, office address, office hours, social links, and every partner's name, role and photo now arrive already filled in. Those answers are tinted and the screen says where they came from, so nothing looks invented, and you can change any of them. For a firm with a live site, three of the seven screens now pass without typing a single character.
+- The tint clears as soon as you edit a prefilled answer, because at that point it is yours.
+
+### Changed
+- **What is NOT prefilled, on purpose:** what you are best known for, your typical clients, your key numbers, how you work, and your review notes. The builder only stores the polished copy the AI wrote from those answers, never the rough notes you gave it. Putting that copy back in as a brief would have the AI rewriting its own output, and the writing gets blander every time round.
+- **Skipping the reviews screen now keeps the reviews already on your site,** and the screen says so. This was already true but invisible. It is also why reviews are not prefilled: the interview needs a note for each review, so prefilling names alone would have forced you to rewrite notes for reviews that are already live.
+- "Clear all answers" now brings your own facts straight back from your site rather than leaving you with an empty form, and opens with 3 workflow and 3 review rows, matching a fresh interview.
+
+### Fixed
+- **Prefilling would have skipped the interview entirely.** Three separate places decided whether to jump you to the review list based on "are any answers present", and prefilled answers are present before you have typed anything. Any user with a published site would have been dropped onto a summary of questions they had never been asked. There is now one resume test, and it distinguishes answers **you** gave from facts we filled in for you.
+
+### Technical notes
+- `seedFromSite()` runs once per interview, tracked by a persisted flag, and only fills fields that are still blank, so a saved draft always wins per field and a field you deliberately cleared stays cleared.
+- Verified with two new jsdom suites plus the five from 0.9.7, all green: a returning user with a full published config (everything prefilled and tinted, three screens passing with no input, judgement fields confirmed empty), and two regression halves covering a brand new user seeing an untouched interview, and an existing user's two live testimonials surviving a full writer run with their names, ratings, partner name and office hours intact.
+
+---
+
 ## [0.9.7] 2026-07-28: Mandatory answers in the AI Writer, and no more demo data on live sites
 
 > On branch `feature/ai-website-writer`. Found while checking whether the AI Writer collects everything a good site needs: it did not, and what was missing was being filled in by the template's own sample content.
