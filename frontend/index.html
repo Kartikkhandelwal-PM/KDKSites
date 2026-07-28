@@ -635,6 +635,43 @@ html.enq-boot::before{content:"";position:fixed;inset:0;background:#F4F6FC;z-ind
 #step6.live-mode .s-eye{justify-content:center}
 #step6.live-mode .s-h1{text-align:center;margin-bottom:18px}
 
+/* ── CONFIRM DIALOG ──
+   For actions a visitor can notice. Unpublish took a live site down on a single
+   click with nothing between the intent and the outcome, which is the one place
+   in this product where a misclick is visible to the outside world.
+
+   Not window.confirm(): that renders "localhost:8765 says" above the message and
+   sits on top of the publish overlay looking like a browser error, on the screen
+   the user is most likely to be showing somebody. Borrows the crop dialog's shape
+   so it reads as part of the product. z-index clears .pub-ov (500) and the crop
+   itself (9800), because a confirm is always the top layer. */
+.cnf-ov{position:fixed;inset:0;z-index:9900;background:rgba(9,16,32,.66);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px}
+.cnf-ov.open{display:flex}
+.cnf-box{background:var(--surface);border-radius:16px;width:100%;max-width:404px;padding:22px;box-shadow:0 28px 70px rgba(9,16,32,.42);animation:crpUp .2s cubic-bezier(.4,0,.2,1)}
+.cnf-hd{display:flex;align-items:flex-start;gap:12px}
+/* Tinted disc, no side stripe: the icon says "caution" without turning the dialog
+   into a card with a coloured edge. */
+.cnf-ic{flex:0 0 34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:#FEF3E7;color:#B25E09}
+.cnf-ic svg{width:17px;height:17px}
+.cnf-ov[data-tone="danger"] .cnf-ic{background:#FEF2F2;color:#B42318}
+.cnf-t{font-size:15.5px;font-weight:800;color:var(--th);letter-spacing:-.015em;line-height:1.3}
+.cnf-s{font-size:12.5px;color:var(--tb);line-height:1.62;margin-top:6px}
+.cnf-s b{color:var(--th);font-weight:700}
+/* What survives the action, spelled out. Unpublish keeps the address, the content
+   and every captured lead, and saying so is what stops it reading as "delete". */
+.cnf-keep{margin:13px 0 0;padding:10px 12px;border-radius:10px;background:var(--ground);font-size:12px;color:var(--tb);line-height:1.6}
+.cnf-keep li{margin:0;list-style:none}
+.cnf-keep li+li{margin-top:4px}
+.cnf-keep svg{width:12px;height:12px;color:#0F6B45;margin-right:6px;vertical-align:-1px}
+.cnf-ft{display:flex;gap:9px;justify-content:flex-end;margin-top:18px}
+.cnf-btn{padding:11px 18px;border-radius:10px;font:700 13px "Segoe UI",system-ui,sans-serif;cursor:pointer;border:1.5px solid transparent;transition:all var(--t)}
+.cnf-no{background:var(--surface);border-color:var(--border);color:var(--tb)}
+.cnf-no:hover{border-color:var(--border-m);color:var(--th)}
+.cnf-yes{background:var(--th);color:#fff}
+.cnf-yes:hover{filter:brightness(1.14)}
+.cnf-ov[data-tone="danger"] .cnf-yes{background:#B42318}
+@media(max-width:520px){.cnf-ft{flex-direction:column-reverse}.cnf-btn{width:100%}}
+
 /* ── CROP & ADJUST ──
    Every published card shows the portrait as a SQUARE with object-fit:cover, so an
    upload was silently centre-cropped by the browser and off-centre heads came out
@@ -2965,7 +3002,107 @@ function setSiteStatus(next,label){
     toast(label);
   }).catch(function(){ toast('No connection. The site was not changed.'); });
 }
-function unpublishSite(){ setSiteStatus('unpublished','Your site is offline. Visitors now see a "not published" page.'); }
+/* ==================================================================
+   CONFIRM
+   ------------------------------------------------------------------
+   askConfirm({...}).then(ok => ...). Resolves true only on the confirm
+   button; Escape, the backdrop and Cancel all resolve false, because every
+   ambiguous exit from a dialog about taking a site down must mean "no".
+
+   Focus lands on CANCEL, not the confirm button. Someone who double-clicks
+   the control that opened this, or who hits Enter out of habit, must not
+   thereby complete the action they were being asked about.
+   ================================================================== */
+var CNF_ICON={
+  warn:'<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10 7v4.2"/><circle cx="10" cy="14.4" r=".55" fill="currentColor" stroke="none"/><path d="M8.6 2.9L1.9 14.6A1.6 1.6 0 003.3 17h13.4a1.6 1.6 0 001.4-2.4L11.4 2.9a1.6 1.6 0 00-2.8 0z"/></svg>',
+  off :'<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.6v6"/><path d="M5.4 5A6.6 6.6 0 1014.6 5"/></svg>'
+};
+var cnfResolve=null, cnfPrevFocus=null;
+function askConfirm(o){
+  o=o||{};
+  return new Promise(function(resolve){
+    /* Built on first use, like the crop dialog, so it costs nothing until something
+       actually needs confirming and there is no markup to keep in sync. */
+    var ov=document.getElementById('cnfOv');
+    if(!ov){
+      ov=document.createElement('div'); ov.className='cnf-ov'; ov.id='cnfOv';
+      document.body.appendChild(ov);
+      /* Registered here rather than beside the other Escape handlers so it lives with
+         the thing it closes. It runs in addition to them, which is exactly why the
+         publish/preview handler has to bail while this is open: otherwise one Escape
+         dismisses the question AND the screen that asked it. */
+      document.addEventListener('keydown',function(e){ if(e.key==='Escape' && cnfIsOpen()) cnfClose(false); });
+    }
+    cnfResolve=resolve;
+    cnfPrevFocus=document.activeElement;
+    ov.dataset.tone=o.tone||'warn';
+    var keep=(o.keep&&o.keep.length)
+      ? '<ul class="cnf-keep">'+o.keep.map(function(k){
+          /* escaped: `body` is deliberately raw so a caller can bold a name, but these
+             are plain lines and a future caller may well pass something user-typed */
+          return '<li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3 3 7-7.5"/></svg>'+esc(k)+'</li>';
+        }).join('')+'</ul>'
+      : '';
+    ov.innerHTML=
+      '<div class="cnf-box" role="alertdialog" aria-modal="true" aria-labelledby="cnfT" aria-describedby="cnfS">'+
+        '<div class="cnf-hd">'+
+          '<span class="cnf-ic">'+(CNF_ICON[o.icon||'warn']||CNF_ICON.warn)+'</span>'+
+          '<div><div class="cnf-t" id="cnfT">'+esc(o.title||'Are you sure?')+'</div>'+
+          (o.body?'<div class="cnf-s" id="cnfS">'+o.body+'</div>':'')+'</div>'+
+        '</div>'+
+        keep+
+        '<div class="cnf-ft">'+
+          '<button type="button" class="cnf-btn cnf-no" id="cnfNo">'+esc(o.cancelLabel||'Cancel')+'</button>'+
+          '<button type="button" class="cnf-btn cnf-yes" id="cnfYes">'+esc(o.confirmLabel||'Confirm')+'</button>'+
+        '</div>'+
+      '</div>';
+    ov.classList.add('open');
+    document.getElementById('cnfNo').focus();
+    document.getElementById('cnfNo').onclick=function(){ cnfClose(false); };
+    document.getElementById('cnfYes').onclick=function(){ cnfClose(true); };
+    ov.onmousedown=function(e){ if(e.target===ov) cnfClose(false); };
+  });
+}
+function cnfClose(ok){
+  var ov=document.getElementById('cnfOv'); if(!ov) return;
+  ov.classList.remove('open');
+  ov.innerHTML='';
+  var r=cnfResolve; cnfResolve=null;
+  if(cnfPrevFocus&&cnfPrevFocus.focus){ try{ cnfPrevFocus.focus(); }catch(e){} }
+  cnfPrevFocus=null;
+  if(r) r(!!ok);
+}
+function cnfIsOpen(){ var ov=document.getElementById('cnfOv'); return !!(ov&&ov.classList.contains('open')); }
+
+/* Taking a live site down is the only action here a stranger can notice, so it
+   asks first. The dialog names what SURVIVES as prominently as what stops,
+   because "unpublish" sounds like "delete" to most people and the fear of
+   losing captured enquiries is the reason someone would leave a site up that
+   they wanted down. */
+function unpublishSite(){
+  /* liveSiteUrl(), not liveSub + "." + liveDomain. Those are two different things and
+     naming the wrong one here was actively misleading: "sharma.kdksites.in" is the
+     address the pool is built FOR, but it needs wildcard DNS that does not exist yet,
+     so nothing resolves there. The link people actually hold is the path form that
+     liveSiteUrl() builds, and it is the one the live card and Copy link both use.
+     A dialog that warns about an address the visitor never had is worse than no
+     dialog, because it teaches the user the wrong URL for their own site. */
+  var where=S.liveSub?liveSiteUrl():'';
+  askConfirm({
+    title:'Take your site offline?',
+    icon:'off',
+    body:(where
+            ? 'Anyone who opens <b>'+esc(where)+'</b> will see a "site unavailable" page instead of your website. '
+            : 'Visitors will see a "site unavailable" page instead of your website. ')+
+         'You can publish it again whenever you want.',
+    keep:['Your address stays reserved for you','Your content and design are kept','Every enquiry you have received is kept'],
+    confirmLabel:'Take it offline',
+    cancelLabel:'Keep it online'
+  }).then(function(ok){
+    if(!ok) return;
+    setSiteStatus('unpublished','Your site is offline. Visitors now see a "site unavailable" page.');
+  });
+}
 /* There is no republishSite() any more. Coming back online goes through the
    normal publish (see the 'Publish again' action), not a bare status flip: the
    user may have edited while the site was down, and they expect the version in
@@ -3624,7 +3761,10 @@ runSplash();
 /* Hard safety net: guarantee the splash lifts even if a timer hiccups. */
 setTimeout(function(){ var sp=document.getElementById('splash'); if(sp) sp.classList.add('hide'); }, 4200);
 window.addEventListener('resize',function(){ scaleShots(); if(typeof scaleLiveShot==='function') scaleLiveShot(); });
-document.addEventListener('keydown',function(e){if(e.key==='Escape'){ closeAddressMove(); closePreview(); if(document.getElementById('pubDone').classList.contains('show')) closePublish(); }});
+/* Escape belongs to whatever is on top. A confirm dialog is always the top layer, so
+   while one is open this handler stands down: without the guard, one Escape both
+   answered the question and closed the publish screen underneath it. */
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){ if(typeof cnfIsOpen==='function'&&cnfIsOpen()) return; closeAddressMove(); closePreview(); if(document.getElementById('pubDone').classList.contains('show')) closePublish(); }});
 </script>
 
 <!-- ===== LOCAL AI WRITER (test only) ===== -->
