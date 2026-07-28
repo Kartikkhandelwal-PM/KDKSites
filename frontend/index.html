@@ -371,12 +371,17 @@ html.enq-boot::before{content:"";position:fixed;inset:0;background:#F4F6FC;z-ind
 .th-card{border:2px solid var(--border);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:all var(--t);background:#fff}
 .th-card:hover{border-color:#9CA8D6;transform:translateY(-2px);box-shadow:var(--sh)}
 .th-card.sel{border-color:var(--c6);box-shadow:0 0 0 3px rgba(196,131,10,.14),var(--sh)}
-.th-sw{height:56px;display:flex;position:relative}
+/* position:relative dropped with the pip that used to be absolutely placed inside it */
+.th-sw{height:56px;display:flex}
 .th-sw-piece{flex:1}
-.th-pip{position:absolute;bottom:8px;right:8px;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.25);border:1.5px solid rgba(255,255,255,.6);display:none;align-items:center;justify-content:center;color:#fff;backdrop-filter:blur(4px)}
+/* Solid gold disc in the white row, matching this card's selected border colour
+   (--c6), rather than a translucent white disc floating on the swatches where the
+   light neutral piece all but erased it. */
+.th-pip{flex-shrink:0;margin-left:10px;width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#C4830A,#E09B20);display:none;align-items:center;justify-content:center;color:#fff;box-shadow:0 2px 7px rgba(196,131,10,.42)}
 .th-card.sel .th-pip{display:flex}
 .th-pip svg{width:10px;height:10px}
-.th-meta{padding:10px 12px}
+.th-meta{padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.th-info{min-width:0}
 .th-name{font-size:12px;font-weight:700;color:var(--th)}
 .th-best{font-size:10px;color:var(--ts);margin-top:2px}
 .custom-color{display:grid;grid-template-columns:1fr 1fr;gap:16px}
@@ -1346,13 +1351,30 @@ const THEMES_BY_DESIGN = {
     {name:'Plum & Champagne',best:'Refined',primary:'#6D28D9',accent:'#D4A017'},
     {name:'Graphite & Sky',best:'Understated',primary:'#334155',accent:'#0EA5E9'}
   ],
+  /* Rebuilt 2026-07-28: four of the six primaries were the same warm dark red-brown
+     and three accents were byte-identical, so half the grid looked like one palette
+     repeated. Measured in CIELAB rather than judged by eye:
+
+       min primary dE   10.5 -> 19.7   (Deep Maroon vs Oxblood were dE 10.5 apart)
+       min accent  dE    0.0 ->  8.2   (three cards all used #C4830A)
+       hue families      3/6 ->  6/6
+
+     Two guards the numbers had to respect. Heritage is a LIGHT design, so every
+     primary stays >= 9:1 on white for body text. And the accent is a text colour
+     here, not just decoration: `.s-eye` sets a 10px uppercase label in it, so no
+     accent may be lighter than the set already was. The floor went 2.4 -> 3.2:1,
+     which is why the accents stay golds and bronzes instead of spreading into pale
+     champagnes that would have measured better on paper and read worse on screen.
+
+     "Charcoal & Bronze" was renamed because it lied: #3E2723 is a dark brown. It is
+     now an actual neutral slate, which is also what pulls it away from Walnut. */
   heritage:[
     {name:'Walnut & Gold',best:'Traditional',primary:'#6B3A1F',accent:'#C4830A'},
-    {name:'Deep Maroon & Gold',best:'Distinguished',primary:'#7A2E2E',accent:'#C4830A'},
-    {name:'Forest & Bronze',best:'Grounded',primary:'#2F4A34',accent:'#B07A2E'},
-    {name:'Charcoal & Bronze',best:'Formal',primary:'#3E2723',accent:'#B8862F'},
-    {name:'Oxblood & Champagne',best:'Bold, senior',primary:'#5B1A1A',accent:'#CBA13A'},
-    {name:'Navy & Antique Gold',best:'Corporate legal',primary:'#1E3A5F',accent:'#C4830A'}
+    {name:'Oxblood & Bronze',best:'Bold, senior',primary:'#471111',accent:'#B8862F'},
+    {name:'Forest & Bronze',best:'Grounded',primary:'#2F4A34',accent:'#A06A22'},
+    {name:'Slate & Brass',best:'Formal',primary:'#2B3035',accent:'#B5741A'},
+    {name:'Navy & Antique Gold',best:'Corporate legal',primary:'#1E3A5F',accent:'#A87C33'},
+    {name:'Ink Teal & Taupe',best:'Understated',primary:'#12505A',accent:'#7E5A2A'}
   ],
   nova:[
     {name:'Ocean Blue & Coral',best:'Fresh, modern',primary:'#1A44C0',accent:'#EA580C'},
@@ -2249,7 +2271,16 @@ function buildThemes(){
   const g=document.getElementById('themeGrid'); if(!g) return;
   const list=currentThemes(), neutral=designNeutral();
   g.innerHTML=list.map(function(t,i){
-    return '<div class="th-card'+(i===S.theme?' sel':'')+'" data-i="'+i+'" onclick="pickTheme('+i+')"><div class="th-sw"><div class="th-sw-piece" style="background:'+t.primary+'"></div><div class="th-sw-piece" style="background:'+t.accent+'"></div><div class="th-sw-piece" style="background:'+neutral+'"></div><div class="th-pip"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 5l2.5 2.5 4.5-5"/></svg></div></div><div class="th-meta"><div class="th-name">'+t.name+'</div><div class="th-best">'+(t.best||'')+'</div></div></div>';
+    /* The tick sits in the white meta row, not on the colour band. As a translucent
+       white disc over the swatches it landed on whatever colour happened to be at
+       that corner: the third piece is the design's light neutral, so on Heritage a
+       white tick on 25%-white cream was very nearly invisible. Same fix as the
+       template card above, for the same reason. */
+    return '<div class="th-card'+(i===S.theme?' sel':'')+'" data-i="'+i+'" onclick="pickTheme('+i+')">'+
+      '<div class="th-sw"><div class="th-sw-piece" style="background:'+t.primary+'"></div><div class="th-sw-piece" style="background:'+t.accent+'"></div><div class="th-sw-piece" style="background:'+neutral+'"></div></div>'+
+      '<div class="th-meta"><div class="th-info"><div class="th-name">'+t.name+'</div><div class="th-best">'+(t.best||'')+'</div></div>'+
+        '<div class="th-pip"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 5l2.5 2.5 4.5-5"/></svg></div>'+
+      '</div></div>';
   }).join('');
 }
 function pickTheme(i){
