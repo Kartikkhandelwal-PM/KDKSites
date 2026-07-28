@@ -152,7 +152,10 @@ html.enq-boot::before{content:"";position:fixed;inset:0;background:#F4F6FC;z-ind
 .tpl-card:hover .tpl-pv-btn{transform:translateY(0)}
 .tpl-pv-btn:hover{background:var(--ground)}
 .tpl-pv-btn svg{width:14px;height:14px}
-.tpl-check{position:absolute;top:9px;right:9px;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#1D4ED8,#2563EB);display:none;align-items:center;justify-content:center;color:#fff;box-shadow:0 2px 8px rgba(29,78,216,.45);z-index:5}
+/* In the white meta row, not absolutely positioned over the preview: on a dark hero
+   a white tick on a blue disc disappeared into the thumbnail behind it. `flex-shrink`
+   keeps it a circle when the name beside it is long. */
+.tpl-check{flex-shrink:0;margin-left:12px;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#1D4ED8,#2563EB);display:none;align-items:center;justify-content:center;color:#fff;box-shadow:0 2px 8px rgba(29,78,216,.45)}
 .tpl-card.sel .tpl-check{display:flex}
 .tpl-check svg{width:11px;height:11px}
 .tpl-meta{padding:13px 15px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
@@ -1569,18 +1572,50 @@ function advance(from){
 }
 
 /* ---------- STEP 1: templates ---------- */
+/* The three squares under a design's name are meant to be the palette that design
+   will actually render with, so they have to follow the colour picker. They were
+   hardcoded to DESIGNS[].sw, so choosing "Walnut & Gold" recoloured the live
+   thumbnail and left the squares underneath still showing the design's factory
+   blue: the one place on the screen whose whole job is to report the colour was
+   the one place that never changed.
+
+   Same rule as pushThumbOne, deliberately, so the squares and the thumbnail can
+   never disagree: only the SELECTED design takes the chosen theme, and theme 0 IS
+   the design's own palette so it shows the factory colours too. The third square
+   is the page background, which no theme changes. */
+function swatchColors(d){
+  var themed=(d.key===S.template && S.theme!==0);
+  return themed ? [S.primary,S.accent,d.sw[2]] : d.sw;
+}
+function swatchHTML(d){
+  return swatchColors(d).map(function(c){ return '<div class="tpl-sw" style="background:'+c+'"></div>'; }).join('');
+}
+/* Repaint in place rather than rebuilding the cards: each card holds a live iframe
+   thumbnail, and re-rendering the grid would reload all four on every colour click. */
+function paintSwatches(){
+  DESIGNS.forEach(function(d){
+    var box=document.querySelector('#tplGrid .tpl-card[data-k="'+d.key+'"] .tpl-swatches');
+    if(box) box.innerHTML=swatchHTML(d);
+  });
+}
 function buildTemplates(){
   const g=document.getElementById('tplGrid'); g.innerHTML='';
   DESIGNS.forEach(function(d){
-    const sw=d.sw.map(function(c){return '<div class="tpl-sw" style="background:'+c+'"></div>';}).join('');
+    const sw=swatchHTML(d);
     g.insertAdjacentHTML('beforeend',
       '<div class="tpl-card'+(d.key===S.template?' sel':'')+'" data-k="'+d.key+'" onclick="pickTpl(\''+d.key+'\')">'+
         '<div class="tpl-prev" style="background:linear-gradient(150deg,'+d.sw[0]+','+shade(d.sw[0],20)+')">'+
           '<iframe class="tpl-shot" data-k="'+d.key+'" src="'+d.live+'" scrolling="no" loading="lazy" tabindex="-1" aria-hidden="true" title="'+d.name+' preview" onload="thumbLoaded(this)"></iframe>'+
           '<div class="tpl-ov"><button class="tpl-pv-btn" onclick="event.stopPropagation();openPreview(\''+d.key+'\',true)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z"/><circle cx="8" cy="8" r="2"/></svg>Preview</button></div>'+
         '</div>'+
-        '<div class="tpl-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6l3 3 5-5"/></svg></div>'+
-        '<div class="tpl-meta"><div class="tpl-info"><div class="tpl-name">'+d.name+'</div><div class="tpl-desc">'+d.desc+'</div><div class="tpl-swatches">'+sw+'</div></div></div></div>');
+        /* The tick lives in the META row, not over the thumbnail. Floated on the
+           preview it sat on top of whatever the website happened to render there,
+           so on a dark hero it vanished and on a busy one it was just noise. The
+           meta row is plain white with a space-between layout already, so there is
+           a purpose-built empty slot on its right. */
+        '<div class="tpl-meta"><div class="tpl-info"><div class="tpl-name">'+d.name+'</div><div class="tpl-desc">'+d.desc+'</div><div class="tpl-swatches">'+sw+'</div></div>'+
+          '<div class="tpl-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6l3 3 5-5"/></svg></div>'+
+        '</div></div>');
   });
 }
 /* Scale each live thumbnail iframe (rendered at desktop width) to fit its card */
@@ -1609,7 +1644,7 @@ function pickTpl(k){
   document.querySelectorAll('.tpl-card').forEach(function(c){c.classList.toggle('sel',c.dataset.k===k);});
   // switching design keeps all entered details; reset to this design's default palette
   S.theme=0; const th=currentThemes()[0]; if(th){ S.primary=th.primary; S.accent=th.accent; }
-  buildThemes(); syncColorInputs(); pushThumbs(); updateHeroVisibility();
+  buildThemes(); syncColorInputs(); pushThumbs(); paintSwatches(); updateHeroVisibility();
   renderPartners();   // the portrait frame follows the design's shape and colour
   // if the preview is open, reload it for the newly chosen design (with current data)
   const ov=document.getElementById('pvOverlay'); if(ov&&ov.classList.contains('open')) openPreview(k,pvSample);
@@ -2220,12 +2255,12 @@ function buildThemes(){
 function pickTheme(i){
   const list=currentThemes(); if(!list[i]) return;
   S.theme=i; document.querySelectorAll('.th-card').forEach(function(c){c.classList.toggle('sel',+c.dataset.i===i);});
-  S.primary=list[i].primary; S.accent=list[i].accent; syncColorInputs(); pushThumbs(); renderPartners(); livePush();
+  S.primary=list[i].primary; S.accent=list[i].accent; syncColorInputs(); pushThumbs(); paintSwatches(); renderPartners(); livePush();
 }
 function onCustomColor(){
   S.primary=document.getElementById('cpPrimary').value; S.accent=document.getElementById('cpAccent').value;
   document.getElementById('hexPrimary').textContent=S.primary.toUpperCase(); document.getElementById('hexAccent').textContent=S.accent.toUpperCase();
-  S.theme=-1; document.querySelectorAll('.th-card').forEach(function(c){c.classList.remove('sel');}); pushThumbs(); livePush();
+  S.theme=-1; document.querySelectorAll('.th-card').forEach(function(c){c.classList.remove('sel');}); pushThumbs(); paintSwatches(); livePush();
 }
 function livePush(){ const ov=document.getElementById('pvOverlay'); if(ov&&ov.classList.contains('open')) pushConfig(); }
 function syncColorInputs(){
@@ -3611,6 +3646,7 @@ function applyConfigToBuilder(c){
   try{
     document.querySelectorAll('.tpl-card').forEach(function(cc){cc.classList.toggle('sel',cc.dataset.k===S.template);});
     buildThemes(); syncColorInputs(); updateHeroVisibility(); if(typeof pushThumbs==='function') pushThumbs();
+    if(typeof paintSwatches==='function') paintSwatches();
     renderServices(); renderTags(); renderStats(); renderPartners(); renderHighlights(); renderProcess(); renderTestimonials(); renderHeroImages();
     applyImgTo('logo','imgLogo','uzLogo');
   }catch(e){ if(window.console) console.warn('restore render error',e); }
