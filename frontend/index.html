@@ -1343,13 +1343,21 @@ const DESIGNS = [
 /* 3-4 curated palettes PER design. Primaries are dark enough for text/buttons on
    the light designs; Zenith (dark UI) uses light accents so text stays legible. */
 const THEMES_BY_DESIGN = {
+  /* Rebuilt 2026-07-28 alongside heritage. "Royal Blue & Gold" and "Indigo & Amber"
+     were dE 12.6 apart and two cards shared #C4830A, so the grid had fewer real
+     choices than it had cards. Apex's accent is NEVER a text colour (0 uses of
+     color:var(--gold)), so its accent may go anywhere legible; it is still kept to a
+     professional register of golds, bronzes, teals and skies, because a raw
+     max-separation search reached for pink and lime, which measure well and look
+     wrong on a chartered accountant's site.
+       min primary dE 12.6 -> 24.8   min accent dE 0.0 -> 13.4 */
   apex:[
     {name:'Royal Blue & Gold',best:'Classic, trusted',primary:'#1D4ED8',accent:'#C4830A'},
-    {name:'Emerald & Gold',best:'Calm, assured',primary:'#0F6B45',accent:'#C4830A'},
-    {name:'Indigo & Amber',best:'Modern, bold',primary:'#4338CA',accent:'#D97706'},
-    {name:'Teal & Coral',best:'Fresh',primary:'#0E7490',accent:'#F97316'},
-    {name:'Plum & Champagne',best:'Refined',primary:'#6D28D9',accent:'#D4A017'},
-    {name:'Graphite & Sky',best:'Understated',primary:'#334155',accent:'#0EA5E9'}
+    {name:'Emerald & Bronze',best:'Calm, assured',primary:'#0F6B45',accent:'#B45309'},
+    {name:'Indigo & Sky',best:'Modern, bold',primary:'#4C1D95',accent:'#0EA5E9'},
+    {name:'Teal & Coral',best:'Fresh',primary:'#0E7490',accent:'#EA580C'},
+    {name:'Sienna & Pine',best:'Warm, senior',primary:'#9A3412',accent:'#0F766E'},
+    {name:'Graphite & Amber',best:'Understated',primary:'#334155',accent:'#D4A017'}
   ],
   /* Rebuilt 2026-07-28: four of the six primaries were the same warm dark red-brown
      and three accents were byte-identical, so half the grid looked like one palette
@@ -1376,17 +1384,30 @@ const THEMES_BY_DESIGN = {
     {name:'Navy & Antique Gold',best:'Corporate legal',primary:'#1E3A5F',accent:'#A87C33'},
     {name:'Ink Teal & Taupe',best:'Understated',primary:'#12505A',accent:'#7E5A2A'}
   ],
+  /* "Indigo & Pink" and "Violet & Lime" were dE 14.4 apart and #EA580C appeared
+     twice. Nova DOES use its accent as a text colour (3 uses of color:var(--coral)),
+     so no accent may fall below the old 3.09:1 floor on white: the first candidate
+     paired Graphite with sky #0EA5E9 at 2.77:1 and was rejected for a darker steel
+     blue. Brighter accents are on-brand here in a way they are not on apex.
+       min primary dE 14.4 -> 25.9   min accent dE 0.0 -> 15.5 */
   nova:[
     {name:'Ocean Blue & Coral',best:'Fresh, modern',primary:'#1A44C0',accent:'#EA580C'},
     {name:'Teal & Amber',best:'Approachable',primary:'#0E7490',accent:'#D97706'},
-    {name:'Indigo & Pink',best:'Contemporary',primary:'#4F46E5',accent:'#DB2777'},
-    {name:'Emerald & Orange',best:'Energetic',primary:'#047857',accent:'#EA580C'},
-    {name:'Violet & Lime',best:'Vibrant',primary:'#7C3AED',accent:'#65A30D'},
-    {name:'Crimson & Gold',best:'Confident',primary:'#BE123C',accent:'#C4830A'}
+    {name:'Violet & Pink',best:'Contemporary',primary:'#7E22CE',accent:'#DB2777'},
+    {name:'Emerald & Lime',best:'Energetic',primary:'#047857',accent:'#65A30D'},
+    {name:'Crimson & Gold',best:'Confident',primary:'#BE123C',accent:'#C4830A'},
+    {name:'Graphite & Steel',best:'Understated',primary:'#334155',accent:'#0369A1'}
   ],
+  /* "Violet & Lilac" and "Electric Indigo" were dE 14.4 apart. Zenith is the DARK
+     design and its accent is a text colour 21 times over on --ink #0D0A14, so the
+     accents must stay PALE: contrast here is measured against the dark background,
+     not against white like the other three. Azure replaces Electric Indigo to pull
+     it away from Violet.
+       min primary dE 14.4 -> 27.2   min accent dE 11.3 -> 18.9
+       accent contrast on --ink 6.58 -> 10.62:1 */
   zenith:[
-    {name:'Violet & Lilac',best:'Premium',primary:'#7C3AED',accent:'#A78BFA'},
-    {name:'Electric Indigo',best:'Techy',primary:'#4F46E5',accent:'#818CF8'},
+    {name:'Violet & Lilac',best:'Premium',primary:'#7C3AED',accent:'#C4B5FD'},
+    {name:'Azure & Sky',best:'Techy',primary:'#2563EB',accent:'#93C5FD'},
     {name:'Cyan & Aqua',best:'Cutting-edge',primary:'#0891B2',accent:'#67E8F9'},
     {name:'Magenta & Pink',best:'Vibrant',primary:'#C026D3',accent:'#F0ABFC'},
     {name:'Emerald & Mint',best:'Growth',primary:'#059669',accent:'#6EE7B7'},
