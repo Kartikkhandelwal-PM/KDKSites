@@ -1,7 +1,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>KDK Sites · KDK Software</title>
-<link rel="icon" type="image/png" href="assets/ca-india-logo.png">
+<title>KDK Sites | Website Builder</title>
+<!-- The product's own mark, not the generic CA logo the builder used to borrow.
+     logo-32 and logo-180 are generated from assets/logo.png (500px): the full file
+     is 90 KB, which is a lot to ship on every page load for something drawn at 16px.
+     The favicon keeps its transparency so browsers composite it on the tab colour;
+     the Apple touch icon is flattened onto white, because iOS gives transparent
+     icons no background and the navy half of this mark disappears against black. -->
+<link rel="icon" type="image/png" sizes="32x32" href="assets/logo-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/logo-180.png">
 <script>
 /* Returning users must never see the splash flash. Decide BEFORE the splash is
    parsed/painted: if a saved session exists, mark <html> so CSS hides the
@@ -43,11 +50,26 @@ html.enq-boot::before{content:"";position:fixed;inset:0;background:#F4F6FC;z-ind
 
 /* HEADER */
 .hdr{height:58px;background:var(--surface);display:flex;align-items:center;padding:0 20px;gap:16px;flex-shrink:0;border-bottom:1px solid var(--border);position:relative;z-index:50;box-shadow:var(--sh-s)}
-.logo-wrap{display:flex;align-items:center;gap:9px}
-.logo-mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#C4830A,#E09B20);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;letter-spacing:-.3px;box-shadow:0 3px 10px rgba(196,131,10,.3)}
-.logo-name{font-size:14px;font-weight:700;color:var(--th)}
-.logo-sep{width:1px;height:16px;background:var(--border);margin:0 2px}
-.logo-prod{font-size:13px;color:var(--ts)}
+.logo-wrap{display:flex;align-items:center;gap:10px}
+/* The mark carries its own shape and colour, so it gets no tile, no rounding and no
+   shadow: the old gold square was a container drawn around two letters, and wrapping
+   a logo that is already a logo just boxes it in.
+   40px in a 58px bar. The artwork has its own internal padding, so it reads smaller
+   than its box: at 30px it looked lost in the bar rather than balanced against it. */
+.logo-img{width:40px;height:40px;display:block;object-fit:contain;flex-shrink:0}
+.logo-txt{display:flex;flex-direction:column;line-height:1.12;min-width:0}
+/* The wordmark is SET, not pictured. The lockup PNG is 1823x863 and 787 KB, and at
+   header height its second line is unreadable; drawn as text it stays crisp at any
+   size and costs nothing. Both colours are sampled from that PNG, so the header and
+   the brand asset agree exactly. */
+.logo-name{font-size:16.5px;font-weight:800;letter-spacing:-.3px;white-space:nowrap}
+.logo-name .lk{color:#09558E}
+.logo-name .ls{color:#FB5B51}
+/* "Website Builder", not the logo's "Build. Personalize. Publish." tagline: this is a
+   tool someone is working in, not a landing page, so the second line should say what
+   the thing is. Sentence case and grey, because the centre of the bar already carries
+   an uppercase tracked label ("STEP 1 OF 6") and two would compete. */
+.logo-sub{font-size:11px;font-weight:600;color:var(--ts);letter-spacing:.01em;white-space:nowrap;margin-top:1px}
 .hdr-mid{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center}
 .hdr-crumb{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ts)}
 .hdr-crumb-nm{font-size:13px;font-weight:700;color:var(--th);margin-left:9px;padding-left:9px;border-left:1px solid var(--border)}
@@ -870,11 +892,16 @@ html.enq-boot::before{content:"";position:fixed;inset:0;background:#F4F6FC;z-ind
 
 <!-- HEADER -->
 <header class="hdr">
+  <!-- The product is KDK Sites. It used to read "KDK | Software | KDK Sites", three
+       fragments for one name, where the gold "KDK" tile and the word "Software" were
+       the parent company and only the greyed-out tail said what this actually is. Now
+       it is the real mark plus the product name, once. -->
   <div class="logo-wrap">
-    <div class="logo-mark">KDK</div>
-    <span class="logo-name">Software</span>
-    <div class="logo-sep"></div>
-    <span class="logo-prod">KDK Sites</span>
+    <img class="logo-img" src="assets/logo.png" alt="" width="40" height="40">
+    <span class="logo-txt">
+      <span class="logo-name"><span class="lk">KDK</span> <span class="ls">Sites</span></span>
+      <span class="logo-sub">Website Builder</span>
+    </span>
   </div>
   <div class="hdr-mid" id="hdrMid"></div>
   <div class="hdr-actions">
