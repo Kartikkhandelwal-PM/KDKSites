@@ -43,3 +43,14 @@ Required Netlify environment variables (Site settings -> Environment variables):
 | `SUPABASE_URL` | `https://hlhtopqbzfzlxxmolkok.supabase.co` |
 | `SUPABASE_SERVICE_KEY` | **Secret.** Service role key; lets `render.ts` read any published site, bypassing RLS. |
 | `SUPABASE_ANON_KEY` | Public key injected into published pages so contact forms can insert leads. |
+| `SITE_DOMAINS` | Comma-separated pool of KDK-owned domains, e.g. `kdksites.in,casites.in`. The **first is the default** and is what a bare `/s/<sub>` resolves against. Optional; defaults to `kdksites.in`. `render.ts` serves only domains named here, so a domain missing from this list resolves in DNS but 404s. |
+
+### Adding a domain to the pool
+
+Three places, all required:
+
+1. **DNS** — point wildcard `*.<domain>` at the Netlify site, and add the domain under Netlify's Domain management.
+2. **`SITE_DOMAINS`** — append it, so `render.ts` will answer for it.
+3. **`frontend/app-config.js`** — append `{host:'<domain>', label:'…', note:'…', live:true}` to `siteDomains`, so the builder offers it. Use `live:false` to list a domain that is bought but not yet wired: it renders disabled rather than being offered.
+
+The edge function is registered on `/*`, not `/s/*`, because a real address requests `/`. It returns `undefined` for anything it does not own, so the builder and all static assets pass through.

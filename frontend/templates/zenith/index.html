@@ -376,6 +376,80 @@ button { border:none; background:none; cursor:pointer; font:inherit }
   background:rgba(var(--ind-rgb),.08); display:flex; align-items:center; justify-content:center;
 }
 
+/* ── FOUNDERS & PARTNERS ──
+   #about carries the layout class, set by applyConfig from the partner count:
+     .about-solo  one  — the card beside the About text (default; card on the left)
+     .about-duo   two  — About text full width, two equal cards below it
+     .about-team  3-4  — lead keeps the card, the rest form a row below
+   In duo mode the text column is ordered above the cards even though the card
+   column comes first in the markup. */
+#about.about-duo .about-grid { grid-template-columns:1fr; gap:36px }
+#about.about-duo .pc-col     { order:2; display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:stretch }
+/* the text column first, the cards second, the highlights last. .ab-list is
+   excluded from the text-column rule or it would inherit order:1 by specificity. */
+#about.about-duo .about-grid > div:not(.pc-col):not(.ab-list) { order:1 }
+#about.about-duo .about-grid > .ab-list { order:3; margin-top:8px }
+#about.about-duo .pc-card    { display:flex; flex-direction:column; height:100% }
+#about.about-duo .pc-body    { display:flex; flex-direction:column; flex:1 }
+#about.about-duo .pc-quals   { margin-top:auto }   /* uneven bios, level credential lists */
+@media(max-width:760px){ #about.about-duo .pc-col { grid-template-columns:1fr } }
+
+/* An uploaded portrait is 3:4. Inside the 80px circle it was unreadable, so a
+   photo gets a real portrait block in the dark head. Initials-only firms keep the
+   circle, and if ANY partner has a photo every card in the section uses the
+   block, so a row never mixes a tall photo with a circle. */
+.pc-portrait {
+  width:118px; height:118px; border-radius:50%; overflow:hidden; flex-shrink:0;
+  background:rgba(var(--ind-rgb),.18); border:1px solid rgba(var(--ind-rgb),.45);
+  display:flex; align-items:center; justify-content:center;
+  font-size:30px; font-weight:800; color:var(--ind3);
+}
+/* faces sit above centre in a portrait, so the crop is biased upward */
+.pc-portrait img { width:100%; height:100%; object-fit:cover; object-position:50% 26%; display:block }
+/* With a portrait the dark head becomes a row: photo left, name and role beside it,
+   so a half-width card is not mostly empty next to the picture. */
+.pc-head.has-photo { display:flex; gap:18px; align-items:center; text-align:left }
+.pc-head.has-photo .pc-nm { margin-bottom:4px }
+@media(max-width:600px){ .pc-portrait { width:104px; height:104px } .pc-head.has-photo { gap:14px } }
+
+.team-band { margin-top:52px; padding-top:34px; border-top:1px solid var(--bdr) }
+.team-hd   { margin-bottom:22px }
+.team-h3   { font-size:19px; font-weight:800; color:#111827; letter-spacing:-.02em }
+.team-sub  { font-size:12.5px; color:#6B7280; margin-top:4px }
+.team-grid { display:grid; gap:18px; grid-template-columns:repeat(auto-fit,minmax(226px,1fr)) }
+.tm-card {
+  background:#fff; border:1px solid var(--bdr); border-radius:16px; overflow:hidden;
+  box-shadow:0 2px 20px rgba(0,0,0,.05); transition:box-shadow var(--t),transform var(--t);
+  display:flex; flex-direction:column;
+}
+.tm-card:hover { box-shadow:0 12px 34px rgba(0,0,0,.1); transform:translateY(-2px) }
+/* the dark head is what makes a Zenith profile card read as Zenith, kept at a smaller scale */
+.tm-head { padding:20px 18px 16px; text-align:center; background:linear-gradient(145deg,var(--ink),var(--ink2)) }
+.tm-mono {
+  width:52px; height:52px; border-radius:50%; margin:0 auto 11px; position:relative; overflow:hidden;
+  background:rgba(var(--ind-rgb),.15); border:2px solid rgba(var(--ind-rgb),.35);
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px; font-weight:800; color:var(--ind3);
+}
+.tm-mono img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover }
+/* photo variant of the compact card head */
+.tm-photo {
+  width:68px; height:68px; border-radius:50%; margin:0 auto 10px; overflow:hidden;
+  background:rgba(var(--ind-rgb),.18); border:1px solid rgba(var(--ind-rgb),.45);
+  display:flex; align-items:center; justify-content:center;
+  font-size:17px; font-weight:800; color:var(--ind3);
+}
+.tm-photo img { width:100%; height:100%; object-fit:cover; object-position:50% 26%; display:block }
+/* row head with a portrait, so a wide compact card is not mostly empty either */
+.tm-head.has-photo { display:flex; gap:14px; align-items:center; text-align:left }
+.tm-head.has-photo .tm-photo { margin:0 }
+.tm-head.has-photo .tm-nm { margin-bottom:3px }
+.tm-nm   { font-size:14.5px; font-weight:800; color:var(--text1); margin-bottom:3px }
+.tm-rl   { font-size:9.5px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--ind3) }
+.tm-body { padding:16px 18px 18px; display:flex; flex-direction:column; flex:1 }
+.tm-bio  { font-size:12.5px; color:#4B5563; line-height:1.7; margin-bottom:12px }
+.tm-cred { display:flex; align-items:center; gap:9px; font-size:11.5px; font-weight:600; color:#4B5563; margin-top:auto }
+
 /* ══════════════════════════════════════
    PROCESS — VERTICAL TIMELINE
 ══════════════════════════════════════ */
@@ -849,7 +923,7 @@ footer {
     <div class="about-grid">
 
       <!-- Founder card — LEFT -->
-      <div class="reveal d1">
+      <div class="reveal d1 pc-col">
         <div class="pc-card">
           <div class="pc-head">
             <div class="pc-mono-wrap">
@@ -1284,23 +1358,30 @@ function bootTestiZ(){
   var ctrEl   = document.getElementById('testiCtr');
   card.style.transition = 'opacity .18s ease,transform .18s ease';
 
-  function show(idx){
+  /* `instant` paints without the fade, and the FIRST paint always uses it. The fade
+     was unconditional, so the card kept the demo quote hardcoded in the markup for
+     180ms after the real reviews arrived: a live site opened on "Rahul Gupta, MD,
+     Gupta Precision Industries", a person who is not that firm's client. Only a
+     genuine slide CHANGE should cross-fade. */
+  function paint(){
+    var t = testimonials[cur];
+    textEl.innerHTML    = t.text;
+    if(t.img){ avatarEl.style.overflow='hidden'; avatarEl.innerHTML='<img src="'+t.img+'" alt="" style="width:100%;height:100%;object-fit:cover">'; }
+    else { avatarEl.style.overflow=''; avatarEl.textContent=t.avatar; }
+    nmEl.textContent    = t.nm;
+    roleEl.textContent  = t.role;
+    ctrEl.textContent   = (cur+1) + ' / ' + testimonials.length;
+    card.style.opacity  = '1'; card.style.transform = 'none';
+  }
+  function show(idx,instant){
     cur = (idx + testimonials.length) % testimonials.length;
+    if(instant){ paint(); return; }
     card.style.opacity = '0'; card.style.transform = 'translateY(8px)';
-    setTimeout(function(){
-      var t = testimonials[cur];
-      textEl.innerHTML    = t.text;
-      if(t.img){ avatarEl.style.overflow='hidden'; avatarEl.innerHTML='<img src="'+t.img+'" alt="" style="width:100%;height:100%;object-fit:cover">'; }
-      else { avatarEl.style.overflow=''; avatarEl.textContent=t.avatar; }
-      nmEl.textContent    = t.nm;
-      roleEl.textContent  = t.role;
-      ctrEl.textContent   = (cur+1) + ' / ' + testimonials.length;
-      card.style.opacity  = '1'; card.style.transform = 'none';
-    }, 180);
+    setTimeout(paint, 180);
   }
   document.getElementById('testiPrev').onclick = function(){ show(cur-1); };
   document.getElementById('testiNext').onclick = function(){ show(cur+1); };
-  show(0);
+  show(0,true);
 }
 bootTestiZ();
 
@@ -1446,6 +1527,72 @@ function handleSubmit(e){
       if(footMark) footMark.style.display='';
     }
   }
+  /* ── FOUNDERS & PARTNERS ──
+     A firm can be one founder, two equal partners, or a small partnership, so the
+     About section has three layouts and the count picks one. people[] is the
+     source of truth; a config saved before people[] existed still carries the
+     founder* keys, so it is read as a single-partner firm and renders unchanged. */
+  var PEOPLE_MAX=4;
+  function peopleOf(cfg){
+    var arr=(Array.isArray(cfg.people)&&cfg.people.length)?cfg.people
+      :[{name:cfg.founderName,role:cfg.founderRole,bio:cfg.founderBio,credentials:cfg.credentials,photo:cfg.founderPhoto}];
+    return arr.filter(function(p){ return p&&String(p.name||'').trim(); }).slice(0,PEOPLE_MAX);
+  }
+  /* `photos` is true when at least one partner in the section has a portrait, so
+     every card switches to the portrait block together. */
+  function bigCard(p,photos){
+    var creds=(p.credentials||[]).map(function(c){ return '<div class="pc-q">'+CHK+esc(c)+'</div>'; }).join('');
+    var id='<div class="pc-nm">'+esc(p.name)+'</div>'+(p.role?'<div class="pc-role">'+esc(p.role)+'</div>':'');
+    var head=photos
+      ? '<div class="pc-portrait">'+(p.photo?'<img src="'+esc(p.photo)+'" alt="'+esc(p.name)+'">':esc(initials(p.name)))+'</div><div>'+id+'</div>'
+      : '<div class="pc-mono-wrap"><div class="pc-initials">'+esc(initials(p.name))+'</div></div>'+id;
+    return '<div class="pc-card">'+
+      '<div class="pc-head'+(photos?' has-photo':'')+'">'+head+
+      '</div>'+
+      '<div class="pc-body">'+
+        (p.bio?'<p class="pc-bio">'+esc(p.bio)+'</p>':'')+
+        (creds?'<div class="pc-quals">'+creds+'</div>':'')+
+      '</div>'+
+    '</div>';
+  }
+  function miniCard(p,photos){
+    var id='<div class="tm-nm">'+esc(p.name)+'</div>'+(p.role?'<div class="tm-rl">'+esc(p.role)+'</div>':'');
+    var head=photos
+      ? '<div class="tm-photo">'+(p.photo?'<img src="'+esc(p.photo)+'" alt="'+esc(p.name)+'">':esc(initials(p.name)))+'</div><div>'+id+'</div>'
+      : '<div class="tm-mono">'+esc(initials(p.name))+'</div>'+id;
+    return '<div class="tm-card">'+
+      '<div class="tm-head'+(photos?' has-photo':'')+'">'+head+
+      '</div>'+
+      '<div class="tm-body">'+
+        (p.bio?'<p class="tm-bio">'+esc(p.bio)+'</p>':'')+
+        ((p.credentials&&p.credentials.length)?'<div class="tm-cred">'+CHK+esc(p.credentials[0])+'</div>':'')+
+      '</div>'+
+    '</div>';
+  }
+  function applyPeople(cfg){
+    var ppl=peopleOf(cfg);
+    var mode=(ppl.length<=1)?'solo':(ppl.length===2?'duo':'team');
+    var photos=ppl.some(function(p){ return !!p.photo; });
+    var about=qs('#about'), grid=qs('#about .about-grid'), col=qs('#about .pc-col'), wrap=qs('#about .sec-wrap');
+    if(!about||!grid||!col) return;
+    about.classList.remove('about-solo','about-duo','about-team');
+    about.classList.add('about-'+mode);
+    if(ppl.length) col.innerHTML=ppl.slice(0,mode==='duo'?2:1).map(function(p){ return bigCard(p,photos); }).join('');
+    /* the highlights list sits inside the text column, except in duo mode where the
+       text runs full width and the list becomes the third row of the grid */
+    var list=qs('.ab-list',about);
+    var textCol=qsa('#about .about-grid > div').filter(function(d){ return d!==col && !d.classList.contains('ab-list'); })[0];
+    if(list&&textCol) (mode==='duo'?grid:textCol).appendChild(list);
+    var band=qs('#about .team-band');
+    if(mode==='team'){
+      if(!band){ band=document.createElement('div'); band.className='team-band'; (wrap||about).appendChild(band); }
+      band.innerHTML='<div class="team-hd"><div class="team-h3">The partners</div>'+
+        '<div class="team-sub">Working alongside '+esc(ppl[0].name)+'</div></div>'+
+        '<div class="team-grid">'+ppl.slice(1).map(function(p){ return miniCard(p,photos); }).join('')+'</div>';
+      band.style.display='';
+    } else if(band){ band.style.display='none'; }
+  }
+
   function applyConfig(cfg){
     if(!cfg||typeof cfg!=='object') return;
 
@@ -1480,11 +1627,8 @@ function handleSubmit(e){
     if(cfg.highlights&&cfg.highlights.length){ var al=qs('.ab-list'); if(al) al.innerHTML=cfg.highlights.map(function(x){
       return '<div class="ab-item">'+ABICON+'<dl class="ab-body"><dt>'+esc(x.t)+'</dt><dd>'+esc(x.d||'')+'</dd></dl></div>'; }).join(''); }
 
-    /* founder */
-    setId('founderName',cfg.founderName); setText('.pc-role',cfg.founderRole); setId('founderBio',cfg.founderBio);
-    var fi=document.getElementById('founderInitials'); if(fi) fi.textContent=initials(cfg.founderName);
-    if(cfg.founderPhoto){ var fp=document.getElementById('founderPhoto'); if(fp){ fp.src=cfg.founderPhoto; fp.style.display='block'; if(fi)fi.style.display='none'; } }
-    if(cfg.credentials&&cfg.credentials.length){ var pq=qs('.pc-quals'); if(pq) pq.innerHTML=cfg.credentials.map(function(c){return '<div class="pc-q">'+CHK+esc(c)+'</div>';}).join(''); }
+    /* founders & partners */
+    applyPeople(cfg);
 
     /* process timeline */
     if(cfg.process&&cfg.process.length){ var pt=qs('.proc-timeline'); if(pt) pt.innerHTML=cfg.process.map(function(p,i){
@@ -1495,13 +1639,24 @@ function handleSubmit(e){
       window.__zTesti=cfg.testimonials.map(function(t){ return { text:'&ldquo;'+esc(t.q)+'&rdquo;', avatar:initials(t.n), img:t.img||'', nm:t.n, role:t.r||'' }; });
       if(typeof bootTestiZ==='function') bootTestiZ();
     }
+    /* No reviews is a legitimate choice, so drop the whole section rather than serve
+       the design's sample quote as if it were this firm's client. Zenith is the only
+       design with nav links INTO this section, so those go with it: a "Clients" link
+       that scrolls nowhere is worse than one that was never there. */
+    else {
+      var tsec=qs('#testimonials'); if(tsec) tsec.style.display='none';
+      qsa('a[href="#testimonials"]').forEach(function(a){ a.style.display='none'; });
+    }
 
-    /* contact — phone, email, address, hours */
+    /* contact — phone, email, address, hours
+       A detail that was not given REMOVES its row. Without the else branch a blank
+       field left the design's demo text live on a real firm's site. */
     var ci=qsa('.ci-item');
-    if(ci[0]&&cfg.phone){ var a0=qs('.ci-val a',ci[0])||qs('.ci-val',ci[0]); if(a0){ a0.textContent=cfg.phone; if(a0.tagName==='A')a0.href='tel:'+String(cfg.phone).replace(/\s/g,''); } }
-    if(ci[1]&&cfg.email){ var a1=qs('.ci-val a',ci[1])||qs('.ci-val',ci[1]); if(a1){ a1.textContent=cfg.email; if(a1.tagName==='A')a1.href='mailto:'+cfg.email; } }
-    if(ci[2]&&cfg.address){ var v2=qs('.ci-val',ci[2]); if(v2)v2.innerHTML=esc(cfg.address)+(cfg.city?'<br>'+esc(cfg.city):''); }
-    if(ci[3]&&cfg.hours){ var v3=qs('.ci-val',ci[3]); if(v3)v3.textContent=cfg.hours; }
+    function ciRow(el,val,fill){ if(!el) return; if(val){ fill(); } else { el.style.display='none'; } }
+    ciRow(ci[0],cfg.phone,function(){ var a0=qs('.ci-val a',ci[0])||qs('.ci-val',ci[0]); if(a0){ a0.textContent=cfg.phone; if(a0.tagName==='A')a0.href='tel:'+String(cfg.phone).replace(/\s/g,''); } });
+    ciRow(ci[1],cfg.email,function(){ var a1=qs('.ci-val a',ci[1])||qs('.ci-val',ci[1]); if(a1){ a1.textContent=cfg.email; if(a1.tagName==='A')a1.href='mailto:'+cfg.email; } });
+    ciRow(ci[2],cfg.address,function(){ var v2=qs('.ci-val',ci[2]); if(v2)v2.innerHTML=esc(cfg.address)+(cfg.city?'<br>'+esc(cfg.city):''); });
+    ciRow(ci[3],cfg.hours,function(){ var v3=qs('.ci-val',ci[3]); if(v3)v3.textContent=cfg.hours; });
 
     /* footer */
     setText('.foot-desc',cfg.footerBlurb); setText('.foot-copy',cfg.copyright);

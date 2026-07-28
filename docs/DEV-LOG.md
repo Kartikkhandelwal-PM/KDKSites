@@ -4,6 +4,289 @@
 
 ---
 
+## 2026-07-28 (Session 18): Mandatory answers in the AI Writer, and the demo data that was reaching live sites
+
+### Why this session happened
+The ask was whether to push everything to git, Netlify and Supabase, with a cost concern attached: Netlify build minutes. The check requested first was whether a user can supply every detail in the AI Writer and whether the AI writes every important field. That check found two defects, one of which puts other people's data on a real firm's website, so nothing was pushed until they were fixed. The user then asked for mandatory fields, naming three floors: at least one founder/partner, at least three "how we work" steps, and stats at 3 minimum / 6 maximum with the option to leave them out.
+
+### The finding that mattered most
+**Every one of the four templates binds its content as "replace the demo text only if a value was given", with no else branch.** So a field the user skipped did not render empty, it left the DESIGN'S OWN placeholder live:
+
+- A firm in Jaipur that skipped the office address published a contact card reading **"302, Barakhamba House, Connaught Place / New Delhi, 110001"**.
+- Office hours were **never asked anywhere in the AI Writer**, yet all four templates render them in the contact card and the footer, so every AI-written site showed the design's `Mon to Sat: 10:00 AM to 7:00 PM`.
+- `collectConfig` strips empty entries, so skipping reviews sent `testimonials: []`, and the prompt explicitly returns an empty array when no reviews are given. The section then kept the design's sample quotes, attributed to **people who were never that firm's clients**.
+- Zenith additionally painted its first testimonial inside a 180ms `setTimeout`, so even a correct config opened on the hardcoded "Rahul Gupta, MD, Gupta Precision Industries" quote for a fifth of a second.
+
+The second defect was smaller: the interview let phone and email be skipped, while `validateStep(2)` requires both. "Write my website" therefore succeeded and dropped the user onto Step 2 with two red errors on questions they had just been asked and allowed to skip.
+
+### The bypass that made "required" advisory
+The per-screen checks lived only in `next()`. The step rail can reach any screen from any other, so clicking "Review & write" on screen 1 walked past every check, and `doGen()` verified only `firm` and `city`. Validation is now one function, `screenErr(q)`, run by **both** `next()` and `doGen()`; the generate action re-checks every screen and lands on the first incomplete one.
+
+### The mandatory set, and the reasoning per field
+| Screen | Field | Rule | Why |
+|---|---|---|---|
+| Your practice | Firm name | required (unchanged) | |
+| | Years practising | **now required** | one number everyone knows; sets Founded Year and is the only real figure the stats fallback has when Key Numbers is empty |
+| Sets you apart | Best known for | **min 2** | the whole anti-generic lever; 3 highlights are drawn from it |
+| | Typical clients | **min 2** | drives the audience tags and About; empty means the model guesses who the clients are |
+| | Numbers worth showing | **0, or 3 to 6** | deliberately NOT required: forcing it invites an invented client count, which is worse than no stat. But a one-figure stats strip looks broken, hence the conditional floor |
+| How you work | Steps | **min 3**, max 5 | the strip is numbered cards with connector arrows drawn between them, so 2 reads as unfinished; also keeps the demo process cards off a live site |
+| Founders & partners | Rows | **min 1**, each needs name + role | matches `validateStep(5)`; role is what makes each AI bio differ instead of four identical paragraphs |
+| Client reviews | Rows | **0, or 3 to 6**, each needs name + note | a carousel with one card is stranded mid-slide, and a firm with nothing to quote should be able to skip it. The note is the raw material the model rewrites; a name alone makes it invent the quote |
+| Contact | Phone, Email (+format) | **now required** | Step 2 already blocked on both |
+| | Office address | **now required** | blank left the Connaught Place demo address live |
+| | **Office hours** | **new field, required**, prefilled | was never asked, yet every template renders it |
+| | Social links | optional (unchanged) | |
+| Anything else | Free text | optional (unchanged) | |
+
+Two kinds of floor, and the distinction is deliberate: `req` + `min` is hard, `min` alone is conditional (zero is fine, one is not). The rejection message only offers "or none at all" on a conditional floor, never on a required field.
+
+### What Was Done
+**`frontend/index.html`**
+- `screenErr(q)` is the single source of truth for completeness, with `minRows` / `optRows` / `rowReq` on list screens and `req` / `min` / `max` on pill fields. `next()` and `doGen()` both run it; `doGen()` sweeps every screen.
+- New `.aiw-emsg` message block per screen, because a list screen has no single input to tint. `flagField` now tints the pill BOX rather than the sliver of input inside it.
+- Summary screen gained a third state: complete, "Skipped" (fine), and **incomplete** in red with the reason and a "Fix" affordance, plus a count above the list. Previously an incomplete screen looked identical to a deliberately skipped one, so the Write button appeared to fail for no reason.
+- Office Hours field added to the contact screen, prefilled with `Mon to Sat: 10:00 AM to 7:00 PM`, carried into `fHours` by `apply()`, and given to old drafts by `normalise()`. `PREFILLED` keeps it and `profession` from making a screen look answered in the rail.
+- Workflow and reviews screens now open on 3 blank rows instead of 1. Blank rows never count as answers, so reviews can still be skipped outright.
+- Stats cap raised from 4 to 6 in `apply()`; it was silently dropping the 5th and 6th figure a user had typed. `pillCap()` enforces the 6 ceiling as pills are added and the placeholder says so at the limit.
+- `stepOwning()` deleted, dead once `doGen()` stopped checking individual keys.
+- **Bug found in testing:** the copyright line used the raw answer while the firm name field was title-cased, so typing "sharma & associates" on a phone produced "Sharma & Associates" in the header and "(c) 2026 sharma & associates" in the footer of the same page.
+- The label `for` on a pills field pointed at `aiwField_<k>`, which does not exist for pills, so clicking a required label there did nothing.
+
+**All four templates (`apex`, `nova`, `heritage`, `zenith`)**
+- Contact rows now REMOVE themselves when the value is missing, instead of leaving the demo text. Applied to all four rows, not just address and hours, so the whole bug class is closed for configs saved by any route.
+- The testimonials section hides entirely when there are no reviews. Zenith also hides its nav and footer links into that section, being the only design that has them.
+- Zenith's first testimonial paint is now synchronous; only a real slide change cross-fades.
+
+### Verification
+Five suites, run against the real code rather than by inspection (jsdom, in the scratchpad):
+1. 33 cases over `screenErr` covering every floor, both branches of each conditional rule, and the message wording.
+2. The AI Writer driven through the DOM: blocked on empty screens, does not advance, and "Write my website" from the summary bounces back to the first incomplete screen **without calling the API**.
+3. The full happy path: 3 rows seeded, reviews skippable, hours prefilled, bad email caught, and a complete brief actually starting generation.
+4. End to end with a stubbed Edge Function response: the request carries all 6 numbers and no base64 image bloat, and the builder receives hours, address, title-cased firm and copyright, 6 stats, 3 highlights, 3 process steps, partner bio and credentials, and a service description.
+5. Both template cases: with data absent, no demo string survives in any of the four and the testimonials section is hidden; with data present, every contact row still renders.
+
+### Decisions
+- **Reviews and stats are "all or nothing at 3", not simply required** (user's call). A new practice with nothing to quote can skip the section; what is blocked is the half-filled middle.
+- **Key Numbers stays optional.** It is the one field where forcing an answer invites a fabricated figure on a chartered accountant's own website.
+- **Mandatory fields AND the template backstop**, not either alone. The interview covers the AI path; the backstop covers a config that reaches publish by any other route.
+
+### Next Steps
+- **Not yet pushed at the time of writing.** Plan: push the branch (free if Netlify builds `main` only), then merge once so the deploy costs a single build.
+- Open question for the user: 6 stats in the hero strip is now reachable and may wrap to a second line in some designs. Worth an eyeball before it ships.
+- `stats`, `highlights` and `process` retain the same "demo content if empty" exposure in the templates if they are ever emptied by hand in the builder. The AI path always fills them and the contact/testimonial cases are closed, so this is the remaining tail of that bug class.
+- Unchanged and still pending from Session 17: connect Netlify (repo access + `SUPABASE_URL` / `SUPABASE_SERVICE_KEY` / `SITE_DOMAINS`).
+
+---
+
+## 2026-07-27 — Session 17 (Portrait controls that are actually visible, plus Crop & adjust)
+
+### Session Summary
+Two reports about the founder/partner portrait in **Step 5 (Founders & Partners)**: the remove button was not properly visible on hover, and it sat "on the edge". Both are the same fault. The frame is a **circle** for Heritage and Zenith (`partnerPhotoFrame()` sets `border-radius:50%`), and the cross was pinned at `top:6px;right:6px` inside a `overflow:hidden` frame. On a 92px circle, a 26px badge at that inset reaches ~40px from the centre against a 32px radius, so roughly a third of it is **clipped away by the round edge**, and what survived sat on a bright rim of the photo where a white glyph on a top-only gradient scrim had almost no contrast.
+
+The second ask was a **crop and adjust** step, framed by the user as "like WhatsApp": the crop opens the moment a file is picked, not behind a separate button.
+
+### The finding that decided the crop's aspect ratio
+All four templates render the portrait as a **square** with `object-fit:cover` and an upward `object-position` bias (`.pc-photo` 124px, `.pc-portrait` 118px, `.founder-photo-block`, `.tm-photo` 70px). Nothing renders 3:4, yet uploads were being bounded to `BOX_PHOTO` = 600x800. So the browser was silently discarding the sides of every portrait and the user had no say in which part survived. The crop therefore exports a **square** (640px), which is exactly what gets published, and the upward bias becomes a no-op for cropped photos while still helping older uncropped drafts.
+
+### What Was Done
+**`frontend/index.html`**
+- `.ptr-ph-rm` (corner cross) replaced by `.ptr-ph-acts`, a **centred** 29px round Remove button over an even `rgba(11,20,38,.5)` scrim instead of a top-only gradient. Centred, it clears the edge in every frame shape. The scrim and button stay visible under `@media (hover:none)`, or a touch user cannot remove the photo at all.
+- Clicking the frame off the button still opens the file picker, so replace is unchanged; the button `stopPropagation`s.
+- **New crop dialog** (`.crp-*` CSS, `openCrop` / `cropDraw` / `cropExport` / `applyCrop`). Drag to pan, slider plus wheel to zoom 1x to 4x, Rotate for a sideways phone photo, Reset, Cancel, Use photo. The outline drawn is the shape the chosen design actually clips to: a circle for Heritage and Zenith, a rounded square for Apex and Nova, with the discarded area dimmed.
+- `onPartnerUpload` now scales to a 1600px working copy and **opens the crop immediately**.
+- The AI Writer's row portrait (`.aiw-lph`) had the identical defect, a 19px badge at `top:2px;right:2px` inside a 64px circle, so it got the same centred button and the same crop on pick. `photoBox()` deleted, replaced by `photoShape()` / `photoOut()`.
+
+### Two bugs found while wiring, not visible in a screenshot
+- **The AI Writer's photo button fired on `onmousedown`.** That only works because `__aiwPhotoRm` calls `render()` synchronously, tearing out the button before the click can land on the frame behind it. Anything asynchronous in that handler, such as the crop dialog waiting on `Image.onload`, would let the click through and open the file picker underneath. Moved to `onclick`, which stops the event properly.
+- **Escape closed the whole interview from under the crop.** The AI Writer's own Escape handler now returns early while `CR` (the live crop session) is set, so Escape belongs to whatever is on top.
+
+### Decisions
+- **Crop on upload, not behind a button** (user's call, "like WhatsApp"). The published card clips to a square either way, so leaving that to chance is the bug.
+- **Store only the cropped square, and keep no originals.** A re-crop button was built first, backed by a session-only `PTR_SRC` cache of the originals so re-framing could zoom back out. The user then asked for the crop button to be dropped: the cross alone is enough, and framing belongs to the upload. Both the button and the cache are gone, so re-framing means re-picking the photo, which clicking the frame already does.
+- **Testimonial reviewer photos were left alone.** `.rep-av-rm` has the same class of bug and is arguably worse (`top:-3px;right:-3px` inside `overflow:hidden` clips it almost entirely), but it is not the founders image that was reported. Flagged, not changed.
+
+### Verification
+- 5/5 inline `<script>` blocks parse (`node --check`); CSS braces balanced.
+- Crop geometry proved on paper: the CSS mapping (`O + R·d + (a,b)` about `transform-origin`) and the canvas mapping (`translate` then `rotate` then centred `drawImage`) reduce to the **same** expression, `(view/2 + t) + R·(p·s - dim·s/2)`, so the export is what the stage showed. Because rotation is always a multiple of 90 degrees, the rotated rectangle **is** its bounding box, so clamping the pan to `(bbox - view)/2` guarantees no white gap. Checked numerically at rot 0 and 90 for a 1600x1200 source.
+- Window resize mid-crop re-measures the stage and scales the pan with it, since scale is proportional to `view`.
+- An SVG with no intrinsic size reports 0x0 and cannot be framed, so it is accepted as uploaded rather than dropped.
+
+### Not verified
+No browser automation is available in this environment (no Playwright, no cached browsers), so the dialog has **not been exercised by hand**. Worth a click-through of: circle vs square outline per design, rotate on a sideways photo, and the AI Writer's small avatar slot, where a 21px button sits inside a 56px circle.
+
+### Next Steps
+- Click through the crop dialog in the browser.
+- Decide whether testimonial reviewer photos get the same treatment (`.rep-av-rm` is clipped almost entirely by `overflow:hidden`).
+- Still open from Session 16: analytics, lead email notification, real `.in` hosting, and the pending Netlify connection.
+
+---
+
+## 2026-07-27 — Session 16 (Domain pool, availability checking, site lifecycle)
+
+### Session Summary
+Started from a question about why a published site showed old content. It was not a code bug: the branch had **3 unpushed commits and ~2,500 uncommitted lines**, so Netlify was serving templates from 13 Jul while Supabase served current config. `render.ts` assembles a page from those two independent sources, and only one of them was current.
+
+That led to an audit of what had been skipped. Five things had: **analytics**, **lead email notification**, **subdomain availability**, **unpublish/delete**, and the **real `.in` hosting**. This session implements availability and lifecycle, and lays the data model for the domain pool KDK plans to buy.
+
+### The constraint that shaped the availability work
+It cannot be done from the browser. The RLS select policy is `status = 'published' or auth.uid() = user_id`, so **another user's draft subdomain is invisible**. A client-side lookup would report "available", and the publish would then fail with a 403 that the old code only `console.warn`ed. So the check has to run server-side: `wb_subdomain_available()` is `SECURITY DEFINER`, sees every row, and returns nothing but `{available, reason}`.
+
+### What Was Done
+**New migration** `backend/supabase/migrations/20260727100000_domains_availability_lifecycle.sql`
+- `domain` column on `wb_websites`, defaulting to `kdksites.in`.
+- Dropped the inline `wb_websites_subdomain_key`; uniqueness is now a partial unique index on `(domain, subdomain)`. `sharma` must be free to exist on two domains.
+- `wb_subdomain_reserved()` — 83 names that must never be handed out (`www`, `admin`, `mail`, `api`, and `s`, because published sites live at `/s/<sub>`).
+- `wb_subdomain_available(domain, subdomain)` — length, format, reserved, then taken. A name the **caller already owns** counts as available, so re-publishing your own site does not report itself as taken.
+- `wb_websites_delete_own` policy. There was none, so under RLS every delete was refused outright.
+
+**`frontend/app-config.js`** — `prettyDomain` (a string) became `siteDomains` (an array of `{host, label, note, live}`). Adding a bought domain is an edit to this array plus DNS plus the `SITE_DOMAINS` env var. Nothing else.
+
+**`frontend/index.html`**
+- `S.domain` / `S.siteStatus` / `S.siteId` / `S.liveSub`: the site's identity, kept separate from its config.
+- Domain picker (`renderDomains`, `pickDomain`), hidden while fewer than two domains are configured. A domain retired from the pool falls back to the default rather than stranding the user on a dead address.
+- `checkAvailability()` on a 420ms debounce with a sequence guard so a slow early response cannot overwrite a newer one. State is pessimistic: anything other than a server `ok` leaves Launch disabled, so a network failure can never read as a free name.
+- `syncLaunch()` re-checks that the verdict still matches what is currently typed, so an old "available" cannot unlock Launch for a different name.
+- `saveSiteToSupabase()` resolves `{ok, reason}` instead of a bare boolean, and returns the row so the builder learns its own id. Conflict target is now `on_conflict=domain,subdomain`.
+- `failPublish()` — closes the overlay and explains, instead of showing the success screen over a save that did not happen.
+- Live/offline card with **Take offline** / **Put back online** / **Delete website**, plus a typed-confirmation dialog for delete.
+- `loadCloudSite()` restores id/status/domain even when a fresher local draft wins on content.
+
+**`backend/netlify/edge-functions/render.ts`** — resolves `(domain, subdomain)` from the Host header, falling back to `/s/<sub>` and `/s/<domain>/<sub>`. Registered on `/*` now, because a real address requests `/`, not `/s/...`; it returns `undefined` for anything it does not own.
+
+### Decisions
+- **Unpublish soft, delete hard** (user's call). Unpublish keeps the row, the leads and the reserved address, so Republish always gets the same URL back. Delete is permanent, and because `wb_leads` cascades it destroys every captured enquiry, so it is gated behind typing the exact address with that consequence stated.
+- **The bare `/s/<sub>` resolves against the default domain only.** Falling through to another domain's site would serve a stranger's page at a link a user believes is theirs.
+- **The picker hides at one domain.** A choice of one is noise.
+- **Multi-domain now rather than later.** Both features touch the same uniqueness rule; doing it in two passes would mean a second migration plus a backfill.
+
+### Verification
+- **4/4** inline `<script>` blocks parse (`new vm.Script`).
+- **54/54** builder assertions in jsdom against the real file with the real `app-config.js` inlined: picker visibility and fallback, debounce (4 keystrokes → 1 request, last value wins), stale-verdict lockout, `on_conflict` target, draft-save not downgrading a live site, the full lifecycle, the typed-confirm gate, and the 403/401 failure paths.
+- **18/18** routing cases against transpiled `render.ts`: the same subdomain on two domains resolving to two different sites, unpublished and draft both 404ing, and `/`, `/app-config.js`, `/templates/...`, `/assets/...` all passing through untouched.
+- Every slug `siteSlug()` can generate validates against the Postgres regex, checked by pulling both rules from source rather than retyping them.
+- Rendered the publish step in headless Chrome at 1280px and 390px, in available / taken / live / offline states.
+
+### The address picker, settled: a large display address
+After the pill was rejected as still looking poor, five directions were built as a live comparison sheet (inline pill, labelled form fields, display address, segmented domains, browser window), then two follow-ups: **C1**, the display address with the domain beside the name rather than under it, and **B1**, a browser preview driven by labelled fields. **C1 was chosen.**
+
+What shipped:
+- The address is the display element on the step, up to 28px. The name carries a dashed underline that turns solid gold on focus, emerald when free, red when taken. The domain sits beside it in the same type, muted, as an inline `<select>` with an em-sized chevron so it tracks the type.
+- Below: one word (`Available`) and one line saying which half is editable. Everything else that used to sit there is gone.
+- `avIcon()` and the spinner were deleted with the pill; nothing referenced them any more.
+
+**Three sizing faults, all found by measuring rather than looking.** Worth recording because each looked fine in a screenshot:
+1. A native `<select>` takes its intrinsic width from the **widest option**, not the selected one, so `.taxsites.in (coming soon)` sized a control displaying `.kdksites.in`: 208px for something needing 107px. Fixed by measuring the selected option.
+2. The name input was left with default `flex-shrink`, so on a narrow window it gave way first and scrolled the user's own typing out of view **while the row still reported that it fitted**. `flex-shrink:0` on both halves; they wrap to a second line rather than hide anything.
+3. The type was sized with `clamp(…vw…)`, but the sidebar is a fixed 235px, so the card is far narrower than the viewport and a 30-character name still overran at 800px. A fixed breakpoint could not fix this either, because overflow depends on name length as much as width. Now keyed to the card with `clamp(13px,5.6cqw,28px)` under `@supports (container-type:inline-size)`, with the vw rule as fallback.
+
+Verified with a 17-character and a 30-character name at 1400 / 1180 / 900 / 800 / 700 / 640 / 600 / 560 / 520px, asserting each half is at least as wide as its own text and the row stays inside the card. **One residual:** a 30-character name below about 540px still overflows. That is the pre-existing no-mobile-layout problem, where the sidebar alone takes 45% of a 520px screen, and it was not worth pushing display type under 13px to paper over.
+
+### The publish step said the same thing four times
+Review after the dropdown landed: *"the UI is looking worst as you have added so much content"*. Correct, and measurable. Between the field and the checklist there were four lines, and three of them were the address:
+
+```
+kartik-associate.casites.in is available
+ⓘ You can also publish on .kdksites.in or .legalsites.in. Change it from the dropdown above. 1 more coming soon.
+Live at: https://kdksites.netlify.app/s/casites.in/kartik-associate
+Permanent address once the domain is live: kartik-associate.casites.in
+```
+
+Two of those (`Live at`, `Permanent address`) predate this work; the other two are mine. Rebuilt as **one address, stated once**:
+
+- **The field is a single pill** reading `https://` · name · domain · verdict. No segment backgrounds, no dividers. The name input **auto-sizes to its own text** via a hidden ghost span sharing its exact font metrics, so the name and domain sit flush (measured gap: -1px) instead of the name floating in a fixed box.
+- **Hierarchy was inverted.** The domain carried an amber fill, making the one thing the user is *not* editing the loudest element. Now the name is the only thing in heavy dark type; protocol and domain are muted and the domain only lights up under the cursor.
+- **The verdict moved inside the field**, next to the address it judges. The line below is one word.
+- **`Live at` and `Permanent address` deleted from the form.** The link only matters once the site exists, and the success screen and live card both already show it. Trade-off accepted: before publishing you no longer see the netlify URL, so the first sight of it is the success screen.
+- **The native select took its width from the widest option**, so `.taxsites.in (coming soon)` sized a field displaying `.kdksites.in`: 208px for something needing 107px, which then crushed the name input on a narrow window. It is now measured against the *selected* option.
+- Below 600px the domain drops to its own full-width row inside the pill. The sidebar is a fixed 235px and does not collapse, so there is genuinely no room for both on one line; two readable lines beat one crushed field. `renderDomains()` clears its inline width below that breakpoint so the stylesheet wins, and a debounced resize listener re-measures across the boundary.
+
+Measured OK at 1400 / 1180 / 1000 / 900 / 800 / 700 / 640 / 600 / 540 / 470 / 420px, asserting the pill stays inside the card, the name keeps usable width, and the domain is flush (wide) or stacked (narrow).
+
+### The picker: cards, then a dropdown
+First build was a grid of domain cards above the address field. Rejected on review as too heavy, and fairly: four cards took more vertical space than the thing they were configuring. Rebuilt as a native `<select>` **inside the address field**, where the domain suffix already lives, so the suffix itself becomes the control. Native gets keyboard, screen reader and mobile pickers for free, and a disabled `<option>` covers a not-yet-wired domain.
+
+Three things came out of building it:
+- **Option text is the domain alone.** A native select shows the selected option's text when closed, so appending the label (`.kdksites.in · Recommended`) widened the control enough to squeeze the name input. Labels moved to the option `title` and to the hint line.
+- **A chevron is not discoverability.** The requirement was that users should realise other domains exist. A hint line under the field names them outright and updates with the selection.
+- **`style.display=''` does not undo `display:none` from a stylesheet.** It falls back to the CSS rule, so the select never appeared. The element is now hidden by an inline style in the markup and toggled with explicit `'block'` / `'none'`. The jsdom assertion that missed this was reading the *inline* style; it now reads `getComputedStyle`, which is the only version of that check worth having.
+
+### Two faults found while demoing the picker
+The picker did not appear, and availability said "Check your connection". Same session, two unrelated causes, both now fixed.
+
+1. **`local-ai-config.js` clobbers the committed config.** It does `window.KDK_AI = {...}`, not a merge, and loads after `app-config.js`. Every key it does not itself repeat is deleted: `siteDomains`, `publicBase`, `prettyDomain`. The builder kept working on its fallbacks, which is exactly why it was hard to see: `siteDomains()` fell back to a single synthetic domain, and the picker hides at one domain by design. Because the file is gitignored it cannot be fixed once for everyone, so the fix is defensive: `app-config.js` keeps `window.KDK_AI_DEFAULTS`, and an inline block in `index.html` backfills only the keys that are `undefined` after both scripts load. Local overrides still win; they just cannot delete any more. **Worth remembering: any future key added to `app-config.js` is invisible on machines with a local override unless this backfill runs.**
+2. **A missing RPC was reported as a connection failure.** `wb_subdomain_available()` 404s until the migration is pushed, and the catch-all mapped that to the offline message. Now 404 is its own state with its own wording and a console line naming the fix.
+
+### Migration applied and verified live
+`cd backend && supabase db push` applied `20260727100000` to `hlhtopqbzfzlxxmolkok`. `migration list` beforehand confirmed the three earlier migrations were already remote and only this one was pending, so exactly one ran. The `Cannot connect to the Docker daemon` line in the output is only the local catalog cache; it does not affect what was applied.
+
+Verified against the live database over REST with the anon key, not just locally:
+
+| call | result |
+|---|---|
+| free name | `{"available":true,"reason":"ok"}` |
+| `admin` | `reserved` |
+| `ab` | `too_short` |
+| `bad--name-` | `invalid_format` |
+| `mehta-and-sons` (already published) | `taken` |
+| same name on `casites.in` | `ok` (proves the pair, not the subdomain, is unique) |
+
+The `domain` column backfilled correctly: all five existing published rows read `kdksites.in`.
+
+Note the owner-exemption path (`auth.uid()` matching `user_id` makes your own name count as available) is exercised by the jsdom suite but not by these anon curl checks, which have no JWT. Anon sees every existing name as taken, which is the correct answer for a stranger.
+
+### Blockers / Next
+- Still unpushed: everything from Session 14b onward. Netlify is serving 13 Jul code.
+- `SITE_DOMAINS` must be set on Netlify (defaults to `kdksites.in` if unset).
+- Still skipped from the audit: **analytics**, **lead email notification**, and the actual `.in` domain purchase + wildcard DNS.
+- The builder has no mobile layout (one breakpoint at 820px, no sidebar collapse). Pre-existing, unrelated to this work, but it does overflow at 390px.
+
+---
+
+## 2026-07-27 — Session 15 (AI Writer: the intro screen shows instead of tells)
+
+### Session Summary
+Pressing **Write with AI** dropped the user straight onto "Tell us about your firm", which reads as one more form. Added an **intro screen** that opens first. The first build of it explained the feature in three headed paragraphs and a note; the review was blunt and correct, *"content heavy, no one reads the content"*, so it was rebuilt as a **demonstration**: a colour-washed panel on the left, and on the right four answer chips that get swallowed by a blank page which then writes itself, with a three-step strip lighting up in time.
+
+### Why it exists
+Two things were never said, and both decide whether the generated site is any good:
+1. An AI is about to write the **entire** site, not fill one box.
+2. It can only write from what it is given. Someone who types "tax filing, 10 years" gets template copy back and blames the AI.
+
+The rebuild says both without asking anyone to read. The four chips are deliberately specific, "12 years in Jaipur", "GST notices", "We reply in 2 hours", "300+ filings a year", because that is exactly the answer quality the screen is trying to buy. One sentence carries the lesson: *The more you tell us, the better it writes.*
+
+### What Was Done (all in `frontend/index.html`, AI Writer block)
+- **Split layout** (`.aiw-intro`): a 392px navy panel, everything in it centred, with two drifting aurora blobs, a gradient-bordered chip, a gradient headline, one short paragraph, a gold CTA with a sheen sweep, and a one-line privacy note. No footer band; the CTA lives in the panel.
+- **The stage** (`.aiw-istage`): "What you tell us" label, four answer chips in a fixed 2x2 grid, the animated browser mock, the three-step strip, and the caption.
+- **The demo page scrolls.** The browser chrome stays put and the page moves inside a fixed-height viewport, revealing the sections below the fold: an about band with a portrait, a dark stats band, and a footer with the WhatsApp dot. Six sections in all, so the mock shows a whole site rather than one screen.
+- **Answer chips** pop in one at a time then drop into the page as the headline starts typing. The label fades with them, so it never hangs over an empty gap.
+- **Mock**: nav → typed hero line 1 → line 2 → sub-lines → buttons → three service cards → "Ready to publish" badge on the frame corner, with a pen nib riding the caret.
+- **Step strip**: `You answer` / `AI writes` / `You go live`, each circle lighting in its own colour behind a gradient track that fills across the loop.
+- **Wiring**: `openW()` shows the intro only when no answer is filled; `__aiwStart()` enters the interview; `__aiwIntro()` (new "How this works" button in the rail footer) reopens it; `__aiwReset()` returns to it; `render()` always clears it; `saveCurrent()` no-ops while it is up.
+
+### Decisions
+- **Show, do not tell.** Prose went from ~120 words to ~45. Everything cut is now demonstrated.
+- **CSS only, no GIF or video.** The project forbids external assets, and keyframes are smaller and sharper than either.
+- **One 11s loop; every animation is `11s infinite`, phase set by `animation-delay` alone.** Equal periods cannot drift however long the modal stays open; a mix of durations would guarantee it. The percentage map is documented in a comment above the block.
+- **The three step circles share one keyframe pair.** Their colour is a per-step CSS variable and their moment is a delay, instead of six near-identical keyframe blocks.
+- **Typing reveal and caret share the same stepped percentages** (`clip-path` + an absolutely positioned bar), so the caret lands on the last shown character whatever the font metrics.
+- **Not added to `QS`.** It is a card state (`.aiw-card.intro`), so step indices, the rail, progress and validation are untouched.
+- **`prefers-reduced-motion`** gets the finished frame, not a frozen half-typed one.
+
+### Verification
+Rendered the real page in headless Chrome with the animation timeline frozen at set points (`getAnimations().currentTime`), which is the only reliable way to screenshot a loop; `--virtual-time-budget` leaves delayed animations stuck at 0%. Note the file has **no closing `</body>`**, so a test harness must be appended at EOF, not spliced at the first `</body>` (that one is inside the Excel-export string).
+- Full flow, one pass: `open:intro=true chips=4 sections=6 | start:intro=false side=flex q=Tell us about your firm | howto:intro=true | reopen:intro=false summary=true`.
+- Scroll distance is set as a percentage of the page's own height, not a pixel count, so it survives small edits to any section. Measured `page=457 view=281` against the `-38%` used, i.e. it stops ~2px short of the bottom rather than over-scrolling into blank space.
+- Frames checked across all three builds at t = 1.2 / 1.4 / 2.0 / 3.9 / 4.2 / 5.4 / 5.6 / 6.2 / 8.0 / 9.2 / 9.4 / 10.4s. Defects found and fixed: the Ready badge landed on the nav bar; the demo column floated at the top of a taller copy column; the chip row reflowed 3+1 and shoved the mock down (now a fixed 2x2 grid); the page sat blank for ~4s before typing (timeline compressed); a caret blinked in an empty page from t=0; and the pen nib rode ~13px above the text it was supposedly writing.
+- Measured widths at phone size: the badge's corner overhang was clipped by `.aiw-intro`'s `overflow-x:hidden`, so it tucks inside below 820px.
+- All 4 inline `<script>` blocks re-parsed clean after every edit.
+
+### Next
+- Not committed yet. Branch is still `feature/ai-website-writer`.
+- Optional: type the URL bar text too, and revisit whether the intro should return after a long absence rather than only on an empty draft.
+
+---
+
 ## 2026-07-25 — Session 14c (Deleted design-samples/, removed the dead code path)
 
 ### Session Summary

@@ -38,6 +38,10 @@ Deno.serve(async (req) => {
   const system = body?.system as string;
   const user = body?.user as string;
   const model = body?.model as string | undefined;
+  /* "json" (default) keeps OpenAI in json_object mode for the whole-site generator.
+     "text" is for single-field rewrites: json_object mode 400s unless the prompt
+     itself mentions JSON, which prose rewrites have no reason to do. */
+  const format = (body?.format === "text" ? "text" : "json") as "json" | "text";
   if (!system || !user) return json({ error: "Missing system/user prompt" }, 400);
 
   try {
@@ -71,7 +75,7 @@ Deno.serve(async (req) => {
         headers: { "content-type": "application/json", authorization: "Bearer " + key },
         body: JSON.stringify({
           model: model || "gpt-4o-mini",
-          response_format: { type: "json_object" },
+          ...(format === "json" ? { response_format: { type: "json_object" } } : {}),
           messages: [
             { role: "system", content: system },
             { role: "user", content: user },

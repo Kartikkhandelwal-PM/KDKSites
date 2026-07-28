@@ -4,6 +4,121 @@
 
 ---
 
+## [0.9.7] 2026-07-28: Mandatory answers in the AI Writer, and no more demo data on live sites
+
+> On branch `feature/ai-website-writer`. Found while checking whether the AI Writer collects everything a good site needs: it did not, and what was missing was being filled in by the template's own sample content.
+
+### Fixed
+- **A skipped field left the design's demo text live on a real website.** All four templates bound their content as "replace only if a value was given", with no else branch, so a firm that skipped the office address published a contact card reading "302, Barakhamba House, Connaught Place / New Delhi, 110001". Missing contact rows now remove themselves.
+- **Office hours were never asked anywhere in the AI Writer,** yet every template renders them in the contact card and the footer. Every AI-written site therefore showed the design's placeholder hours. There is now a required, prefilled Office Hours field.
+- **Skipping client reviews served the design's sample quotes,** attributed to people who were never that firm's clients. The testimonials section now hides entirely when there are no reviews, and Zenith hides its nav and footer links into that section with it.
+- **Zenith opened on a hardcoded demo quote for 180ms** even with a correct config, because the first testimonial was painted inside the cross-fade timer. The first paint is now synchronous.
+- **The interview allowed phone and email to be skipped while Step 2 required both,** so "Write my website" succeeded and then dropped the user onto two red validation errors on questions they had just been allowed to skip.
+- **"Required" was advisory.** The per-screen checks lived only in the Continue handler, and the step rail can jump straight to the summary, where the generate action verified only the firm name and city. Every screen is now re-checked when you press Write, and it lands on the first incomplete one.
+- **The footer copyright used the raw answer while the firm name was title-cased,** so typing "sharma & associates" on a phone gave "Sharma & Associates" in the header and "(c) 2026 sharma & associates" in the footer of the same page.
+- **The stats cap silently discarded the 5th and 6th figure** a user had typed. It now carries all 6.
+- Clicking a required pill field's label did nothing: it pointed at an element id that does not exist for pill fields.
+
+### Changed
+- **The AI Writer now has mandatory answers**, chosen so the model gets a brief it can write from rather than guess around:
+  - Years practising is required: it sets the Founded Year and is the only real figure the stats fallback has.
+  - "What you are best known for" and "Your typical clients" need at least 2 entries each. These drive the highlights and the audience tags, and are what stop the copy reading like every other firm.
+  - "How you work" needs at least 3 steps. The strip is numbered cards with connector arrows drawn between them, so two read as unfinished.
+  - At least one founder or partner, with both a name and a role. The role is what makes each AI-written bio differ instead of four near-identical paragraphs.
+  - Phone, email (format checked), office address and office hours are required.
+- **Two sections are "all or nothing at 3":** Key Numbers (3 to 6) and Client Reviews (3 to 6). Leaving either out entirely is fine; a half-filled one is not, because a stats strip holding one figure and a carousel holding one card both read as broken. Key Numbers stays optional on purpose, since forcing it invites an invented client count on a chartered accountant's own website.
+- The "How you work" and "Client reviews" screens open on 3 blank rows rather than 1, so the screen does not quietly suggest that one will do and then reject it. Blank rows never count, so reviews stay skippable.
+- The review screen now distinguishes **incomplete** (red, with the reason and a Fix action) from **skipped** (fine). Previously the two looked identical, so the Write button appeared to fail for no reason.
+
+### Technical notes
+- Completeness is one function, `screenErr(q)`, run by both the Continue handler and the generate action. Floors come in two kinds: hard (`req` + `min`) and conditional (`min` alone, where zero is allowed but one is not). The rejection message only offers "or none at all" on a conditional floor.
+- Verified with five jsdom suites against the real code: 33 validator cases, the interview driven through the DOM (including that Write from the summary refuses **without calling the API**), the full happy path, an end-to-end run with a stubbed Edge Function response, and both template cases (no demo string survives when data is absent; every contact row still renders when present).
+
+---
+
+## [0.9.6] 2026-07-27 — Crop & adjust for portraits, and photo controls that clear the frame edge
+
+> On branch `feature/ai-website-writer`. Fixes the reported remove button on the founder/partner portrait and adds the crop step the published card always needed.
+
+### Added
+- **Crop & adjust for every portrait.** Picking a photo now opens a framing dialog straight away, before anything is stored: drag to pan, slider or scroll to zoom 1x to 4x, Rotate for a photo held sideways by a phone, Reset, Cancel, Use photo. The outline drawn is the shape the chosen design actually clips to, a circle for Heritage and Zenith and a rounded square for Apex and Nova, with the discarded area dimmed. There is **no separate crop button** on a photo already in place: framing belongs to the upload, and clicking the frame re-picks the photo, which opens the dialog again.
+- **The crop is why this mattered.** All four templates render the portrait as a **square** with `object-fit:cover`, but uploads were bounded to 600x800. The browser was therefore throwing away the sides of every portrait with no way to choose which part survived, which is how a head standing off-centre came out clipped. The stored photo is now the exact 640px square the user framed.
+
+### Fixed
+- **The remove button on the founder/partner portrait was partly cut off and hard to see.** The frame is a circle for Heritage and Zenith, and the cross was pinned to a corner inside a clipping frame: on a 92px circle a 26px badge at a 6px inset reaches about 40px from the centre against a 32px radius, so roughly a third of it was cut away by the round edge, and the remainder sat on a bright rim of the photo under a top-only gradient that gave a white glyph almost no contrast. Remove is now a **centred** button over an even scrim, which clears the edge in every frame shape. It stays visible on touch, where there is no hover at all and the photo was otherwise stuck.
+- **The same defect in the AI Writer's row portrait** (a 19px badge at a 2px inset inside a 64px circle) fixed the same way, with the same crop on pick.
+- **The AI Writer's photo button could open the file picker underneath a dialog.** It fired on `onmousedown`, which only works because Remove re-renders synchronously and tears the button out before the click lands on the frame behind it. That is too fragile to rely on, so it moved to `onclick`, which stops the event properly.
+- **Escape closed the whole AI interview from under the crop dialog.** It now belongs to whichever layer is on top.
+
+### Technical notes
+- The on-screen CSS transform and the export canvas transform reduce to the same expression, so the saved square is what the stage showed. Rotation is always a multiple of 90 degrees, so the rotated rectangle is its own bounding box and clamping the pan to the overhang guarantees no white gap at any zoom. Resizing the window mid-crop re-measures the stage and scales the pan with it.
+- An image with no intrinsic size (an SVG without dimensions) cannot be framed, so it is accepted as uploaded rather than dropped.
+- **Testimonial reviewer photos were deliberately left alone.** `.rep-av-rm` has the same class of bug and is arguably worse, but it is not the founders image that was reported.
+- Verified: 5/5 inline script blocks parse, CSS braces balanced, crop geometry checked numerically at 0 and 90 degrees. **Not** click-tested in a browser: no browser automation was available in this environment.
+
+---
+
+## [0.9.5] 2026-07-27 — Domain pool, real availability checking, and site lifecycle
+
+> On branch `feature/ai-website-writer`. Closes two of the gaps found in the "what did we skip" audit: **subdomain availability** and **unpublish/delete**. Also lays the data model for the planned pool of KDK-owned domains, so buying one becomes a config edit rather than a migration.
+
+### Added
+- **A domain pool.** A site's address is now the pair `(domain, subdomain)`, not a bare subdomain, so `sharma` can exist independently on two domains. The domain is chosen from a **dropdown inside the address field**, where the suffix already sits, built from `KDK_AI.siteDomains` in `frontend/app-config.js`. A `live:false` domain appears as a disabled `(coming soon)` option. With one domain configured the suffix stays plain text, since a dropdown with a single option is a control that does nothing.
+- **The publish step now states the address once, and sets it large.** It briefly stated it four times: an availability sentence repeating the full address, a hint sentence, a "Live at" URL and a "Permanent address" line. The address is now the display element on the step, at up to 28px, with the name carrying a dashed underline to mark the part you type and the domain beside it in the same type, muted. Below it: one word, "Available", and one line saying which half is editable. The working link moved to where it is actually useful, the success screen and the live card, which both already showed it.
+- Chosen from five directions built and compared side by side. The two runners-up were labelled form fields and a browser-window preview.
+- **Real availability checking.** A new `wb_subdomain_available(domain, subdomain)` Postgres function validates length, format and a **83-name reserved list** (`www`, `admin`, `mail`, `s`, …) and reports whether the name is free. The publish step calls it on a 420ms debounce and shows available / taken / reserved / too short inline.
+- **Launch is now gated on a confirmed-free address.** The button is disabled until the server says yes, and re-disables the moment the typed name stops matching the verdict it was granted for.
+- **Site lifecycle controls.** Once a site exists, the publish step shows a live/offline card with **Take offline**, **Put back online** and **Delete website**.
+- **`SITE_DOMAINS`** Netlify env var: the comma-separated pool `render.ts` will answer for. First entry is the default.
+
+### Changed
+- **A refused publish no longer looks like a success.** `saveSiteToSupabase()` used to resolve a bare `false` and only `console.warn`, so the animation still ended on "your site is live" over a save that never happened. It now resolves `{ok, reason}`, the success screen waits on it, and a failure closes the overlay and says why. A 403/409 is reported as "that address was just taken", which is what it actually means under RLS.
+- **`render.ts` resolves a site by Host**, so `sharma.casites.in` works once wildcard DNS is pointed at Netlify. The path forms `/s/<sub>` and `/s/<domain>/<sub>` both still work with no DNS at all. The bare `/s/<sub>` resolves against the **default domain only**; it deliberately does not fall through to another domain's site.
+- **The edge function is registered on `/*`** instead of `/s/*` (host mode requests `/`, not `/s/...`). It returns `undefined` for anything it does not own, so the builder and every static asset pass straight through.
+- A **draft save can no longer knock a live site offline.** It used to write `status:'draft'` unconditionally; it now preserves `published`/`unpublished`.
+- The builder **restores its site's identity** (id, status, domain, subdomain) on login even when a fresher local draft wins on content. Without it the publish step could not offer Unpublish or Delete, and would have inserted a second row instead of updating the first.
+- Taking a site offline returns "Site unavailable / not published right now" rather than wording that implied the owner never finished.
+
+### Fixed
+- **The share link was wrong on any non-default domain.** `siteUrl()` always produced `/s/<sub>`, which `render.ts` resolves against the **default** domain, so a site published on `casites.in` got a "Live at" link that 404s. It now emits `/s/<domain>/<sub>` for non-default domains and keeps the short form for the default one, so every existing link stays valid.
+- **The address no longer clips or overflows at any usable width.** Three separate faults, each found by measuring rather than by eye: the native select took its width from the widest option (`.taxsites.in (coming soon)` sizing a field showing `.kdksites.in`); the name input was allowed to shrink below its own text, scrolling what the user had just typed out of sight while the row still "fitted"; and the type was sized against the viewport, which is a poor proxy because the fixed 235px sidebar makes the card far narrower than the window. Now the select is measured against its *selected* option, neither half shrinks, and the type is keyed to the card via a container query (with the viewport rule kept as a fallback). Verified with a 17-character and a 30-character name at 1400 / 1180 / 900 / 800 / 700 / 640 / 600 / 560 / 520px.
+- **`local-ai-config.js` was silently deleting committed config.** It assigns `window.KDK_AI = {...}` outright instead of merging, and loads *after* `app-config.js`, so on any machine that has it (it is gitignored, so it varies per machine) `siteDomains`, `publicBase` and `prettyDomain` all vanished. The visible symptom was the domain picker never appearing. `app-config.js` now keeps a `KDK_AI_DEFAULTS` reference and `index.html` backfills missing keys after both scripts load, so a local override can add or replace a key but never remove one. Deliberate local overrides still win, and the restore is logged to the console.
+- **A missing RPC no longer reports itself as a network problem.** Before the migration is pushed, `wb_subdomain_available()` returns 404, which was shown as "Could not check availability. Check your connection." and sent testers hunting the wrong fault. A 404 now reads "Availability checking is not set up on the server yet" and logs the exact fix (`supabase db push`); genuine transport failures keep the connection message.
+- Sample domains (`casites.in`, `legalsites.in`, `taxsites.in`) added to the pool so the picker can be seen and tested. **None is bought or wired** and the config carries a prominent warning to strip them before real users.
+- The auto-mirrored address could be cut at 30 characters mid-hyphen and display `gupta-verma-sharma-associates-` while the line beneath it confirmed `gupta-verma-sharma-associates`. `siteSlug()` already stripped it before anything was sent, so nothing was ever published wrong, but the field now shows exactly what goes live.
+
+### Technical notes
+- **Uniqueness moved** from the inline `subdomain text unique` to a partial unique index on `(domain, subdomain) where subdomain is not null`. The upsert's conflict target changed to match; a mismatch there is rejected by Postgres.
+- `wb_subdomain_available` is `SECURITY DEFINER` **by necessity**: RLS exposes only rows that are published or owned by the caller, so a browser-side check reports "available" for another user's draft and the publish then 403s. The function sees every row but returns only `{available, reason}` — no ids, owners or config. A name the caller already owns counts as available.
+- **A delete policy was added** (`wb_websites_delete_own`). There was none, which under RLS meant every delete was silently refused.
+- Delete is **hard** and `wb_leads` cascades, so it is gated behind typing the exact address, with the lead loss stated in the dialog. Unpublish is **soft**: the row, the leads and the reserved address all survive.
+- Verified: 4/4 inline script blocks parse; 54/54 builder assertions in jsdom (picker, debounce, race, stale-verdict, upsert target, lifecycle, typed-confirm, failure paths); 18/18 routing cases against `render.ts` including the same subdomain on two domains and the builder never being intercepted; and every slug the builder can generate validates against the Postgres regex. **The migration is applied** to `hlhtopqbzfzlxxmolkok` and the RPC was checked against the live database over REST: free, `reserved`, `too_short`, `invalid_format` and `taken` all return correctly, and the same name is free on a second domain, which proves uniqueness moved to the pair.
+
+---
+
+## [0.9.4] 2026-07-27 — The AI Writer opens on a screen that shows what it does
+
+> On branch `feature/ai-website-writer`. The AI button used to drop you straight onto the first question, so nobody was told that an AI writes the whole site or that thin answers produce thin copy.
+
+### Added
+- **Intro screen for the AI Writer** (`frontend/index.html`). Shown when the modal opens with no answers saved, and reachable any time from a new **How this works** button in the step rail's footer. One CTA leaves it, and a saved draft skips it entirely.
+- **A navy panel with drifting aurora light**, centred, with a gradient headline, one short paragraph and a gold call to action. The panel replaces the modal's footer band on this screen.
+- **A demonstration instead of a description.** Four answer chips ("12 years in Jaipur", "GST notices", "We reply in 2 hours", "300+ filings a year") pop in one at a time, then drop into a blank page which writes itself: nav, a hero headline typed character by character with a pen nib riding the caret, sub-lines, buttons, three service cards and a "Ready to publish" badge. The page then **scrolls inside the browser frame**, revealing the about band, a dark stats band and the footer. A three-step strip, `You answer` / `AI writes` / `You go live`, lights up in time behind a filling gradient track.
+- One sentence carries the lesson: **"The more you tell us, the better it writes."**
+
+### Changed
+- The first cut of this screen explained the feature in three headed paragraphs and a note. Rewritten after review as "content heavy, no one reads the content": prose is down from roughly 120 words to 45, and everything cut is now shown.
+
+### Technical notes
+- Pure CSS keyframes. No GIF, video or external asset, per the project's no-CDN rule.
+- The whole loop is 11s and **every** animation is `11s infinite`, phased by `animation-delay` alone, so the pieces cannot drift apart however long the modal is open. The percentage map is documented above the stylesheet block.
+- The three step circles share a single keyframe pair; their colour is a per-step CSS variable and their moment is a delay.
+- The typing reveal (`clip-path`) and the caret (an absolutely positioned bar) run off identical stepped percentages, so the caret sits on the last shown character regardless of font metrics.
+- Implemented as a card state (`.aiw-card.intro`), not an extra entry in `QS`, so step indices, the rail, progress and validation are untouched.
+- `prefers-reduced-motion` shows the finished frame rather than a frozen half-typed one.
+
+---
+
 ## [0.9.3] 2026-07-25 — Removed the unused design-samples/ folder
 
 > Closes the "retire or sync `New Design/`" question open since Session 3. No user-visible change.

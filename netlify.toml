@@ -9,7 +9,16 @@
   # Edge functions moved under backend/ during the 2026-07-25 reorg.
   edge_functions = "backend/netlify/edge-functions"
 
-# Published client sites: kdksites.netlify.app/s/<subdomain>
+# Published client sites.
+#
+# Registered on /* rather than /s/* because a real address (sharma.casites.in)
+# requests "/", not "/s/...". render.ts inspects the Host header and returns
+# undefined for anything it does not own, so the builder and all static assets
+# pass straight through untouched.
+#
+# Adding a domain to the pool: point wildcard DNS (*.<domain>) at this site, add
+# the domain in Netlify's Domain management, and append it to the SITE_DOMAINS
+# env var. render.ts serves only domains named in SITE_DOMAINS.
 [[edge_functions]]
-  path = "/s/*"
+  path = "/*"
   function = "render"

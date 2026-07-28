@@ -421,6 +421,82 @@ button { cursor:pointer; font-family:inherit; border:none; background:none }
   flex-shrink:0; background:var(--g-gold);
 }
 
+/* ── FOUNDERS & PARTNERS ──
+   #about carries the layout class, set by applyConfig from the partner count:
+     .about-solo  one  — the founder card beside the About text (default)
+     .about-duo   two  — About text full width, two equal cards below it
+     .about-team  3-4  — lead keeps the founder card, the rest form a row  */
+#about.about-duo .about-grid   { grid-template-columns:1fr; gap:44px }
+#about.about-duo .pc-col       { display:grid; grid-template-columns:1fr 1fr; gap:26px; align-items:stretch }
+#about.about-duo .founder-card { display:flex; flex-direction:column; height:100%; max-width:none }
+#about.about-duo .founder-body { display:flex; flex-direction:column; flex:1 }
+#about.about-duo .founder-quals{ margin-top:auto }   /* uneven bios, level credential lists */
+/* two fully ornamented heads side by side read heavy, so the decoration steps down */
+#about.about-duo .founder-head { padding:22px 24px }
+#about.about-duo .founder-head::before,
+#about.about-duo .founder-head::after { display:none }
+#about.about-duo .founder-photo-wrap { width:68px; height:68px; margin-bottom:11px }
+#about.about-duo .founder-initials   { font-size:24px }
+#about.about-duo .ab-highs { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:24px; margin-top:0 }
+@media(max-width:760px){ #about.about-duo .pc-col { grid-template-columns:1fr } }
+
+/* An uploaded portrait is 3:4. Inside the 88px circle it was unreadable, so a
+   photo gets a real portrait block with the gold rule the design uses elsewhere.
+   Initials-only firms keep the circle, and if ANY partner has a photo every card
+   in the section uses the block, so a row never mixes a tall photo with a circle. */
+.founder-photo-block {
+  width:122px; height:122px; border-radius:50%; margin-bottom:14px; overflow:hidden;
+  background:rgba(255,255,255,.12); border:2px solid rgba(var(--gold-rgb),.42);
+  display:flex; align-items:center; justify-content:center; position:relative; z-index:1;
+  font-family:Georgia,'Times New Roman',serif; font-size:34px; font-weight:700; color:rgba(255,255,255,.78);
+}
+/* faces sit above centre in a portrait, so the crop is biased upward */
+.founder-photo-block img { width:100%; height:100%; object-fit:cover; object-position:50% 26%; display:block }
+/* With a portrait the head becomes a row: photo left, name and role beside it, so a
+   half-width card is not mostly empty next to the picture. */
+.founder-head.has-photo { display:flex; gap:18px; align-items:center }
+.founder-head.has-photo .founder-photo-block { margin-bottom:0 }
+.founder-head.has-photo .founder-nm { margin-bottom:3px }
+@media(max-width:600px){ .founder-photo-block { width:104px; height:104px } .founder-head.has-photo { gap:14px } }
+
+.team-band { margin-top:56px; padding-top:36px; border-top:1px solid var(--border) }
+.team-hd   { margin-bottom:24px }
+.team-h3   { font-family:Georgia,'Times New Roman',serif; font-size:22px; font-weight:700; color:var(--text) }
+.team-sub  { font-size:13px; color:var(--text2); margin-top:5px }
+.team-grid { display:grid; gap:20px; grid-template-columns:repeat(auto-fit,minmax(232px,1fr)) }
+.tm-card {
+  background:var(--g-card); border:1px solid var(--border); border-radius:16px; overflow:hidden;
+  box-shadow:var(--sh-sm); display:flex; flex-direction:column;
+  transition:box-shadow var(--t),transform var(--t);
+}
+.tm-card:hover { box-shadow:var(--sh-md); transform:translateY(-2px) }
+.tm-head { background:var(--g-brown); padding:20px 20px 16px; text-align:center }
+.tm-mono {
+  width:54px; height:54px; border-radius:50%; margin:0 auto 10px; position:relative; overflow:hidden;
+  background:rgba(255,255,255,.12); border:2px solid rgba(var(--gold-rgb),.4);
+  display:flex; align-items:center; justify-content:center;
+  font-family:Georgia,'Times New Roman',serif; font-size:19px; font-weight:700; color:rgba(255,255,255,.75);
+}
+.tm-mono img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover }
+/* photo variant of the compact card head */
+.tm-photo {
+  width:70px; height:70px; border-radius:50%; margin:0 auto 10px; overflow:hidden;
+  background:rgba(255,255,255,.12); border:2px solid rgba(var(--gold-rgb),.42);
+  display:flex; align-items:center; justify-content:center;
+  font-family:Georgia,'Times New Roman',serif; font-size:19px; font-weight:700; color:rgba(255,255,255,.78);
+}
+.tm-photo img { width:100%; height:100%; object-fit:cover; object-position:50% 26%; display:block }
+/* row head with a portrait, so a wide compact card is not mostly empty either */
+.tm-head.has-photo { display:flex; gap:14px; align-items:center; text-align:left }
+.tm-head.has-photo .tm-photo { margin:0 }
+.tm-head.has-photo .tm-nm { margin-bottom:3px }
+.tm-nm   { font-family:Georgia,'Times New Roman',serif; font-size:15px; font-weight:700; color:#fff; margin-bottom:2px }
+.tm-rl   { font-size:9.5px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--gold2) }
+.tm-body { padding:16px 20px 18px; display:flex; flex-direction:column; flex:1 }
+.tm-bio  { font-size:12.5px; color:var(--text2); line-height:1.72; margin-bottom:12px }
+.tm-cred { display:flex; align-items:center; gap:10px; font-size:12px; color:var(--text2); font-weight:500; margin-top:auto }
+.tm-cred::before { content:''; width:6px; height:6px; border-radius:50%; flex-shrink:0; background:var(--g-gold) }
+
 /* ─────────────────────────────────────────
    PROCESS (dark)
 ───────────────────────────────────────── */
@@ -999,7 +1075,7 @@ footer::before {
     </div>
 
     <!-- Right: founder card -->
-    <div class="rv" style="--rv-d:.14s">
+    <div class="rv pc-col" style="--rv-d:.14s">
       <div class="founder-card">
         <div class="founder-head">
           <div class="founder-photo-wrap" id="founderPhotoWrap">
@@ -1780,6 +1856,71 @@ bootTestiH();
       if(footMark) footMark.style.display='';
     }
   }
+  /* ── FOUNDERS & PARTNERS ──
+     A firm can be one founder, two equal partners, or a small partnership, so the
+     About section has three layouts and the count picks one. people[] is the
+     source of truth; a config saved before people[] existed still carries the
+     founder* keys, so it is read as a single-partner firm and renders unchanged. */
+  var PEOPLE_MAX=4;
+  function peopleOf(cfg){
+    var arr=(Array.isArray(cfg.people)&&cfg.people.length)?cfg.people
+      :[{name:cfg.founderName,role:cfg.founderRole,bio:cfg.founderBio,credentials:cfg.credentials,photo:cfg.founderPhoto}];
+    return arr.filter(function(p){ return p&&String(p.name||'').trim(); }).slice(0,PEOPLE_MAX);
+  }
+  /* `photos` is true when at least one partner in the section has a portrait, so
+     every card switches to the portrait block together. */
+  function bigCard(p,photos){
+    var creds=(p.credentials||[]).map(function(c){ return '<div class="founder-q">'+esc(c)+'</div>'; }).join('');
+    var id='<div class="founder-nm">'+esc(p.name)+'</div>'+(p.role?'<div class="founder-role">'+esc(p.role)+'</div>':'');
+    var head=photos
+      ? '<div class="founder-photo-block">'+(p.photo?'<img src="'+esc(p.photo)+'" alt="'+esc(p.name)+'">':esc(initials(p.name)))+'</div><div style="position:relative;z-index:1">'+id+'</div>'
+      : '<div class="founder-photo-wrap"><div class="founder-initials">'+esc(initials(p.name))+'</div></div>'+id;
+    return '<div class="founder-card">'+
+      '<div class="founder-head'+(photos?' has-photo':'')+'">'+head+
+      '</div>'+
+      '<div class="founder-body">'+
+        (p.bio?'<p class="founder-bio">'+esc(p.bio)+'</p>':'')+
+        (creds?'<div class="founder-quals">'+creds+'</div>':'')+
+      '</div>'+
+    '</div>';
+  }
+  function miniCard(p,photos){
+    var id='<div class="tm-nm">'+esc(p.name)+'</div>'+(p.role?'<div class="tm-rl">'+esc(p.role)+'</div>':'');
+    var head=photos
+      ? '<div class="tm-photo">'+(p.photo?'<img src="'+esc(p.photo)+'" alt="'+esc(p.name)+'">':esc(initials(p.name)))+'</div><div>'+id+'</div>'
+      : '<div class="tm-mono">'+esc(initials(p.name))+'</div>'+id;
+    return '<div class="tm-card">'+
+      '<div class="tm-head'+(photos?' has-photo':'')+'">'+head+
+      '</div>'+
+      '<div class="tm-body">'+
+        (p.bio?'<p class="tm-bio">'+esc(p.bio)+'</p>':'')+
+        ((p.credentials&&p.credentials.length)?'<div class="tm-cred">'+esc(p.credentials[0])+'</div>':'')+
+      '</div>'+
+    '</div>';
+  }
+  function applyPeople(cfg){
+    var ppl=peopleOf(cfg);
+    var mode=(ppl.length<=1)?'solo':(ppl.length===2?'duo':'team');
+    var photos=ppl.some(function(p){ return !!p.photo; });
+    var about=qs('#about'), grid=qs('#about .about-grid'), col=qs('#about .pc-col');
+    if(!about||!grid||!col) return;
+    about.classList.remove('about-solo','about-duo','about-team');
+    about.classList.add('about-'+mode);
+    if(ppl.length) col.innerHTML=ppl.slice(0,mode==='duo'?2:1).map(function(p){ return bigCard(p,photos); }).join('');
+    /* the highlights sit under the About text, except in duo mode where the text
+       runs full width and they become a row under the two cards */
+    var highs=qs('.ab-highs',about), textCol=grid.firstElementChild;
+    if(highs&&textCol) (mode==='duo'?grid:textCol).appendChild(highs);
+    var band=qs('#about .team-band');
+    if(mode==='team'){
+      if(!band){ band=document.createElement('div'); band.className='team-band'; about.appendChild(band); }
+      band.innerHTML='<div class="team-hd"><div class="team-h3">The partners</div>'+
+        '<div class="team-sub">Working alongside '+esc(ppl[0].name)+'</div></div>'+
+        '<div class="team-grid">'+ppl.slice(1).map(function(p){ return miniCard(p,photos); }).join('')+'</div>';
+      band.style.display='';
+    } else if(band){ band.style.display='none'; }
+  }
+
   function applyConfig(cfg){
     if(!cfg||typeof cfg!=='object') return;
 
@@ -1814,11 +1955,8 @@ bootTestiH();
     if(cfg.highlights&&cfg.highlights.length){ var ah=qs('.ab-highs'); if(ah){ var icon='<div class="ab-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9l4.5 4.5 7.5-7.5" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
       ah.innerHTML=cfg.highlights.map(function(x){ return '<div class="ab-item">'+icon+'<div><div class="ab-t">'+esc(x.t)+'</div><div class="ab-d">'+esc(x.d||'')+'</div></div></div>'; }).join(''); } }
 
-    /* founder */
-    setText('#founderName',cfg.founderName); setText('.founder-role',cfg.founderRole); setText('#founderBio',cfg.founderBio);
-    var fi=qs('#founderInitials'); if(fi) fi.textContent=initials(cfg.founderName);
-    if(cfg.founderPhoto){ var fp=qs('#founderPhoto'); if(fp){ fp.src=cfg.founderPhoto; fp.style.display='block'; if(fi)fi.style.display='none'; } }
-    if(cfg.credentials&&cfg.credentials.length){ var fq=qs('.founder-quals'); if(fq) fq.innerHTML=cfg.credentials.map(function(c){return '<div class="founder-q">'+esc(c)+'</div>';}).join(''); }
+    /* founders & partners */
+    applyPeople(cfg);
 
     /* process */
     if(cfg.process&&cfg.process.length){ var pg=qs('.proc-grid'); if(pg){ var last=cfg.process.length-1,
@@ -1831,13 +1969,19 @@ bootTestiH();
         return '<div class="tc"><div class="tc-qm">&ldquo;</div><div class="tc-stars">'+st+'</div><p class="tc-q">'+esc(t.q)+'</p><div class="tc-sep"></div><div class="tc-au">'+(t.img?'<div class="tc-av" style="overflow:hidden"><img src="'+t.img+'" alt="'+esc(t.n)+'" style="width:100%;height:100%;object-fit:cover"></div>':'<div class="tc-av">'+esc(initials(t.n))+'</div>')+'<div><div class="tc-nm">'+esc(t.n)+'</div><div class="tc-rl">'+esc(t.r||'')+'</div></div></div></div>'; }).join('');
       if(typeof bootTestiH==='function'){ bootTestiH(); setTimeout(bootTestiH,140); setTimeout(bootTestiH,420); }
     } }
+    /* No reviews is a legitimate choice, so drop the whole section rather than serve
+       the design's sample quotes as if they were this firm's clients. */
+    else { var tsec=qs('.testi-sec'); if(tsec) tsec.style.display='none'; }
 
-    /* contact — order: phone, email, address, hours */
+    /* contact — order: phone, email, address, hours
+       A detail that was not given REMOVES its row. Without the else branch a blank
+       field left the design's demo text live on a real firm's site. */
     var ci=qsa('.ct-list .ct-item');
-    if(ci[0]&&cfg.phone){ var e0=qs('.ct-v',ci[0]); if(e0)e0.textContent=cfg.phone; }
-    if(ci[1]&&cfg.email){ var e1=qs('.ct-v',ci[1]); if(e1)e1.textContent=cfg.email; }
-    if(ci[2]&&cfg.address){ var e2=qs('.ct-v',ci[2]); if(e2)e2.textContent=cfg.address; var e2s=qs('.ct-s',ci[2]); if(e2s)e2s.textContent=cfg.city||''; }
-    if(ci[3]&&cfg.hours){ var e3=qs('.ct-v',ci[3]); if(e3)e3.textContent=cfg.hours; }
+    function ctRow(el,val,fill){ if(!el) return; if(val){ fill(); } else { el.style.display='none'; } }
+    ctRow(ci[0],cfg.phone,function(){ var e0=qs('.ct-v',ci[0]); if(e0)e0.textContent=cfg.phone; });
+    ctRow(ci[1],cfg.email,function(){ var e1=qs('.ct-v',ci[1]); if(e1)e1.textContent=cfg.email; });
+    ctRow(ci[2],cfg.address,function(){ var e2=qs('.ct-v',ci[2]); if(e2)e2.textContent=cfg.address; var e2s=qs('.ct-s',ci[2]); if(e2s)e2s.textContent=cfg.city||''; });
+    ctRow(ci[3],cfg.hours,function(){ var e3=qs('.ct-v',ci[3]); if(e3)e3.textContent=cfg.hours; });
 
     /* footer */
     setText('.foot-desc',cfg.footerBlurb); setText('.foot-copy',cfg.copyright);

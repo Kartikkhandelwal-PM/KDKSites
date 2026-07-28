@@ -9,20 +9,87 @@
 //                         contact form can insert leads (RLS restricts anon to
 //                         inserting into wb_leads only). Optional: if unset, the
 //                         form still works but shows a confirmation without saving.
+//   SITE_DOMAINS          comma-separated pool of KDK-owned domains, e.g.
+//                         "kdksites.in,casites.in". The FIRST is the default.
+//                         Optional; defaults to "kdksites.in".
+//
+// ADDRESSING. A site is identified by the PAIR (domain, subdomain), because the
+// same name may legitimately exist on two domains. Two ways in:
+//
+//   1. Host mode   sharma.casites.in           <- the real address, once wildcard
+//                                                 DNS for that domain points here
+//   2. Path mode   /s/sharma  or  /s/casites.in/sharma
+//                                                 works with no DNS at all, which
+//                                                 is how the prototype is shared
+//
+// The bare /s/<sub> form predates multi-domain, so it has to keep working. It
+// resolves against the DEFAULT domain only. That is deliberate: silently falling
+// through to some other domain's site would serve a stranger's page at a link a
+// user believes is theirs.
 
+const DEFAULT_DOMAINS = "kdksites.in";
+const siteDomains = (): string[] =>
+  (Deno.env.get("SITE_DOMAINS") || DEFAULT_DOMAINS)
+    .split(",").map((d) => d.trim().toLowerCase()).filter(Boolean);
+
+/** Split a request hostname into (domain, subdomain) if it sits under a known
+ *  domain from the pool. Returns null for the Netlify host, localhost, or any
+ *  domain we do not serve. */
+function fromHost(hostname: string): { domain: string; subdomain: string } | null {
+  const host = hostname.toLowerCase().replace(/\.$/, "").replace(/:\d+$/, "");
+  for (const domain of siteDomains()) {
+    if (host === domain || host === `www.${domain}`) return null;   // apex is the marketing site, not a client site
+    if (host.endsWith(`.${domain}`)) {
+      const sub = host.slice(0, -(domain.length + 1));
+      if (sub && !sub.includes(".")) return { domain, subdomain: sub };   // one label only; no a.b.domain
+    }
+  }
+  return null;
+}
+
+const clean = (s: string) => (s || "").toLowerCase().replace(/[^a-z0-9-]/g, "");
+
+// Registered on /* so host mode can work: a request to sharma.casites.in asks
+// for "/", not "/s/...". Everything this function does not own is passed
+// straight through to the static build by returning undefined, so the builder
+// at / and every asset under it are untouched.
 export default async (request: Request) => {
   const url = new URL(request.url);
-  const parts = url.pathname.split("/").filter(Boolean); // ["s", "<subdomain>"]
-  const subdomain = (parts[1] || "").toLowerCase().replace(/[^a-z0-9-]/g, "");
+  const domains = siteDomains();
+  const isSitePath = url.pathname === "/s" || url.pathname.startsWith("/s/");
+
+  // ---- Resolve which site was asked for -------------------------------
+  let domain = "";
+  let subdomain = "";
+
+  const viaHost = fromHost(url.hostname);
+  if (viaHost) {
+    domain = viaHost.domain;
+    subdomain = clean(viaHost.subdomain);
+    // On a client domain, only the site itself is served here. Its own assets
+    // (/templates/..., /assets/...) still come from the static build.
+    if (url.pathname !== "/" && !isSitePath) return;
+  } else if (isSitePath) {
+    // Path mode: /s/<subdomain> or /s/<domain>/<subdomain>
+    const parts = url.pathname.split("/").filter(Boolean);   // ["s", ...]
+    const a = (parts[1] || "").toLowerCase();
+    const b = (parts[2] || "").toLowerCase();
+    if (b && domains.includes(a)) { domain = a; subdomain = clean(b); }
+    else { domain = domains[0]; subdomain = clean(a); }
+  } else {
+    return;   // not ours — let the static site answer
+  }
   if (!subdomain) return page("Site not found", "Missing subdomain.", 404);
 
   const SB_URL = Deno.env.get("SUPABASE_URL");
   const SB_SERVICE = Deno.env.get("SUPABASE_SERVICE_KEY");
   if (!SB_URL || !SB_SERVICE) return page("Not configured", "The server is missing Supabase env vars.", 500);
 
-  // Look up the site (service key bypasses RLS)
+  // Look up the site (service key bypasses RLS). Matched on the PAIR.
   const q = `${SB_URL.replace(/\/+$/, "")}/rest/v1/wb_websites` +
-    `?subdomain=eq.${encodeURIComponent(subdomain)}&select=id,template,config,status&limit=1`;
+    `?subdomain=eq.${encodeURIComponent(subdomain)}` +
+    `&domain=eq.${encodeURIComponent(domain)}` +
+    `&select=id,template,config,status&limit=1`;
   let rows: any[] = [];
   try {
     const r = await fetch(q, { headers: { apikey: SB_SERVICE, authorization: `Bearer ${SB_SERVICE}` } });
@@ -31,10 +98,16 @@ export default async (request: Request) => {
   } catch {
     return page("Lookup failed", "Could not reach Supabase.", 502);
   }
-  if (!Array.isArray(rows) || rows.length === 0) return page("Site not found", `No site at /s/${subdomain}.`, 404);
+  if (!Array.isArray(rows) || rows.length === 0) {
+    return page("Site not found", `No site at ${subdomain}.${domain}.`, 404);
+  }
 
   const site = rows[0];
-  if (site.status !== "published") return page("Not published", "This site is not published yet.", 404);
+  // Covers both 'draft' and 'unpublished'. Taking a site offline is a supported
+  // action now, so the wording must not imply the owner simply never finished.
+  if (site.status !== "published") {
+    return page("Site unavailable", "This site is not published right now.", 404);
+  }
 
   const template = ["apex", "nova", "heritage", "zenith"].includes(site.template) ? site.template : "apex";
   const config = site.config || {};
@@ -62,7 +135,8 @@ export default async (request: Request) => {
   const brand = firm || "Professional Services";
   const titleText = brand + (tagline ? " | " + tagline : "") + (city ? (tagline ? ", " : " | ") + city : "");
   const descText = (tagline || about || (firm ? firm + " — professional services" : "")).slice(0, 180);
-  const shareUrl = `${url.origin}/s/${subdomain}`;
+  // Canonical share link: the real address in host mode, the path form otherwise.
+  const shareUrl = viaHost ? `https://${subdomain}.${domain}` : `${url.origin}/s/${subdomain}`;
   const metaTags =
     `<meta property="og:type" content="website">` +
     `<meta property="og:site_name" content="${esc(brand)}">` +
