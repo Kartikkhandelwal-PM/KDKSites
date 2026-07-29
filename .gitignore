@@ -5,6 +5,7 @@ Thumbs.db
 # Local editor / tooling config
 .claude/
 .vscode/
+.wrangler/
 
 # Finder duplicates (never publish these)
 * copy/
