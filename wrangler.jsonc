@@ -1,0 +1,10 @@
+{
+  // Cloudflare Workers config for the daily-deploy branch. Serves frontend/ as
+  // static assets — mirrors the Netlify prototype (netlify.toml) minus the
+  // published-site render function, which still only exists on Netlify for now.
+  "name": "kdksites",
+  "compatibility_date": "2026-07-29",
+  "assets": {
+    "directory": "./frontend"
+  }
+}
