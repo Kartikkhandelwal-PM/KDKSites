@@ -2358,7 +2358,7 @@ function currentDomain(){
    on any other domain must use the /s/<domain>/<sub> form or it 404s. Keeping
    the short form for the default domain leaves every existing link valid. */
 function siteUrl(sub){
-  var base=(window.KDK_AI&&window.KDK_AI.publicBase)||'https://kdksites.netlify.app/s/';
+  var base=(window.KDK_AI&&window.KDK_AI.publicBase)||(location.origin+'/s/');
   var dom=currentDomain();
   var prefix=(dom.toLowerCase()===defaultDomain().toLowerCase())?'':(dom+'/');
   return base+prefix+siteSlug(sub);
@@ -2622,7 +2622,7 @@ function liveDomainHost(){
   return hit?hit.host:currentDomain();
 }
 function liveSiteUrl(){
-  var base=(window.KDK_AI&&window.KDK_AI.publicBase)||'https://kdksites.netlify.app/s/';
+  var base=(window.KDK_AI&&window.KDK_AI.publicBase)||(location.origin+'/s/');
   var dom=liveDomainHost();
   var prefix=(dom.toLowerCase()===defaultDomain().toLowerCase())?'':(dom+'/');
   return base+prefix+siteSlug(S.liveSub||'');
