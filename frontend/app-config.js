@@ -16,8 +16,12 @@ window.KDK_AI = {
   openai:    { model: 'gpt-4o-mini' },
   anthropic: { model: 'claude-opus-4-8' },
   // Where published sites are actually served today (path-based, no custom domain needed).
-  // Later, when the domains below have wildcard DNS pointed at Netlify, switch to subdomain URLs.
-  publicBase:   'https://kdksites.netlify.app/s/',   // real, working share URL: publicBase + <subdomain>
+  // Computed from wherever the builder itself is running, so the share link
+  // matches the host that generated it (Netlify build shows a Netlify link,
+  // Cloudflare build shows a Cloudflare link) rather than a fixed host — both
+  // render the same published site, since they share one Supabase backend.
+  // Later, when the domains below have wildcard DNS pointed at a host, switch to subdomain URLs.
+  publicBase:   location.origin + '/s/',
 
   /* ---------- The domain pool ----------
      KDK buys the domains; the user picks one and gets <subdomain>.<domain>.
