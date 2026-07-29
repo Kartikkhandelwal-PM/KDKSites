@@ -4,6 +4,31 @@
 
 ---
 
+## 2026-07-29 (Session 21): A second host, on its own branch, so Netlify's usage isn't spent on every experiment
+
+### Why
+Netlify's free tier has usage limits, and every push to `feature/ai-website-writer` costs a real deploy there. The idea: a separate host for daily iteration, promote to Netlify only when something is actually ready. See [docs/CLOUDFLARE-DEPLOY.md](CLOUDFLARE-DEPLOY.md) for the full reference — this entry is the narrative version.
+
+### What got built
+- **New `cloudflare` branch**, forked from `feature/ai-website-writer`. Netlify keeps deploying the other branch automatically, untouched; the two do not sync automatically going forward.
+- **Cloudflare Workers, not Cloudflare Pages.** The dashboard's "Create a Worker" flow was tried first (Cloudflare has merged Pages into Workers), but its setup wizard has no branch picker — it would have deployed from `main`, which has neither this work nor a `wrangler.jsonc`. Switched to deploying via the `wrangler` CLI directly instead (`npm install -g wrangler`, `wrangler login`, `wrangler deploy`), which sidesteps the dashboard entirely.
+- **`backend/netlify/edge-functions/render.ts` ported to `src/index.ts`.** Same logic — resolve a subdomain, look up Supabase with the service key, inject the config into the right template — adapted to Cloudflare's `fetch(request, env)` signature and `env.ASSETS.fetch()` instead of Netlify's Deno `Deno.env.get()` and same-origin fetch. `/s/<subdomain>` now renders identically on both hosts, since they share one Supabase project.
+- **`publicBase` (the share-link shown after Publish) changed from a hardcoded `kdksites.netlify.app` string to `location.origin + '/s/'`.** Before this, publishing from the Cloudflare-served builder still showed a Netlify link (functionally fine, since both hosts read the same database, but confusing). Now the link matches whichever host actually served the builder.
+
+### A secret briefly leaked, caught the same session
+`wrangler deploy` reads `frontend/` straight off local disk, not from a git clone — unlike Netlify, which only ever sees committed files. `frontend/local-ai-config.js` is gitignored (holds a live OpenAI key) but still existed on disk, so the very first Cloudflare deploy uploaded it as a public static file for a few minutes. Caught immediately; fixed with `frontend/.assetsignore` (same syntax as `.gitignore`, but Cloudflare-specific — gitignore alone doesn't protect a disk-based deploy). Confirmed after the fix: the file 404s, it was never committed to git in any branch's history, and a repo-wide grep found no other copies of the key. **Any new local-only file added under `frontend/` must go in both `.gitignore` and `.assetsignore`, or this happens again.**
+
+### Also caught: a reflexive push to the Netlify branch
+Mid-session, a one-line `.gitignore` fix (ignoring the local `.wrangler/` cache folder) was pushed to `feature/ai-website-writer` without stopping to flag that this triggers an automatic Netlify production redeploy. Harmless in this case (`.gitignore` isn't even inside `frontend/`, Netlify's publish directory, so the deployed site was byte-identical before and after), but it's now a standing rule: ask before pushing anything to that branch, not just before making functional changes.
+
+### Notes for whoever is next
+- Live: builder at `kdksites.kartik-khandelwal.workers.dev`, published sites at the same host's `/s/<subdomain>`.
+- No custom domain is wired up on the Cloudflare side yet — it only has the default `workers.dev` URL.
+- No CI deploys the `cloudflare` branch automatically; every deploy so far has been a manual `wrangler deploy` run on request.
+- `cloudflare` and `feature/ai-website-writer` will drift unless changes are deliberately ported both ways — check [docs/CLOUDFLARE-DEPLOY.md](CLOUDFLARE-DEPLOY.md) before assuming either branch's docs or deploy state matches the other.
+
+---
+
 ## 2026-07-28 (Session 20): Live-site polish, and colour palettes that were measured rather than eyeballed
 
 ### Session shape

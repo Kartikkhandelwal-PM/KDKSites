@@ -4,6 +4,26 @@
 
 ---
 
+## [0.9.10] 2026-07-29: A second host on its own branch — Cloudflare Workers alongside Netlify
+
+> On a new `cloudflare` branch (forked from `feature/ai-website-writer`, which keeps deploying to Netlify unchanged). Full detail in [docs/CLOUDFLARE-DEPLOY.md](CLOUDFLARE-DEPLOY.md).
+
+### Added
+- **The app now also runs on Cloudflare Workers**, deployed via the `wrangler` CLI to `kdksites.kartik-khandelwal.workers.dev`, so daily iteration doesn't spend Netlify's usage limits. Netlify remains the primary deploy.
+- **`src/index.ts`** — the published-site renderer (`/s/<subdomain>`), ported from `backend/netlify/edge-functions/render.ts` to Cloudflare's Worker API. Both hosts render identically, since they share one Supabase backend.
+- **`frontend/.assetsignore`** — excludes local-only gitignored files from the Workers static-asset upload (Cloudflare's deploy reads straight from disk, unlike Netlify's git-based build).
+
+### Fixed
+- **The "changes are live" share link always read `kdksites.netlify.app`, even when the builder was served from Cloudflare.** `publicBase` is now computed from `location.origin` instead of hardcoded, so the link matches whichever host actually served the builder.
+- **A live OpenAI key was briefly served publicly.** The first Cloudflare deploy uploaded the gitignored `frontend/local-ai-config.js` as a public static file, because Cloudflare's deploy reads local disk rather than a git clone. Fixed within the same session via `.assetsignore`; confirmed the key was never committed to git history and no other copy exists in the repo.
+
+### Technical notes
+- Cloudflare's dashboard "Create a Worker" Git-integration flow has no branch picker in its setup wizard, so it would have deployed from `main` (which has none of this). Deploys are done via local `wrangler deploy` instead.
+- `SUPABASE_SERVICE_KEY` is set as a Cloudflare Worker secret (`wrangler secret put`), not committed anywhere; `SUPABASE_URL`/`SUPABASE_ANON_KEY` are committed as plain `vars` in `wrangler.jsonc`, since they're already public in `frontend/app-config.js`.
+- The `cloudflare` and `feature/ai-website-writer` branches do not sync automatically — a fix on one has to be deliberately re-applied to the other.
+
+---
+
 ## [0.9.9] 2026-07-28: Live-site polish, a confirmation before going offline, and palettes you can tell apart
 
 > On branch `feature/ai-website-writer`. Everything here came from looking at the running builder and reporting what was wrong.
