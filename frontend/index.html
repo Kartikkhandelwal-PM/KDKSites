@@ -2206,7 +2206,12 @@ function addPartner(){
    the site without retyping the whole first row. */
 function delPartner(i){
   if(S.people.length<=1){ toast('Your site needs at least one partner.'); return; }
-  S.people.splice(i,1); renderPartners(); livePush();
+  /* tell the AI Writer too, or its answers keep this person and the next run
+     re-adds them (see __aiwForget) */
+  var gone=(S.people[i]||{}).name;
+  S.people.splice(i,1);
+  if(typeof window.__aiwForget==='function') window.__aiwForget(gone);
+  renderPartners(); livePush();
 }
 /* Heritage and Zenith clip the portrait to a circle, the other two to a rounded
    square, so the crop outline shows the user the shape they will actually get. */
@@ -4900,18 +4905,59 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ if(typeof 
     });
     /* Partner names and roles are the user's own facts and the AI rewrites only the bio
        and credentials, so carrying them over costs nothing and saves the most typing.
-       Photos ride along, or running the writer would drop portraits already uploaded. */
+       Photos ride along, or running the writer would drop portraits already uploaded.
+
+       This MERGES, it does not seed-once. It used to bail out whenever the interview
+       already held any partner, which broke the common order of work: answer the
+       interview with one founder, then add two partners by hand in Step 5. Those two
+       never reached the prompt, so they came back with an empty bio, AND `apply()`
+       rebuilds S.people from these answers, so it deleted them and their portraits.
+       Interview rows still win on wording; the builder only fills gaps and appends
+       people the interview has never heard of. */
     var ppl=(window.S && Array.isArray(S.people))?S.people:[];
     var named=ppl.filter(function(p){ return String((p&&p.name)||'').trim(); });
-    if(named.length && !fieldAnswered('partners')){
+    if(named.length){
       var cap=(typeof PTR_MAX==='number')?PTR_MAX:4;
-      A.partners=named.slice(0,cap).map(function(p){
-        return {name:String(p.name||'').trim(), role:String(p.role||'').trim(), photo:String(p.photo||'')};
+      var pKey=function(s){ return String(s||'').trim().toLowerCase().replace(/\s+/g,' '); };
+      var rows=(Array.isArray(A.partners)?A.partners:[])
+        .filter(function(r){ return String((r&&r.name)||'').trim(); });
+      var byName={}; rows.forEach(function(r){ byName[pKey(r.name)]=r; });
+      var changed=false;
+      named.forEach(function(p){
+        var k=pKey(p.name), row=byName[k];
+        if(row){
+          /* same person, already answered: only backfill what is blank, so a role or
+             portrait typed in Step 5 is not lost and never overwrites the interview */
+          if(!String(row.role||'').trim() && String(p.role||'').trim()){ row.role=String(p.role).trim(); changed=true; }
+          if(!String(row.photo||'').trim() && String(p.photo||'').trim()){ row.photo=String(p.photo); changed=true; }
+          return;
+        }
+        if(rows.length>=cap) return;
+        row={name:String(p.name||'').trim(), role:String(p.role||'').trim(), photo:String(p.photo||'')};
+        byName[k]=row; rows.push(row); changed=true;
       });
-      SEEDED.partners=1;
+      if(changed || !fieldAnswered('partners')){
+        A.partners=rows.length?rows:[freshPartner()];
+        SEEDED.partners=1;
+      }
     }
     persist();
   }
+  /* The other half of the merge above. Step 5 and this interview have to agree on WHO
+     the partners are, and the merge only ever adds, so without this a partner deleted
+     in Step 5 stayed in the answers: reopening the writer offered them back, and the
+     next run put them on the published site again. Called by delPartner(). */
+  window.__aiwForget = function(name){
+    var k=String(name||'').trim().toLowerCase().replace(/\s+/g,' ');
+    if(!k || !Array.isArray(A.partners)) return;
+    var before=A.partners.length;
+    A.partners=A.partners.filter(function(r){
+      return String((r&&r.name)||'').trim().toLowerCase().replace(/\s+/g,' ')!==k;
+    });
+    /* the screen always renders at least one row, the same as a fresh interview */
+    if(!A.partners.length) A.partners=[freshPartner()];
+    if(A.partners.length!==before) persist();
+  };
   /* Has the USER engaged, as opposed to us prefilling their facts? Seeding alone must
      not skip the interview: landing a first-time writer on the review list would show
      them a list of things they have never been asked. */
@@ -5791,15 +5837,28 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ if(typeof 
       /* a bio has to be shorter as the cards get smaller: one big card, two equal
          cards, or a row of compact team cards */
       var nP=Math.max(1,seeds.length), bioCap=(nP<=1?45:(nP===2?32:22));
+      /* Match a partner to the one already in Step 5 BY NAME, not by row index.
+         Index matching quietly moved one person's bio and portrait onto another as
+         soon as the interview reordered the list or inserted somebody in the middle. */
+      var pKey=function(s){ return String(s||'').trim().toLowerCase().replace(/\s+/g,' '); };
+      var prevBy={};
+      kept.forEach(function(p){ var k=pKey(p&&p.name); if(k && !prevBy[k]) prevBy[k]=p; });
       S.people=(seeds.length?seeds:[{name:'',role:''}]).map(function(s,i){
         var g=aiP[i]||{};
+        var prev=prevBy[pKey(s.name)]||kept[i]||{};
+        var bio=clip(g.bio,bioCap,true);
+        var creds=bullets(g.credentials,4,8).join('\n');
         return {
           name:TC(s.name||''), role:TC(s.role||''),
-          bio:clip(g.bio,bioCap,true),
-          creds:bullets(g.credentials,4,8).join('\n'),
-          /* a portrait from the interview wins, then anything already uploaded in
-             Step 5, so running the writer never loses a photo either way */
-          photo:String((s&&s.photo)||(kept[i]&&kept[i].photo)||'')
+          /* KEEP what is there when the model returns nothing for this partner.
+             This used to assign unconditionally, so a reply that omitted `partners`,
+             or returned fewer entries than there are partners, blanked bios the user
+             already had. Every other section in apply() is guarded this same way. */
+          bio: bio || String(prev.bio||''),
+          creds: creds || String(prev.creds||''),
+          /* a portrait from the interview wins, then whatever this same person already
+             had in Step 5, so running the writer never loses a photo either way */
+          photo:String((s&&s.photo)||prev.photo||'')
         };
       });
       if(typeof renderPartners==='function'){ renderPartners(); markBlock('ptrList'); }
