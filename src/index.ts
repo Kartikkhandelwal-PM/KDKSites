@@ -184,7 +184,8 @@ export default {
       `<meta name="twitter:description" content="${esc(descText)}">` +
       (imageUrl ? `<meta name="twitter:image" content="${esc(imageUrl)}">` : "") +
       `<meta name="description" content="${esc(descText)}">` +
-      `<link rel="canonical" href="${esc(shareUrl)}">`;
+      `<link rel="canonical" href="${esc(shareUrl)}">` +
+      buildJsonLd(config, shareUrl, imageUrl, brand, descText);
     if (/<title>[\s\S]*?<\/title>/i.test(html)) {
       html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${esc(titleText)}</title>${metaTags}`);
     } else if (/<\/head>/i.test(html)) {
@@ -239,6 +240,78 @@ function sitemapResponse(shareUrl: string, esc: (s: unknown) => string): Respons
     `  <url><loc>${esc(shareUrl)}</loc></url>\n` +
     `</urlset>\n`;
   return new Response(xml, { headers: { "content-type": "application/xml; charset=utf-8" } });
+}
+
+// Structured data (JSON-LD): machine-readable facts about the firm, so Google
+// can build a rich result (phone, hours, services) instead of guessing from
+// prose. Deliberately excludes review/aggregateRating markup: Google does not
+// grant the star-rating rich snippet for a business's own self-published
+// review markup on its own site (that requires Google Business Profile
+// instead), so shipping it here would look like it works but wouldn't.
+function buildJsonLd(config: any, shareUrl: string, imageUrl: string, brand: string, descText: string): string {
+  const schemaType = (profession: string) => {
+    if (profession === "advocate") return "LegalService";
+    if (profession === "company_secretary") return "ProfessionalService";
+    return "AccountingService";   // ca, tax_consultant, gst_practitioner, cost_accountant
+  };
+  const city = String(config.city || "").trim();
+  const address = String(config.address || "").trim();
+  const phone = String(config.phone || "").trim();
+  const email = String(config.email || "").trim();
+  const hours = String(config.hours || "").trim();
+  const founderName = String(config.founderName || "").trim();
+  const founderRole = String(config.founderRole || "").trim();
+  const foundedYear = String(config.foundedYear || "").trim();
+  const social = config.social || {};
+  const sameAs = Array.from(new Set(
+    [social.linkedin, social.facebook, social.instagram, social.youtube]
+      .map((s: unknown) => String(s || "").trim()).filter(Boolean)
+  ));
+  const highlights = Array.isArray(config.highlights) ? config.highlights : [];
+  const knowsAbout = highlights.map((h: any) => String((h && h.t) || "").trim()).filter(Boolean);
+  const services = Array.isArray(config.services) ? config.services : [];
+
+  const ld: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": schemaType(String(config.profession || "")),
+    name: brand,
+    url: shareUrl,
+  };
+  if (imageUrl) ld.image = imageUrl;
+  if (descText) ld.description = descText;
+  if (phone) ld.telephone = phone;
+  if (email) ld.email = email;
+  if (address || city) {
+    ld.address = {
+      "@type": "PostalAddress",
+      ...(address ? { streetAddress: address } : {}),
+      ...(city ? { addressLocality: city } : {}),
+      addressCountry: "IN",
+    };
+  }
+  if (city) ld.areaServed = city;
+  if (foundedYear) ld.foundingDate = foundedYear;
+  if (hours) ld.openingHours = hours;
+  if (sameAs.length) ld.sameAs = sameAs;
+  if (founderName) {
+    ld.founder = { "@type": "Person", name: founderName, ...(founderRole ? { jobTitle: founderRole } : {}) };
+  }
+  if (knowsAbout.length) ld.knowsAbout = knowsAbout;
+  if (services.length) {
+    ld.hasOfferCatalog = {
+      "@type": "OfferCatalog",
+      name: "Services",
+      itemListElement: services.map((s: any) => ({
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: String((s && s.name) || ""),
+          ...(s && s.desc ? { description: String(s.desc) } : {}),
+        },
+      })),
+    };
+  }
+  return `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, "\\u003c")}</script>`;
 }
 
 function page(title: string, msg: string, status: number): Response {
