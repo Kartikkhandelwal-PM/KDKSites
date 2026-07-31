@@ -61,19 +61,32 @@ export default async (request: Request) => {
   // ---- Resolve which site was asked for -------------------------------
   let domain = "";
   let subdomain = "";
+  // og-image is a real per-site asset (referenced by the meta tags below), so
+  // it works in both addressing modes. robots.txt/sitemap.xml are host-mode
+  // only: crawlers only ever fetch them from the true origin root, and in
+  // path mode (/s/<sub>) there is no origin of the site's own to answer for.
+  let wantsOgImage = false;
+  let wantsRobots = false;
+  let wantsSitemap = false;
 
   const viaHost = fromHost(url.hostname);
   if (viaHost) {
     domain = viaHost.domain;
     subdomain = clean(viaHost.subdomain);
+    if (url.pathname === "/og-image") wantsOgImage = true;
+    else if (url.pathname === "/robots.txt") wantsRobots = true;
+    else if (url.pathname === "/sitemap.xml") wantsSitemap = true;
     // On a client domain, only the site itself is served here. Its own assets
     // (/templates/..., /assets/...) still come from the static build.
-    if (url.pathname !== "/" && !isSitePath) return;
+    else if (url.pathname !== "/") return;
   } else if (isSitePath) {
-    // Path mode: /s/<subdomain> or /s/<domain>/<subdomain>
+    // Path mode: /s/<subdomain> or /s/<domain>/<subdomain>, optionally with a
+    // trailing /og-image.
     const parts = url.pathname.split("/").filter(Boolean);   // ["s", ...]
-    const a = (parts[1] || "").toLowerCase();
-    const b = (parts[2] || "").toLowerCase();
+    let rest = parts.slice(1);
+    if (rest[rest.length - 1] === "og-image") { wantsOgImage = true; rest = rest.slice(0, -1); }
+    const a = (rest[0] || "").toLowerCase();
+    const b = (rest[1] || "").toLowerCase();
     if (b && domains.includes(a)) { domain = a; subdomain = clean(b); }
     else { domain = domains[0]; subdomain = clean(a); }
   } else {
@@ -112,6 +125,22 @@ export default async (request: Request) => {
   const template = ["apex", "nova", "heritage", "zenith"].includes(site.template) ? site.template : "apex";
   const config = site.config || {};
 
+  const esc = (s: unknown) =>
+    String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  // Canonical share link: the real address in host mode, the path form otherwise.
+  const shareUrl = viaHost ? `https://${subdomain}.${domain}` : `${url.origin}/s/${subdomain}`;
+
+  // The firm's own logo, falling back to the lead partner's photo, is what a
+  // shared link's preview card shows. Both are stored as base64 data: URLs
+  // inside the config (see readScaledImage() in frontend/index.html) rather
+  // than as files with their own address, so they need a real URL of their
+  // own before a social crawler (which does not run JS and cannot fetch a
+  // data: URL) can use one as og:image. This route decodes and re-serves it.
+  const ogImageSrc = String((config as any).logo || (config as any).founderPhoto || "");
+  if (wantsOgImage) return imageResponse(ogImageSrc);
+  if (wantsRobots) return robotsResponse(shareUrl);
+  if (wantsSitemap) return sitemapResponse(shareUrl, esc);
+
   // Fetch the template from this same deploy
   let html = "";
   try {
@@ -126,8 +155,6 @@ export default async (request: Request) => {
   // The templates ship with demo <title>/text. Rewrite the title and inject
   // Open Graph + Twitter tags from the firm's config so a shared link previews
   // the real firm name (not the template's demo firm). Applies to every template.
-  const esc = (s: unknown) =>
-    String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   const firm = String((config as any).firmName || "").trim();
   const tagline = String((config as any).tagline || "").trim();
   const city = String((config as any).city || "").trim();
@@ -135,18 +162,21 @@ export default async (request: Request) => {
   const brand = firm || "Professional Services";
   const titleText = brand + (tagline ? " | " + tagline : "") + (city ? (tagline ? ", " : " | ") + city : "");
   const descText = (tagline || about || (firm ? firm + " — professional services" : "")).slice(0, 180);
-  // Canonical share link: the real address in host mode, the path form otherwise.
-  const shareUrl = viaHost ? `https://${subdomain}.${domain}` : `${url.origin}/s/${subdomain}`;
+  const hasImage = /^data:image\//.test(ogImageSrc);
+  const imageUrl = hasImage ? `${shareUrl}/og-image` : "";
   const metaTags =
     `<meta property="og:type" content="website">` +
     `<meta property="og:site_name" content="${esc(brand)}">` +
     `<meta property="og:title" content="${esc(brand)}">` +
     `<meta property="og:description" content="${esc(descText)}">` +
     `<meta property="og:url" content="${esc(shareUrl)}">` +
-    `<meta name="twitter:card" content="summary">` +
+    (imageUrl ? `<meta property="og:image" content="${esc(imageUrl)}">` : "") +
+    `<meta name="twitter:card" content="${imageUrl ? "summary_large_image" : "summary"}">` +
     `<meta name="twitter:title" content="${esc(brand)}">` +
     `<meta name="twitter:description" content="${esc(descText)}">` +
-    `<meta name="description" content="${esc(descText)}">`;
+    (imageUrl ? `<meta name="twitter:image" content="${esc(imageUrl)}">` : "") +
+    `<meta name="description" content="${esc(descText)}">` +
+    `<link rel="canonical" href="${esc(shareUrl)}">`;
   if (/<title>[\s\S]*?<\/title>/i.test(html)) {
     html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${esc(titleText)}</title>${metaTags}`);
   } else if (/<\/head>/i.test(html)) {
@@ -175,6 +205,32 @@ export default async (request: Request) => {
     headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=60" },
   });
 };
+
+// Decodes a stored `data:<mime>;base64,<...>` image and re-serves it as a real
+// image response, so it has a URL a social-share crawler can actually fetch.
+function imageResponse(dataUrl: string): Response {
+  const m = /^data:([^;]+);base64,(.+)$/.exec(dataUrl);
+  if (!m) return new Response("Not found", { status: 404 });
+  const [, mime, b64] = m;
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new Response(bytes, { headers: { "content-type": mime, "cache-control": "public, max-age=3600" } });
+}
+
+function robotsResponse(shareUrl: string): Response {
+  const body = `User-agent: *\nAllow: /\nSitemap: ${shareUrl}/sitemap.xml\n`;
+  return new Response(body, { headers: { "content-type": "text/plain; charset=utf-8" } });
+}
+
+// One page per site, so the sitemap is just that one URL.
+function sitemapResponse(shareUrl: string, esc: (s: unknown) => string): Response {
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n` +
+    `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+    `  <url><loc>${esc(shareUrl)}</loc></url>\n` +
+    `</urlset>\n`;
+  return new Response(xml, { headers: { "content-type": "application/xml; charset=utf-8" } });
+}
 
 function page(title: string, msg: string, status: number) {
   const body = `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">` +
