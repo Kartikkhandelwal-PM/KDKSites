@@ -39,29 +39,31 @@ window.KDK_AI = {
      Order matters: the FIRST entry is the default for new sites.
 
      ============================================================
-     >>> PLACEHOLDERS, kept on purpose (2026-07-28) <<<
-     Only `kdksites.in` is real. The other three are not bought, have no DNS and
-     are not in SITE_DOMAINS, so a site published to one of them would sit at an
-     address that never resolves.
-
-     They stay in the list because the picker is worth showing, but every one of
-     them is `live:false`, which renders it as "Coming soon" and DISABLED. That
-     matters more now than it did: a published site can change its address, and a
-     selectable dead domain would let someone move a working site to nowhere and
-     release their old address at the same time.
+     >>> NAMES FINALISED, NOT YET PURCHASED (2026-07-31) <<<
+     The four domains below are the real, decided names (replacing the earlier
+     casites.in/legalsites.in/taxsites.in placeholders, which were never bought
+     either). None of these four are purchased yet, so none have DNS or a
+     SITE_DOMAINS entry. Only `kdksites.in` is real end to end, so it is the
+     only one marked `live:true`. The other four stay `live:false` ("Coming
+     soon", disabled) so the name is visible in the picker without being
+     selectable, which would otherwise resolve to nothing.
 
      TO TURN ONE ON, in this order:
        1. Buy the domain.
-       2. Point wildcard DNS (*.<domain>) at the Netlify site.
-       3. Add it to the SITE_DOMAINS env var on Netlify, so render.ts answers for it.
+       2. Point wildcard DNS (*.<domain>) at the Netlify site (and/or the
+          Cloudflare Worker, if that host should serve it too).
+       3. Add it to SITE_DOMAINS: the Netlify env var, and `vars.SITE_DOMAINS`
+          in wrangler.jsonc (comma-separated), so render.ts / src/index.ts
+          answer for it.
        4. Only then flip `live:false` to `live:true` here.
      See backend/README.md, "Adding a domain to the pool".
      ============================================================ */
   siteDomains: [
-    { host:'kdksites.in',   label:'Recommended',   note:'The general KDK Sites address', live:true  },
-    { host:'casites.in',    label:'For CAs',       note:'Chartered Accountants',         live:false },  // not bought yet
-    { host:'legalsites.in', label:'For Advocates', note:'Advocates and legal practices', live:false },  // not bought yet
-    { host:'taxsites.in',   label:'For Tax Pros',  note:'Tax consultants and GST',       live:false }   // not bought yet
+    { host:'kdksites.in',   label:'Recommended', note:'The general KDK Sites address', live:true  },
+    { host:'CAworld.in',    label:'CAworld',      note:'Chartered Accountants',         live:false },  // name finalised, not purchased yet
+    { host:'Mycafirm.in',   label:'My CA Firm',   note:'Chartered accountancy firms',   live:false },  // name finalised, not purchased yet
+    { host:'caone.ai',      label:'CA One',       note:'Modern, tech-forward practices',live:false },  // name finalised, not purchased yet
+    { host:'cadesk.app',    label:'CA Desk',      note:'A clean, app-style address',    live:false }   // name finalised, not purchased yet
   ],
 
   prettyDomain: 'kdksites.in'   // legacy fallback; siteDomains[0].host wins when present
