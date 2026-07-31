@@ -329,10 +329,20 @@ html.enq-boot::before{content:"";position:fixed;inset:0;background:#F4F6FC;z-ind
 .rep-av img{width:100%;height:100%;object-fit:cover}
 .rep-av svg{width:22px;height:22px}
 .rep-av.has-img{border-style:solid;border-color:var(--c3);background:none;color:var(--c3)}
+.rep-av.has-img:hover{background:none}
+/* Same scrim + hover-gated remove button as the partner portrait box, so a photo
+   already in place reads as a photo until the user hovers to change it. */
+.rep-av.has-img::after{content:'';position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity var(--t);background:rgba(11,20,38,.5)}
+.rep-av.has-img:hover::after,.rep-av.has-img:focus-within::after{opacity:1}
 .rep-av-cap{font-size:9px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--ts);text-align:center;line-height:1.15}
-.rep-av-rm{position:absolute;top:-3px;right:-3px;width:18px;height:18px;border-radius:50%;background:rgba(219,39,119,.95);color:#fff;border:2px solid var(--ground);display:none;align-items:center;justify-content:center;cursor:pointer}
-.rep-av.has-img .rep-av-rm{display:flex}
-.rep-av-rm svg{width:8px;height:8px}
+.rep-av-acts{position:absolute;inset:0;z-index:2;display:none;align-items:center;justify-content:center;opacity:0;transition:opacity var(--t)}
+.rep-av.has-img .rep-av-acts{display:flex}
+.rep-av.has-img:hover .rep-av-acts,.rep-av.has-img:focus-within .rep-av-acts{opacity:1}
+@media (hover:none){.rep-av.has-img .rep-av-acts,.rep-av.has-img::after{opacity:1}}
+.rep-av-rm{width:22px;height:22px;padding:0;border-radius:50%;border:1.5px solid rgba(255,255,255,.92);background:rgba(11,20,38,.74);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 9px rgba(11,20,38,.5);transition:background var(--t),transform var(--t)}
+.rep-av-rm:hover{transform:scale(1.09);background:#E11D48}
+.rep-av-rm:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.rep-av-rm svg{width:10px;height:10px}
 .rep-fields{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
 .rep-fields input{border:1.5px solid var(--border);border-radius:7px;padding:8px 10px;font-size:12px;font-family:inherit;color:var(--th);background:var(--surface);outline:none;width:100%}
 .rep-fields input:focus{border-color:var(--c3);box-shadow:0 0 0 3px rgba(5,150,105,.08)}
@@ -2276,14 +2286,23 @@ function renderTestimonials(){
     var avInner=hasImg
       ? '<img src="'+t.img+'" alt="">'
       : '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13.5V4.5M6.5 8L10 4.5 13.5 8"/><path d="M4 13.5v2A1.5 1.5 0 005.5 17h9a1.5 1.5 0 001.5-1.5v-2"/></svg>';
-    var av='<div class="rep-av-wrap"><div class="rep-av'+(hasImg?' has-img':'')+'" title="Upload reviewer photo" onclick="document.getElementById(\'testImg'+i+'\').click()">'+avInner+'<span class="rep-av-rm" title="Remove photo" onclick="event.stopPropagation();removeTestiImg('+i+')"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3l6 6M9 3l-6 6"/></svg></span><input type="file" id="testImg'+i+'" accept="image/*" hidden onchange="onTestiUpload(this,'+i+')"></div><span class="rep-av-cap">'+(hasImg?'Photo':'Add photo')+'</span></div>';
+    var acts=hasImg
+      ? '<div class="rep-av-acts"><button type="button" class="rep-av-rm" title="Remove photo" aria-label="Remove this reviewer’s photo" onclick="event.stopPropagation();removeTestiImg('+i+')">'+CROP_ICONS.x+'</button></div>'
+      : '';
+    var av='<div class="rep-av-wrap"><div class="rep-av'+(hasImg?' has-img':'')+'" title="'+(hasImg?'Click to replace this photo':'Upload reviewer photo')+'" onclick="document.getElementById(\'testImg'+i+'\').click()">'+avInner+acts+'<input type="file" id="testImg'+i+'" accept="image/*" hidden onchange="onTestiUpload(this,'+i+')"></div><span class="rep-av-cap">'+(hasImg?'Photo':'Add photo')+'</span></div>';
     w.insertAdjacentHTML('beforeend','<div class="rep"><div class="rep-hd"><div class="star-row" onmouseleave="resetStars(this,'+i+')"><span class="star-lbl">Rating</span>'+stars+'<span class="star-num">'+t.s+' / 5</span></div><div style="flex:1"></div>'+delBtn('delTest',i)+'</div><textarea class="rep-ta" placeholder="e.g. They handled our GST and audits flawlessly. Truly reliable." oninput="S.testimonials['+i+'].q=this.value">'+esc(t.q)+'</textarea><div class="rep-author">'+av+'<div class="rep-fields"><input value="'+esc(t.n)+'" placeholder="e.g. Rajan Kapoor" oninput="S.testimonials['+i+'].n=this.value"><input value="'+esc(t.r)+'" placeholder="e.g. Director, Kapoor Industries" oninput="S.testimonials['+i+'].r=this.value"></div></div></div>');
   });
 }
 function onTestiUpload(input,i){
   var f=input.files[0]; if(!f) return;
   if(!validImage(f,'testi')){ input.value=''; return; }
-  readScaledImage(f,BOX_AVATAR,function(src){ S.testimonials[i].img=src; renderTestimonials(); livePush(); });
+  readScaledImage(f,CROP_WORK,function(src){
+    openCrop(src,{shape:'circ',onApply:function(out){
+      if(!S.testimonials[i]) return;
+      S.testimonials[i].img=out; renderTestimonials(); livePush();
+    }});
+  });
+  input.value='';   // so cancelling the crop and picking the same file again works
 }
 function removeTestiImg(i){ S.testimonials[i].img=''; renderTestimonials(); livePush(); }
 function addTestimonial(){S.testimonials.push({q:'',n:'',r:'',s:5,img:''}); renderTestimonials();}
@@ -3372,7 +3391,6 @@ function validImage(f,kind){
    may rely on transparency that a JPEG cannot carry. */
 const BOX_PHOTO={w:600,h:800};    // generic portrait bound; partners crop to a square instead
 const BOX_HERO={w:1600,h:1100};   // hero carousel images
-const BOX_AVATAR={w:240,h:240};   // testimonial avatars
 const PHOTO_Q=0.82;
 function readScaledImage(file,box,cb){
   const type=(file.type||'').toLowerCase();
