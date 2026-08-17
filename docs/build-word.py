@@ -32,8 +32,9 @@ with zipfile.ZipFile(OUT) as z:
 doc = parts['word/document.xml'].decode('utf-8')
 
 # 1 + 2. Table behaviour across page breaks.
-repeats = doc.count('<w:tblHeader/>') + doc.count('<w:tblHeader />')
-doc = doc.replace('<w:tblHeader/>', '').replace('<w:tblHeader />', '')
+# pandoc writes <w:tblHeader w:val="on" />, so match the attribute form too.
+repeats = len(re.findall(r'<w:tblHeader[^>]*>', doc))
+doc = re.sub(r'<w:tblHeader[^>]*>', '', doc)
 rows = doc.count('<w:trPr>')
 doc = doc.replace('<w:trPr>', '<w:trPr><w:cantSplit/>')
 doc = re.sub(r'<w:tr(\s[^>]*)?>(?!<w:trPr>)', lambda m: m.group(0) + '<w:trPr><w:cantSplit/></w:trPr>', doc)
