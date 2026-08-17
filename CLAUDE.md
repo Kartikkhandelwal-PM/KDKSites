@@ -57,7 +57,12 @@ A **website builder product** embedded inside the KDK Software desktop/web app. 
      user never made, and for ICAI/Bar-regulated professionals that is their liability.
   Runs through **OpenRouter** (`OPENROUTER_API_KEY`), default `google/gemini-3.5-flash-lite`
   (~Rs 0.35/profile); cost table and escalation path in `frontend/app-config.js`
-  under `profileImport`. **The secret IS set and the function IS deployed** (verified 2026-08-17: `mode:"extract"` on a blank image returns a wholly empty profile, which is also the never-guess rule working). What is left is a UI that is functional rather than final, and one untested path: a returning user with a published site who also uploads a document.
+  under `profileImport`. **The secret IS set and the function IS deployed**, but the
+  **OpenRouter account has no balance**, so a real PDF comes back
+  `402: requires at least $0.50 in balance for file processing` (hit 2026-08-17). A tiny
+  blank image still succeeds, which is what made this look unblocked; it is not. **Top the
+  account up before demoing or testing.** Also left: a UI that is functional rather than
+  final, and one untested path, a returning user with a published site who also uploads.
   Test it standalone at `frontend/test-profile-import.html` (touches nothing in the
   builder). It reuses `seedFromSite()`'s seeding path and its pale-green `.aiw-seeded`
   styling rather than a second visual language.

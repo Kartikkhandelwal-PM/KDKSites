@@ -54,13 +54,21 @@ Earlier notes claimed the publish step still offered one and that it made the pe
 rule bypassable; that was wrong, and it is worth knowing that the bypass does not exist.
 Unpublish is the only way down: reversible, address kept reserved, every enquiry kept.
 
-**Profile import is live on the server.** `mode:"extract"` is deployed on the
-`ai-generate` function and `OPENROUTER_API_KEY` is set: a probe with a blank image returns
-a fully empty profile, which is also the "never guess" rule behaving correctly. Earlier
-notes calling this blocked on the secret are out of date. What is genuinely unfinished is
-the UI and one untested path: a returning user who has a published site **and** uploads a
-document. Implemented precedence there is
-`what the user typed > the uploaded document > the published site > empty`.
+**Profile import is deployed but cannot currently read a document: the OpenRouter account
+has no balance.** Uploading a real PDF returns
+
+```
+openrouter 402: This request requires at least $0.50 in balance for file processing
+```
+
+so **the feature is blocked on funding, not on code.** `mode:"extract"` is deployed and
+`OPENROUTER_API_KEY` is set, which is why a probe with a tiny blank image still succeeds
+and returns a wholly empty profile. That probe is what made this look unblocked on
+17 August; it is not. Top the account up before demonstrating or testing the feature.
+
+Also unfinished: the UI is functional rather than final, and one path is untested, a
+returning user who has a published site **and** uploads a document. Implemented precedence
+there is `what the user typed > the uploaded document > the published site > empty`.
 
 **Enquiries are stored but nothing is notified.** The published site posts straight into
 `wb_leads`; the inbox reads it back. There is no per-enquiry web address yet, only
@@ -74,23 +82,41 @@ console so wording can change without a release.
 
 ---
 
-## Screenshots in the PRD that need retaking
+## Screenshots
 
-The document's screenshots were taken on 1 August 2026. These five no longer match the
-product. Keep the existing filenames and simply overwrite the files, and the PRD needs no
-further edit.
+**Retaken on 17 August 2026** against the current build, from a demo account, using a
+fictional firm (Sharma & Associates, Jaipur). No real client data appears in any of them.
 
-| File | Retake showing |
+| File | Now shows |
 |---|---|
-| `step6-never-published.png` | Step 6 before the first publish, with everything complete, so the warning *"Check your address before you launch"* is visible |
-| `step6-publish.png` | A live site with unpublished changes: **Publish changes** and **Unpublish** only, no Change address button |
-| `step6-live-in-sync.png` | A live site with nothing pending: **Unpublish** as the only button |
-| `step6-offline.png` | An unpublished site: **Publish again** as the only button |
-| `ai-writer-partners.png` | The AI Writer's Founders & Partners screen, showing the "What do they handle?" box on each partner |
+| `step6-never-published.png` | Everything complete, so the *"Check your address before you launch"* warning is visible |
+| `step6-publish.png` | A live site with changes waiting: **Publish changes** and **Unpublish** only |
+| `step6-live-in-sync.png` | Live and up to date: **Unpublish** as the only button |
+| `step6-offline.png` | Offline: **Publish again**, and the address still reserved |
+| `ai-writer-intro.png` | The writer's opening choice, with upload given equal weight |
+| `ai-writer-import-upload.png` | **New.** The upload screen, with "Answer a few questions instead" beneath it |
+| `ai-writer-partners.png` | The "What do they handle?" box, the green seeded answers, and the drawer's "Import from a profile" |
+| `ai-writer-question.png`, `enquiries-inbox.png`, `profile-menu.png` | Refreshed against the current build |
 
-`step6-change-address.png` is no longer used anywhere, since the panel it shows was
-removed from the product. The file has been left in place rather than deleted, in case
-decision 5 brings the flow back.
+**Still missing one:** the interview *after* a document has been read, with the imported
+answers tinted green. It cannot be captured until the OpenRouter balance is topped up
+(see the blocker above).
 
-`user-flow-diagram.png` does not need retaking: it is generated, and was regenerated on
-17 August 2026 from the Mermaid source kept in a comment beside it in the PRD.
+`step6-change-address.png` is no longer used, since the panel it showed was removed. The
+file was left in place in case decision 5 brings the flow back.
+
+**The two flow diagrams are generated, not photographed.** `user-flow-build.png` and
+`user-flow-live.png` come from Mermaid sources kept in comments beside them in the PRD.
+The single tall diagram they replaced was cut off in the Word export, which is why it is
+now two. Regeneration is described in [DEV-LOG.md](DEV-LOG.md), 2026-08-17.
+
+## The Word version of the PRD
+
+Built with pandoc from a **restyled reference template**, not pandoc's plain default:
+KDK navy and gold headings, Segoe UI, bordered tables with a shaded header row, centred
+figures with captions under them, a contents list, and a page number in the footer. The
+template is generated by a script rather than hand-edited in Word, so the styling
+survives every rebuild.
+
+The 1 August `.docx` was last saved by Word and carries hand edits, so the rebuild is
+written alongside it under a dated name rather than over it.

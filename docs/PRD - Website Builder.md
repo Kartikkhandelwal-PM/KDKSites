@@ -108,32 +108,44 @@ There is also a **second, indirect user of this product**: the visitor to a publ
 
 ### 5.1 User Flow Diagram
 
-![The complete user journey, from signing in to following up on an enquiry](screenshots/user-flow-diagram.png)
+The journey has two halves, and they are shown separately because they belong to different moments: the first happens once, in about ten minutes; the second repeats for as long as the site is live.
 
-<!-- DIAGRAM SOURCE. The picture above is generated from the Mermaid below; keep the two
-     in step. Regenerating it is described in docs/DEV-LOG.md, 2026-08-17 (Session 24).
+**Getting the website built and live**
+
+![The three ways in, all of them ending at a published website](screenshots/user-flow-build.png)
+
+<!-- DIAGRAM SOURCE (1 of 2). The picture above is generated from this Mermaid; keep the
+     two in step. How to regenerate: docs/DEV-LOG.md, 2026-08-17 (Session 24).
 
 flowchart TD
-    A[Professional signs in] --> B{How do they want to build?}
-    B -->|Do it themselves| C[6-step manual wizard]
-    B -->|Let AI do it| D[AI Website Writer interview]
-    B -->|Upload an existing profile| U[AI reads the document and pre-fills the interview]
+    A[Professional signs in] --> B{How do they want to build it?}
+    B -->|Answer the questions themselves| C[The 6-step builder]
+    B -->|Let the AI write it| D[A short interview, then the AI writes the site]
+    B -->|Upload a profile they already have| U[The AI reads it and fills in what it covers]
     U --> D
-    D --> E[AI writes the site content]
-    E --> C
-    C --> F[Step 6: Publish]
-    F --> G{Web address available?}
-    G -->|No| F
-    G -->|Yes| H[Website is live, address now permanent]
-    H --> I[Visitor finds the site]
-    I --> J[Visitor submits contact form]
+    D --> C
+    C --> F[Step 6: choose an address and publish]
+    F --> H[Live. The address is now permanent]
+-->
+
+**What happens once it is live**
+
+![The enquiry cycle, and the two things the firm can change afterwards](screenshots/user-flow-live.png)
+
+<!-- DIAGRAM SOURCE (2 of 2).
+
+flowchart TD
+    H[Website is live] --> I[Prospective client finds the site]
+    I --> J[They submit the contact form]
     J --> K[Enquiry saved to the Enquiries inbox]
-    K --> Q[Owner emailed, one click opens the enquiry]
-    Q --> L[Professional calls / WhatsApps / emails the lead]
-    H --> M{Professional wants a change?}
-    M -->|Edit content| C
-    M -->|Take site down| N[Unpublish: reversible, address kept reserved]
-    N -->|Publish again| F
+    K --> L[Professional is emailed straight away]
+    L --> M[One click opens that enquiry]
+    M --> N[They call, WhatsApp or email the client]
+    H --> O{The firm wants a change}
+    O -->|Edit the content| P[Publish changes]
+    P --> H
+    O -->|Take the site down| Q[Unpublish. Reversible, and the address stays reserved]
+    Q -->|Publish again| H
 -->
 
 ### 5.2 Signing In & Your Account
@@ -279,7 +291,7 @@ Two more rules worth knowing:
 
 This is a short, conversational interview (7 screens plus a final review) that stands in for typing everything out by hand.
 
-![AI Website Writer: introduction screen](screenshots/ai-writer-intro.png)
+![The AI Website Writer opens on a choice: start answering questions, or upload a profile the firm already has](screenshots/ai-writer-intro.png)
 
 **What it asks, screen by screen:**
 
@@ -308,6 +320,8 @@ Most established firms already have a profile document: a firm brochure, a partn
 - **I already have a firm profile**, which lets the user upload it.
 
 **Both choices carry equal visual weight.** Plenty of sole practitioners have no such document, and that path must never read as the lesser one.
+
+![Choosing to upload a profile, with "Answer a few questions instead" kept equally available](screenshots/ai-writer-import-upload.png)
 
 Uploading is a **starting point, not a shortcut, and the product must not imply otherwise.** The document pre-fills the interview; it does not replace it. Whatever the document did not cover is still asked for, screen by screen, before the site can be written. For the same reason, **Import from a profile** also sits permanently in the left-hand drawer, so someone who skipped it at the start, or who found their document later, can bring it in without discarding the answers they have already given. An import made part-way through fills empty boxes only and never overwrites anything the user has typed.
 

@@ -17,7 +17,7 @@
 
 ### Fixed (documentation that described code which does not exist)
 - **There is no Delete anywhere in the product.** CLAUDE.md and the requirements note both claimed the publish step offered one, and an open question rested on it ("Delete is the bypass"). Unpublish is the only way down.
-- **Profile import is not blocked on its API key.** `OPENROUTER_API_KEY` is set and `mode:"extract"` is deployed, verified by probe.
+- **Profile import is not blocked on its API key.** `OPENROUTER_API_KEY` is set and `mode:"extract"` is deployed, verified by probe. It is, however, **blocked on OpenRouter balance**: a real PDF returns `402: requires at least $0.50 in balance for file processing`. The probe passed only because a 1x1 image is small enough to slip under that floor.
 
 ---
 
@@ -43,7 +43,7 @@
 - Default model is `google/gemini-3.5-flash-lite` (~₹0.35/profile); escalate to `anthropic/claude-haiku-4.5` (~₹0.90) if it invents content. Avoid `gemini-3-flash-preview` in production — a *preview* model can be retired without notice and would break the feature silently. Model IDs and prices were read from OpenRouter's live `/api/v1/models`, not from memory.
 
 ### Blocked
-- ~~Needs `supabase secrets set OPENROUTER_API_KEY=...` and `supabase functions deploy ai-generate`.~~ **Both done. Verified live on 2026-08-17:** `mode:"extract"` is deployed and the key is set — a probe with a blank 1x1 image returns a wholly empty profile, which is the never-guess rule behaving correctly. What remains is a UI that is functional rather than final, and the untested published-site-plus-upload path.
+- ~~Needs `supabase secrets set OPENROUTER_API_KEY=...` and `supabase functions deploy ai-generate`.~~ **Both done, but now blocked on OpenRouter balance instead** (a real PDF returns 402). **Verified live on 2026-08-17:** `mode:"extract"` is deployed and the key is set — a probe with a blank 1x1 image returns a wholly empty profile, which is the never-guess rule behaving correctly. What remains is a UI that is functional rather than final, and the untested published-site-plus-upload path.
 
 ---
 

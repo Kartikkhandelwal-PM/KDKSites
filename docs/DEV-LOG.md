@@ -4,6 +4,74 @@
 
 ---
 
+## 2026-08-17 (Session 25): Screenshots retaken from a real session, and a Word file that is actually designed
+
+Session 24 corrected the PRD's text but left three things wrong: the screenshots still
+showed the 1 August build, the flow diagram was cut off in Word, and the Word file was
+pandoc's unstyled default. All three are fixed.
+
+### Screenshots are now taken by a script, not by hand
+
+A demo account was supplied, so the builder was driven with **puppeteer-core against the
+installed Chrome** (no Chromium download) at `http://localhost:8765/`, which is the only
+place the current UI runs: the `cloudflare` deploy is manual and still serves an older
+build. Ten screenshots were retaken at 1440x900 to match the existing set.
+
+Three things that cost time and are worth knowing before doing this again:
+
+- **`page.click()` on the login button silently does nothing.** The card animates in, so
+  the coordinate click lands on empty space, with no error and no request. Calling the
+  handler in-page (`document.getElementById('auGo').click()`) is reliable.
+- **Waiting for the gate to disappear does not work.** The overlay stays in the DOM and
+  `#fFirmName` belongs to step 2, so it is invisible on arrival. The dependable signal is
+  `document.body.classList.contains('kdk-authed')`.
+- **Step 6 renders its state on entry.** Publishing while sitting on the step leaves the
+  old markup on screen, so the "live" screenshot came out identical to "ready to launch".
+  Leaving and re-entering the step (`go(3)` then `go(6)`) fixes it.
+
+The account was filled with a fictional firm (Sharma & Associates, Jaipur) by setting the
+builder's fields directly, with no AI call, then published as `demo-sharma-associates` to
+photograph the live states, then taken offline. Five demo enquiries were inserted through
+the same public path the contact form uses.
+
+### The AI half of profile import cannot run: no OpenRouter balance
+
+Uploading a real PDF returns `402: This request requires at least $0.50 in balance for
+file processing`. **Session 24's claim that import was unblocked was wrong**, and wrong in
+an instructive way: the probe that "proved" it used a 1x1 blank image, which is small
+enough to slip under OpenRouter's file-processing floor. A genuine document is not. The
+notes now say funding, not code.
+
+One screenshot is therefore still missing: the interview after a document has been read,
+with the imported answers tinted green.
+
+### One tall diagram became two
+
+The single flow diagram was 1:2.94, so Word scaled it to the text width and ran it off the
+bottom of the page. It is now two diagrams that each fit: **getting the site live**
+(1:1.45) and **what happens once it is live** (1:0.96). `flowchart LR` was tried and
+rejected again, at 3392x369 it becomes an unreadable band.
+
+Rendering is now `render-mermaid.js`, which screenshots the SVG element itself rather than
+guessing a window size. The check that matters is arithmetic: at A4 with 2.2cm margins the
+text column is 6.61in and the usable height is 9.96in, so any image taller than about
+1.5:1 will overflow a page.
+
+### The Word file is now built from a designed template
+
+`make-reference.py` rebuilds pandoc's own `reference.docx` with KDK's styling: navy
+headings with a gold rule under H1, Segoe UI throughout, tables with real borders and a
+shaded header row, figures centred with their captions beneath, blockquotes with a gold
+left rule, code blocks boxed, A4 page setup, a contents list, and a page number in the
+footer. It is a script rather than a hand-edited file so the styling survives every
+rebuild.
+
+**A bug worth remembering:** `open(p,'w').write(patch(open(p).read()))` truncates the file
+before it is read, because Python evaluates the outer `open` first. The template came out
+empty and the error looked like a failed regex.
+
+---
+
 ## 2026-08-17 (Session 24): The PRD brought up to date, and two of our own notes found to be wrong
 
 The PRD and its 26 screenshots were written on 1 August. The UI moved on 13 August and the
