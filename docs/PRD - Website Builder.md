@@ -218,6 +218,12 @@ This is the only place the full journey is described. Each module in Section 5 t
 | 5 | The uploaded file is read once and discarded. It is not saved to the account, not stored on KDK's servers, and not retained afterwards |
 | 6 | Import cannot create a service that is not in the profession's preset list |
 
+#### What the user sees after the document is read
+
+![The interview after the document has been read: answered screens are ticked in the rail on the left, and the interview asks for what the document did not cover](screenshots/ai-writer-question.png)
+
+The rail on the left is the record of what the document supplied. A screen with a tick is complete. A screen without one is still to be answered, and its fields are empty rather than guessed. In the screen shown, the document gave nothing about what the firm is best known for or its typical clients, so the interview asks for both.
+
 **Why rule 1 matters.** These users are registered with the ICAI or a Bar Council and work under rules on advertising and misrepresentation. A claim the AI invents is published under the professional's name and becomes their liability. Filling more fields is not a better result. Correctly leaving a field blank is.
 
 **Example.** A firm profile states "more than 50 years in aggregate experience", meaning the total across six partners. The correct result is to leave "Years practising" empty and keep 50 only as a key number with its wording intact. Filling 50 would publish "50 years of practice" for a firm that may be ten years old.
@@ -229,8 +235,6 @@ This is the only place the full journey is described. Each module in Section 5 t
 **What it covers.** An interview of seven screens and a final review, then the writing of every line of content.
 
 ![The AI Website Writer opens on a choice of two routes](screenshots/ai-writer-intro.png)
-
-![An interview screen](screenshots/ai-writer-question.png)
 
 #### Screen 1: Your practice
 
