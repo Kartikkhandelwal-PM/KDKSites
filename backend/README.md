@@ -30,6 +30,29 @@ supabase --workdir backend db push                      # or pass --workdir
 
 Running bare `supabase db push` from the repo root will not find the project.
 
+## Secrets on the `ai-generate` function
+
+The function has two jobs and each needs its own key. Set them from `backend/`:
+
+```bash
+cd backend
+supabase secrets set OPENROUTER_API_KEY=sk-or-...    # profile import (uploaded documents)
+supabase secrets set OPENAI_API_KEY=sk-...           # the AI Writer interview  [already set]
+supabase secrets set ANTHROPIC_API_KEY=sk-ant-...    # optional, only for provider:"anthropic"
+supabase secrets list                                # check what is actually set
+```
+
+| Secret | Needed for | Status as of 2026-08-13 |
+|---|---|---|
+| `OPENAI_API_KEY` | The interview generator (`provider:"openai"`, the default) | **set** |
+| `OPENROUTER_API_KEY` | Profile import (`mode:"extract"`) — one key reaches Gemini, Claude, and the rest | **not set yet** |
+| `ANTHROPIC_API_KEY` | Only if you call Anthropic directly rather than via OpenRouter | **not set** (verified by probe) |
+
+Profile import defaults to OpenRouter because a single key covers every model,
+so comparing them is a config change rather than a new billing relationship.
+The per-model cost table and how to choose live in `frontend/app-config.js`
+under `profileImport`.
+
 ## Netlify
 
 `netlify.toml` stays at the **repo root** (Netlify reads it from nowhere else). It

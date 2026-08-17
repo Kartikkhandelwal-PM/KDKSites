@@ -13,3 +13,8 @@ Thumbs.db
 
 # Local AI test config (contains API key — NEVER commit)
 local-ai-config.js
+
+# Real client firm profiles used to test the profile-import feature. These are other
+# people's business documents (names, phone numbers, office addresses, partner
+# details) and must not go into a public repo. Keep test files here locally.
+CA Profile/
