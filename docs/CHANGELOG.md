@@ -4,6 +4,49 @@
 
 ---
 
+## [0.9.12] 2026-08-17: The PRD brought up to date, and requirements separated from delivery status
+
+> Documentation only; no product code changed. Full detail in [docs/DEV-LOG.md](DEV-LOG.md) 2026-08-17 (Sessions 23 and 24).
+
+### Changed
+- **The PRD now carries requirements only, never build status.** Profile import is written into section 5.5 (it is a way into the AI Writer, not a separate feature) with its rules in 6.13; the enquiry email alert is written into 5.6 with its rules in 6.14, including the wording of the email itself. Open questions sit inline with the feature they belong to.
+- **`REQUIREMENTS-PENDING.md` was rewritten as the delivery-status file**: what is live, what is built but unreleased, what is specified only, every open decision and what it blocks, and the screenshot retake list. It no longer duplicates any requirement.
+- **Step 6 (Publish) rewritten**: four states, not five. "Change address" and the whole address-change sub-section are gone, along with the flow-diagram branch and the screenshot. The permanence rule is stated with its reasoning, and the new pre-launch warning is recorded.
+- **User-flow diagram regenerated** from Mermaid source now kept beside the image in the PRD, adding the profile-upload branch and the enquiry-alert step, and dropping change-address.
+- The AI Writer's partner field **"What do they handle?"** added to sections 5.5 and 6.10.
+
+### Fixed (documentation that described code which does not exist)
+- **There is no Delete anywhere in the product.** CLAUDE.md and the requirements note both claimed the publish step offered one, and an open question rested on it ("Delete is the bypass"). Unpublish is the only way down.
+- **Profile import is not blocked on its API key.** `OPENROUTER_API_KEY` is set and `mode:"extract"` is deployed, verified by probe.
+
+---
+
+## [0.9.11] 2026-08-13: Profile upload — AI reads an uploaded profile and pre-fills the interview
+
+> New requirement from management. This ships the **AI half only**; the builder UI is not wired up yet and is expected to change. Full detail and reasoning in [docs/DEV-LOG.md](DEV-LOG.md) 2026-08-13 (Session 22).
+
+### Added
+- **`mode:"extract"` on the `ai-generate` Edge Function.** Send `{mode:"extract", model, file:{name,type,data}}` and get back a schema-validated profile object. The existing text-prompt path is untouched.
+- **PDF and images go straight to the model, unparsed.** Current models read both natively, so nothing is parsed in the browser — which is what makes this possible at all, since the no-CDN rule forbids pdf.js and every OCR library.
+- **DOCX extraction inside the function**, in ~50 lines on Deno's built-in `DecompressionStream`, with **no third-party dependency** in a function that holds API keys. Reads the ZIP central directory rather than local headers, because Word often zeroes the local header and defers sizes to a trailing data descriptor. Verified against a real .docx.
+- **OpenRouter as the provider for profile import** (`OPENROUTER_API_KEY`), so one key reaches Gemini, Claude and the rest and swapping models is a config change. `provider:"anthropic"` still works if that key is ever set.
+- **`frontend/test-profile-import.html`** — standalone harness that touches nothing in the builder. Upload a file, pick a model, see every field's found/empty state, token counts, and the actual USD spent.
+- **`profileImport` block in `frontend/app-config.js`** — the production model, plus the per-model cost table and how to choose between them.
+
+### Changed
+- `anthropic.model` was pinned to the superseded `claude-opus-4-8`; now `claude-opus-5`.
+- `backend/README.md` documents all three function secrets and which are actually set.
+
+### Technical notes
+- **The extraction prompt's job is restraint, not coverage.** It forbids inference by name (do not turn a job title into an expertise claim, do not turn past employers into a client list, never estimate a number). Any field the document does not state comes back empty, which is what lets `screenErr()` route it into the interview as a real question. This is the 2026-07-28 "no demo data on live sites" rule applied one layer earlier: an invented "best known for" publishes a claim the user never made, and for ICAI/Bar-regulated professionals that is their liability.
+- **`plugins:[{id:"file-parser",pdf:{engine:"native"}}]` is load-bearing.** Without it OpenRouter defaults to `mistral-ocr`, billing $2/1,000 pages on top of tokens and flattening the layout first.
+- Default model is `google/gemini-3.5-flash-lite` (~₹0.35/profile); escalate to `anthropic/claude-haiku-4.5` (~₹0.90) if it invents content. Avoid `gemini-3-flash-preview` in production — a *preview* model can be retired without notice and would break the feature silently. Model IDs and prices were read from OpenRouter's live `/api/v1/models`, not from memory.
+
+### Blocked
+- ~~Needs `supabase secrets set OPENROUTER_API_KEY=...` and `supabase functions deploy ai-generate`.~~ **Both done. Verified live on 2026-08-17:** `mode:"extract"` is deployed and the key is set — a probe with a blank 1x1 image returns a wholly empty profile, which is the never-guess rule behaving correctly. What remains is a UI that is functional rather than final, and the untested published-site-plus-upload path.
+
+---
+
 ## [0.9.10] 2026-07-29: A second host on its own branch — Cloudflare Workers alongside Netlify
 
 > On a new `cloudflare` branch (forked from `feature/ai-website-writer`, which keeps deploying to Netlify unchanged). Full detail in [docs/CLOUDFLARE-DEPLOY.md](CLOUDFLARE-DEPLOY.md).

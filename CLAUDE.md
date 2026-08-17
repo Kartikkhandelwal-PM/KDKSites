@@ -30,7 +30,7 @@ A **website builder product** embedded inside the KDK Software desktop/web app. 
   - `SUPABASE_URL` and `SUPABASE_SERVICE_KEY` **are already set** on Netlify: `/s/<any-name>` returns a 404 "No site at …" from the Supabase lookup rather than the 500 "Not configured" that a missing var produces. `SITE_DOMAINS` is still unset, which is harmless because `render.ts` defaults it to `kdksites.in`.
   - **Pushing will move the site root** from `publish = "."` to `publish = "frontend"`. The builder stays up: for the `*.netlify.app` host, `fromHost()` returns null and `/` is not a `/s/` path, so `render.ts` returns undefined and the request passes straight through to the static build.
   - **Addresses are a PAIR `(domain, subdomain)`** (2026-07-27). KDK will own a pool of domains and the user picks one, so `sharma` can exist on two of them. The pool is `KDK_AI.siteDomains` in `frontend/app-config.js`; the picker hides while only one is configured. Adding a bought domain = edit that array + wildcard DNS + the `SITE_DOMAINS` env var. `render.ts` resolves by Host, falling back to `/s/<sub>` (default domain) and `/s/<domain>/<sub>`.
-  - **Availability + lifecycle** (2026-07-27) — `wb_subdomain_available()` gates Launch on a confirmed-free name; the publish step offers Take offline / Put back online / Delete. Migration `20260727100000` is **applied** to `hlhtopqbzfzlxxmolkok` and verified live.
+  - **Availability + lifecycle** (2026-07-27) — `wb_subdomain_available()` gates Launch on a confirmed-free name; the publish step offers Take offline / Put back online. **There is no Delete anywhere in the product** (no button, no `deleteSite()`): Unpublish is the only way down, and it keeps the address and every enquiry. Migration `20260727100000` is **applied** to `hlhtopqbzfzlxxmolkok` and verified live.
   - **Portrait crop** (2026-07-27) — every portrait upload (Step 5 and the AI Writer) opens a **Crop & adjust** dialog immediately and stores a **640px square**, because all four templates render the portrait as a square with `object-fit:cover`. `BOX_PHOTO` (3:4) is no longer used for partners. There is no re-crop button on a photo already in place: the cross removes it, and clicking the frame re-picks it, which opens the dialog again.
   - **Mandatory AI Writer answers + no demo data on live sites** (2026-07-28). Two rules to know before touching either area:
     1. **A template must never leave its own demo text standing.** All four bound content as "replace only if a value was given", so a skipped office address published "302, Barakhamba House, Connaught Place, New Delhi" on a Jaipur firm's site, and skipped reviews served the design's sample quotes. Contact rows now remove themselves and the testimonials section hides when empty. **Any new bound field needs an else branch**, or it reintroduces this.
@@ -39,6 +39,64 @@ A **website builder product** embedded inside the KDK Software desktop/web app. 
   - **AI Writer prefills from the published site** (2026-07-28). `seedFromSite()` runs on open and fills only **hard facts**: firm, city, years (from Founded Year), phone, email, address, hours, socials, partner names/roles/photos. It deliberately does **not** fill the judgement fields (known-for, clients, numbers, workflow, review notes), because the builder stores only the model's polished prose, and feeding that back as a brief makes it paraphrase itself. Reviews stay empty so a skipped screen **preserves the testimonials already live** (`apply()` leaves `S.testimonials` alone when the model returns none).
     - **Trap:** prefilling makes `anyAnswered()` true before the user types, and three places used that to skip the interview. Use `hasResumableAnswers()` for any resume decision, never `anyAnswered()` on its own.
   - Full detail: [docs/DEV-LOG.md](docs/DEV-LOG.md) 2026-07-11 (Sessions 5 & 6), 2026-07-28 (Sessions 18 & 19).
+- **Profile upload -> AI pre-fills the interview (2026-08-13; built end to end, not yet released).**
+  Management asked for this: the user uploads their existing profile (PDF, DOCX, or a
+  photo) and AI builds the site from it. Three things to know before touching it:
+  1. **It is not a separate screen.** Upload is an alternate entry into the *existing*
+     AI Writer interview. AI fills what the document supports, leaves the rest empty,
+     and `screenErr()` then makes the interview ask for exactly the gaps. Upload and
+     "skip and answer questions" must carry **equal visual weight**: many users have no
+     profile document, and that path must not read as the lesser one.
+  2. **Nothing is parsed in the browser.** Models read PDFs and images natively, so the
+     file goes straight to the model. DOCX is unzipped inside the Edge Function with
+     zero dependencies. This is what makes the feature possible at all under the
+     no-CDN / no-build rule, which rules out pdf.js and every OCR library.
+  3. **The extraction prompt exists to hold back, not to fill in.** A field the document
+     does not state must come back EMPTY. This is the 2026-07-28 "no demo data on live
+     sites" rule one layer earlier: an invented "best known for" publishes a claim the
+     user never made, and for ICAI/Bar-regulated professionals that is their liability.
+  Runs through **OpenRouter** (`OPENROUTER_API_KEY`), default `google/gemini-3.5-flash-lite`
+  (~Rs 0.35/profile); cost table and escalation path in `frontend/app-config.js`
+  under `profileImport`. **The secret IS set and the function IS deployed** (verified 2026-08-17: `mode:"extract"` on a blank image returns a wholly empty profile, which is also the never-guess rule working). What is left is a UI that is functional rather than final, and one untested path: a returning user with a published site who also uploads a document.
+  Test it standalone at `frontend/test-profile-import.html` (touches nothing in the
+  builder). It reuses `seedFromSite()`'s seeding path and its pale-green `.aiw-seeded`
+  styling rather than a second visual language.
+  - **This feature IS in the PRD now** (2026-08-17), as part of section 5.5 with its rules
+    in 6.13, because it is a way into the AI Writer rather than a feature of its own. The
+    deeper working record, including measured results per firm profile, stays in
+    [docs/FEATURE-Profile-Import.md](docs/FEATURE-Profile-Import.md).
+  - **New interview field:** partners now have "What do they handle?" (`about`). It was
+    added because the writer was inventing partner bios from nothing but a name and a
+    designation. Adding a partner field means editing SIX places — `freshPartner()`,
+    the QS item fields, the restore normalizer (**a whitelist: omit a key there and it
+    is silently dropped on reload**), the legacy `founder` migration, the generator's
+    seed, and the prompt payload.
+  - `CA Profile/` holds real client PDFs for testing and is gitignored. Do not commit them.
+- **Address is final once published (2026-08-13).** The "Change address" button is gone
+  from the publish step; a published site's `(domain, subdomain)` pair can no longer be
+  edited. The whole change-address flow is still in the code and merely unreachable, so
+  it is **one line in `renderPubActions()`** to put back (the comment there says which).
+  It was left in because the open questions could each need it: chiefly **Delete is
+  currently a bypass** (delete the site, publish again on a new address). Requirement,
+  rationale and open questions: [docs/REQUIREMENTS-PENDING.md](docs/REQUIREMENTS-PENDING.md).
+  Full detail: [docs/DEV-LOG.md](docs/DEV-LOG.md) 2026-08-13 (Session 22).
+- **Email alert on a new enquiry (2026-08-17) — SPECIFIED ONLY, no code.** An enquiry
+  emails the site owner, and one click in that email opens that enquiry. The requirement
+  and the email's wording live in the **PRD, sections 5.6 and 6.14**. Three things to know
+  before building it: the sender is **ZeptoMail** (KDK already has it), the enquiry must
+  be stored *before* any mail is attempted so a mail failure can never lose a lead, and
+  the click-through needs a **new per-enquiry address** that pages to the right row, since
+  only `#enquiries` (the inbox as a whole) exists today and the list pages at ten.
+  **The contact form has no captcha or rate limit**, so alerts would turn form spam into
+  mailbox spam and damage the sending domain's reputation for every client at once; junk
+  protection ships with the feature, not after it.
+  Full detail: [docs/DEV-LOG.md](docs/DEV-LOG.md) 2026-08-17 (Sessions 23 and 24).
+- **The PRD carries requirements; delivery status lives elsewhere (2026-08-17).** The PRD
+  says what the product does and how each screen behaves, and deliberately carries **no**
+  "built / not built / live" markers, so it never has to be restructured after a release.
+  Build state, blockers, open decisions and the screenshot retake list are in
+  [docs/REQUIREMENTS-PENDING.md](docs/REQUIREMENTS-PENDING.md). **Do not put status back
+  into the PRD**, and do not restate requirements in the status file.
 - **Second host: Cloudflare Workers, on its own `cloudflare` branch** (2026-07-29, forked from `feature/ai-website-writer`; that branch keeps deploying to Netlify, untouched). Daily-dev deploys go here instead of spending Netlify's usage limits. Builder + published sites both live at `kdksites.kartik-khandelwal.workers.dev`; deploy manually with `wrangler deploy` (no auto-deploy on push). Full reference, including two gotchas already hit once (a secret briefly leaked via a disk-vs-git deploy difference, and a hardcoded share-link host) — see [docs/CLOUDFLARE-DEPLOY.md](docs/CLOUDFLARE-DEPLOY.md) and [docs/DEV-LOG.md](docs/DEV-LOG.md) 2026-07-29 (Session 21).
 
 ### Deploy a change
