@@ -4,6 +4,25 @@
 
 ---
 
+## [0.9.13] 2026-08-17: The PRD rewritten module by module
+
+> Documentation only. Full detail in [docs/DEV-LOG.md](DEV-LOG.md) 2026-08-17 (Session 26).
+
+### Changed
+- **The PRD is now organised as eleven modules**, in the order the user meets them: sign in, design and colour, creating the content (profile import, AI interview, manual), business and contact, hero and numbers, services, about and partners, publish, enquiries inbox, enquiry alerts, and the published site.
+- **Every module carries its own fields and validation table**, with the product's real error messages, instead of validation living in a separate section.
+- **Section 1 states the objective plainly**: a professional digital presence for CAs, advocates and tax practitioners, in under ten minutes, with no technical knowledge.
+- **Writing is direct**: short statements and tables in place of prose.
+- **Open questions removed from the PRD.** Delivery status and undecided points live in `REQUIREMENTS-PENDING.md`.
+- **One user journey, in one place**, instead of a flow repeated per module.
+- Horizontal rules between sections and the rule under every heading are gone.
+
+### Fixed
+- **The diagram source was printing into the Word file.** A Markdown HTML comment containing a blank line is not one comment, so Word printed the second half as body text. Sources moved to `docs/diagrams/*.mmd`.
+- **The Word export is built by `docs/build-word.py`**, using the 1 August `.docx` as the style reference. It stops table header rows repeating after a page break, stops rows splitting across pages, keeps headings with their content, drops orphaned images that had doubled the file to 14 MB, and fails loudly if an image is taller than the page.
+
+---
+
 ## [0.9.12] 2026-08-17: The PRD brought up to date, and requirements separated from delivery status
 
 > Documentation only; no product code changed. Full detail in [docs/DEV-LOG.md](DEV-LOG.md) 2026-08-17 (Sessions 23 and 24).

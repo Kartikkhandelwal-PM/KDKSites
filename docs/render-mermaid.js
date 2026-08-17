@@ -13,7 +13,7 @@ const html = `<!doctype html><meta charset="utf-8">
 <script src="mermaid.min.js"></script>
 <script>mermaid.initialize({startOnLoad:true,theme:'default',
   fontFamily:"'Segoe UI',system-ui,sans-serif",themeVariables:{fontSize:'13px'},
-  flowchart:{useMaxWidth:false,nodeSpacing:26,rankSpacing:34,padding:8,curve:'basis'}});</script>`;
+  flowchart:{useMaxWidth:false,nodeSpacing:${process.env.NODE_SPACING||26},rankSpacing:${process.env.RANK_SPACING||34},padding:8,curve:'basis'}});</script>`;
 
 fs.writeFileSync('_render.html', html);
 

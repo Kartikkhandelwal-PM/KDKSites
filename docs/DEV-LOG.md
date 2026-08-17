@@ -4,6 +4,42 @@
 
 ---
 
+## 2026-08-17 (Session 26): The PRD rewritten module by module
+
+The document was rejected on structure and on tone, and rewritten from scratch. What was
+wrong, and what replaced it:
+
+| Problem | Fix |
+|---|---|
+| Organised by document convention, not by the product | Section 5 is now eleven modules, in the order the user meets them |
+| Validation sat in its own section, away from the screen it applied to | Every module carries its own fields and validation table |
+| AI import and the AI interview sat near the end | They are Module 3, straight after design, which is where the user meets them |
+| Writing was indirect: "this step is about changing that default, not filling in a blank" | Short statements. One fact per line. Tables instead of paragraphs |
+| Objective was never stated | Section 1 states it plainly: a professional digital presence for CAs and other practitioners, in under ten minutes, with no technical knowledge |
+| "Open question, not yet decided" blocks throughout | Removed from the PRD. They live in REQUIREMENTS-PENDING.md, which is where status belongs |
+| A user flow repeated inside each module | One journey, in section 4, once |
+| Horizontal rules between sections, and a rule under every heading | Both gone. Sections are separated by spacing and heading size alone |
+
+### The Word export
+
+**The diagram source printed itself into the document.** The Mermaid was kept in an HTML
+comment in the Markdown, and a comment containing a blank line stops being one comment:
+Word printed the second half as body text on page 5. The sources now live in
+`docs/diagrams/*.mmd`, outside the document entirely.
+
+**Styling now comes from the 1 August `.docx` itself**, passed to pandoc as the reference
+document, rather than from a template built by hand. Simpler, and it matches what was
+already approved. `docs/build-word.py` runs the export and then fixes what pandoc leaves:
+repeating table header rows, rows split across page breaks, headings stranded at the foot
+of a page, and the reference file's own images left in the package as orphans, which had
+doubled the file to 14 MB.
+
+**The size check that matters** is in that script: the document is Letter, not A4, so the
+usable height is 9.40in against a 6.69in text column. Anything taller than about 1.40:1 is
+cut off. The flow diagram was 1.49:1 and lost its last inch, which is what the reader saw.
+
+---
+
 ## 2026-08-17 (Session 25): Screenshots retaken from a real session, and a Word file that is actually designed
 
 Session 24 corrected the PRD's text but left three things wrong: the screenshots still

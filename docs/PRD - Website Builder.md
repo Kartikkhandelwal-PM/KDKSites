@@ -1,69 +1,37 @@
-# Personalised Website Builder
-## Product Requirements Document (PRD)
+# KDK Sites: Personalised Website Builder
+## Product Requirements Document
 
 | | |
 |---|---|
 | **Product** | KDK Sites: Personalised Website Builder |
 | **Product owner** | KDK Software (appadmin@kdksoftware.com) |
-| **Maintainer** | Kartik Khandelwal (Kartik.khandelwal@kdksoftware.com) |
-| **Status** | Phase 1: working prototype, live and in active development |
-| **Audience** | Everyone: leadership, product, design, developers, support, sales |
-| **Last updated** | 17 August 2026 |
+| **Prepared by** | Kartik Khandelwal (Kartik.khandelwal@kdksoftware.com) |
+| **Version** | 2.0 |
+| **Date** | 17 August 2026 |
+| **Audience** | Leadership, product, design, development, support, sales |
 
-> **How to read this document:** It is written in plain language on purpose, so anyone at KDK can pick it up and understand what the product is, why it exists, who it's for, and exactly what it does today, not just the engineers building it. Every screen described below is shown with a real screenshot taken directly from the working product, not a mockup. Where a rule needs to be exact (for example, a validation rule a developer must build to), it is spelled out in full rather than summarised.
->
-> **What this document does not carry:** delivery status. Which parts are already running, which are in build, and which are still to start is tracked separately in the team's working notes, so this document stays a stable description of the product rather than something that has to be restructured after every release.
+**How this document is arranged.** Sections 1 to 4 explain what the product is and how a user moves through it. Section 5 is the product itself, written module by module in the order the user meets them. Every module states its purpose, its fields, the validation on each field, and the rules it follows. Sections 6 to 9 hold the reference material.
 
----
+## 1. Objective
 
-## 1. Purpose of This Document
+KDK's customers are Chartered Accountants, Advocates, Tax Consultants, GST Practitioners, Company Secretaries and Cost Accountants. Most of them have no website. Their clients search for them online and find nothing.
 
-This document is the single source of truth for the Personalised Website Builder. It sets out **what the product does, how each screen behaves, and what the user sees**, screen by screen, along with the reasoning behind each decision, in enough detail that leadership, design, development, support, and sales can all work from this one document without a separate conversation.
+**The objective of this product is to give every one of these professionals a professional digital presence, built by themselves, in under ten minutes, with no technical knowledge and no outside help.**
 
----
+| # | Objective | Measure |
+|---|---|---|
+| 1 | A professional can publish a complete website without help | Time from first sign-in to first published site is under 10 minutes |
+| 2 | The published website looks professional, not templated | Four designs, six colour themes each, so firms do not share an appearance |
+| 3 | The website brings in work, not just presence | Every site carries a contact form, a WhatsApp button, and an enquiry inbox |
+| 4 | The professional responds quickly to an enquiry | The owner is emailed on every enquiry, and one click opens it |
+| 5 | The website never carries a claim the professional did not make | No section, and no field, is ever filled with sample or invented content |
+| 6 | The firm can maintain the site itself | Any content can be edited and republished at any time, with no charge and no waiting |
 
-## 2. Executive Summary
+## 2. Who This Is For
 
-Most Chartered Accountants, Advocates, Tax Consultants, GST Practitioners, Company Secretaries, and Cost Accountants in India do not have a website. Getting one built the traditional way is expensive, slow, and requires technical knowledge they don't have and don't want to learn.
+The product serves six professions. Each one starts with its own set of services already loaded, so the user never faces an empty page.
 
-The Personalised Website Builder solves this by letting any of these professionals create a complete, professional, mobile-friendly website in under 10 minutes, either by:
-
-1. **Answering simple questions themselves** in a guided, 6-step wizard, or
-2. **Letting an AI writer do it for them**: a short interview where they describe their practice in their own words, and the AI writes all the website copy.
-
-Once published, the website goes live immediately at its own web address, collects enquiries from visitors into a built-in inbox, and can be edited or taken offline at any time. No developer, no waiting, no separate invoice.
-
-The product is a **working prototype**, live for real use. It is not yet part of KDK's official commercial offering: pricing and packaging are still to be decided.
-
----
-
-## 3. Background
-
-### 3.1 The Problem
-
-Talk to any small or mid-sized CA firm, law office, or tax practice in India, and the story is the same:
-
-- A website costs **₹15,000 to ₹80,000** through a freelancer or agency.
-- It takes **4 to 8 weeks** to get anything live.
-- They don't have anyone in-house who can build or update it.
-- Once it's live, even a simple change (a new phone number, a new service) means going back to whoever built it, and often paying again.
-
-The result: the overwhelming majority of these professionals either have no website at all, or a hopelessly outdated one, at exactly the time when a prospective client's first move is to search for them online.
-
-### 3.2 Goals
-
-- **Let a non-technical user go from nothing to a published, professional website in under 10 minutes.** The entire value proposition collapses if it needs a developer or takes hours.
-- **Make every published site look genuinely professional, never generic or "templated".** A cheap-looking website damages credibility for a CA or Advocate more than having none.
-- **Capture enquiries directly from the website, in one place the professional already checks.** The website must generate business, not just exist as a brochure.
-- **Never let a real, published website show placeholder or sample content.** A firm's website carrying someone else's demo address, quotes, or numbers is a trust-breaking failure, not a cosmetic bug.
-- **Increase how much value each existing KDK customer represents.** This is a new product line inside an existing relationship, not a new customer to acquire.
-- **Keep the product usable and distinct-looking at scale** (hundreds or thousands of live sites). A template-based builder risks every site looking the same once there are many of them.
-
-### 3.3 Who This Is For
-
-The builder currently serves six professions. Each gets a starter set of services pre-loaded so the user isn't starting from a blank page:
-
-| Profession | Pre-loaded services |
+| Profession | Services loaded by default |
 |---|---|
 | Chartered Accountant | Income Tax Return filing, GST, Tax Audit, TDS, ROC filings, NRI services |
 | Advocate / Lawyer | Civil, Criminal, Corporate law, Tax litigation, Property matters |
@@ -72,627 +40,657 @@ The builder currently serves six professions. Each gets a starter set of service
 | Company Secretary | Company incorporation, ROC filings, FEMA compliance, Board meetings |
 | Cost Accountant | Cost audit, CAS compliance, Management accounting, Budgeting |
 
-A typical user: runs a small-to-mid-sized practice, is comfortable with WhatsApp and basic apps, but has never built a website and doesn't want to learn HTML, hosting, or design software.
+**The user.** Runs a small or mid-sized practice. Uses WhatsApp and basic apps. Has never built a website and does not want to learn how.
 
-There is also a **second, indirect user of this product**: the visitor to a published site (a prospective client of the professional). Their needs matter too: the site must load fast, read clearly on a phone, and make it obvious how to make contact.
+**The second user.** The visitor to the published site, who is the professional's prospective client. The site must load fast, read clearly on a phone, and make contact obvious.
 
----
+## 3. Scope
 
-## 4. Product Scope
+### 3.1 In Scope
 
-### 4.1 What's In Scope (Phase 1, current)
-
-- A guided, 6-step wizard covering design, business details, content, services, and publishing
-- An **AI Website Writer** that can fill out the entire site from a short conversational interview
-- A **login system**, so a professional's site and drafts are saved to their account
-- **Four website designs**, each with six colour options, so no two firms need to look identical
-- A **built-in enquiries inbox**: every message a visitor sends is saved, searchable, exportable, and trackable by status
-- **Hosting and a live web address** the moment the user clicks Publish, with the ability to take a site offline (and bring it back online) at any time
-- A **WhatsApp chat button** on every published site
-- **Mobile-responsive** design and automatic **SSL** (the padlock/https that browsers require)
-- Automatic groundwork for the site to be found on Google
-- **Import from a profile document**: the professional uploads a firm profile they already have, and the AI fills in whatever it covers
-- **An email alert on every enquiry**, taking the professional straight to that enquiry in one click
-
-### 4.2 What's Deliberately Out of Scope (Phase 1)
-
-- Custom domains (a firm's own `.com`, rather than a KDK-provided address)
-- A client-facing portal or login on the published website
-- A blog or multi-page sites: every published site is a single page
-- Payment collection or an appointment-booking system on the site
-- Automatic import of a professional's existing KDK profile data into the site. This is **not** the same as the profile upload described in [Section 5.5](#55-the-ai-website-writer): that reads a document the user hands over themselves, and never reaches into KDK's own customer records.
-
----
-
-## 5. The Complete User Journey
-
-### 5.1 User Flow Diagram
-
-The journey has two halves, and they are shown separately because they belong to different moments: the first happens once, in about ten minutes; the second repeats for as long as the site is live.
-
-**Getting the website built and live**
-
-![The three ways in, all of them ending at a published website](screenshots/user-flow-build.png)
-
-<!-- DIAGRAM SOURCE (1 of 2). The picture above is generated from this Mermaid; keep the
-     two in step. How to regenerate: docs/DEV-LOG.md, 2026-08-17 (Session 24).
-
-flowchart TD
-    A[Professional signs in] --> B{How do they want to build it?}
-    B -->|Answer the questions themselves| C[The 6-step builder]
-    B -->|Let the AI write it| D[A short interview, then the AI writes the site]
-    B -->|Upload a profile they already have| U[The AI reads it and fills in what it covers]
-    U --> D
-    D --> C
-    C --> F[Step 6: choose an address and publish]
-    F --> H[Live. The address is now permanent]
--->
-
-**What happens once it is live**
-
-![The enquiry cycle, and the two things the firm can change afterwards](screenshots/user-flow-live.png)
-
-<!-- DIAGRAM SOURCE (2 of 2).
-
-flowchart TD
-    H[Website is live] --> I[Prospective client finds the site]
-    I --> J[They submit the contact form]
-    J --> K[Enquiry saved to the Enquiries inbox]
-    K --> L[Professional is emailed straight away]
-    L --> M[One click opens that enquiry]
-    M --> N[They call, WhatsApp or email the client]
-    H --> O{The firm wants a change}
-    O -->|Edit the content| P[Publish changes]
-    P --> H
-    O -->|Take the site down| Q[Unpublish. Reversible, and the address stays reserved]
-    Q -->|Publish again| H
--->
-
-### 5.2 Signing In & Your Account
-
-The builder is protected by a login screen (email and password). Signing in loads the user's saved site straight into the builder, exactly as they last left it, whether it's a draft or already published.
-
-The account card in the bottom-left corner of the builder (name, email, and initials) opens the account menu when clicked:
-
-![The account menu, opened from the bottom-left profile card](screenshots/profile-menu.png)
-
-| Menu item | What it does today |
+| # | Included |
 |---|---|
-| Profile | Placeholder: not yet built |
-| Enquiries | Opens the same Enquiries inbox described in [Section 5.6](#56-managing-enquiries) |
-| Settings | Placeholder: not yet built |
-| Subscription | Placeholder: not yet built |
-| Sign Out | Ends the session and returns to the login screen. Also clears anything saved only on this device (an in-progress draft, AI Writer answers not yet saved to the cloud), so the next person to sign in on this device never sees a previous user's unsaved work. |
+| 1 | A six-step builder covering design, business details, content, services and publishing |
+| 2 | An AI interview that writes the entire website from the user's spoken-language answers |
+| 3 | Profile import: the user uploads an existing firm profile and the AI fills in what it covers |
+| 4 | Four designs, six colour themes each |
+| 5 | Sign-in, so each user's site and drafts are saved to their own account |
+| 6 | Publishing to a KDK-owned web address, with no purchase or setup by the user |
+| 7 | Taking a site offline and bringing it back online |
+| 8 | An enquiry inbox with status, private notes, search and export |
+| 9 | An email alert to the owner on every enquiry |
+| 10 | A WhatsApp button on every published site |
+| 11 | Mobile layout, SSL, and search-engine groundwork, applied automatically |
 
-Only **Enquiries** and **Sign Out** are functional at the moment. Profile, Settings, and Subscription are reserved slots for later: account details, notification preferences, and whatever future commercial features get decided, respectively.
+### 3.2 Out of Scope
 
-### 5.3 Two Ways to Build: Do It Yourself, or Let the AI Do It
-
-Every user can either:
-
-- Work through the **6-step wizard** below at their own pace, filling in each screen, **or**
-- Open the **AI Website Writer** (a floating button, always available) and answer a short set of questions in plain conversational language. The AI then writes the entire site's content for them, and drops it straight into the same 6 steps.
-
-Both paths lead to the exact same place: a finished configuration ready for Step 6 (Publish). Most users are expected to prefer the AI path; the manual steps stay available for anyone who wants full control, or wants to fine-tune what the AI produced.
-
-There is a **third way in**, which is a third starting point rather than a third product: the user uploads a profile document the firm already has, and the AI Writer opens with its answers already filled in from that document. It feeds the same interview and the same six steps, and is described in [Section 5.5](#55-the-ai-website-writer).
-
-### 5.4 The 6-Step Manual Builder
-
-| Step | Name | What the user does |
+| # | Excluded | Reason |
 |---|---|---|
-| 1 | **Design & Colours** | Pick one of 4 website designs, then one of 6 colour palettes for that design |
-| 2 | **Business & Contact** | Firm name, profession (which loads the right starter services), phone, email, office address, office hours, social links |
-| 3 | **Hero & Stats** | The main banner text visitors see first, plus up to 6 key numbers (e.g. years in practice, clients served) |
-| 4 | **Services** | Turn the pre-loaded services for their profession on or off, edit any description, or add their own |
-| 5 | **About & Story** | Firm story, founder/partner photos and roles, how the firm works (a numbered process), and client reviews |
-| 6 | **Publish** | Pick a web address and go live |
+| 1 | The firm's own domain name | Requires the user to buy and manage a domain, which is the technical burden this product removes |
+| 2 | Multiple pages or a blog | Every extra page is content the firm must write and maintain |
+| 3 | A client login area on the published site | A separate product with separate security requirements |
+| 4 | Payments or appointment booking on the site | Compliance and support load, with no proven demand |
+| 5 | Pulling the user's existing KDK records into the site automatically | Different from profile import, where the user hands over a document deliberately |
+| 6 | Alerts by WhatsApp or SMS | Planned for a later phase. Email is the first channel |
 
-The wizard can be moved through in any order using a left-hand navigator, and it does not force a strict front-to-back path, but every required field is still checked before the site can actually be published. The exact rule for every field is in [Section 6](#6-functional-requirements--validation-rules).
+## 4. How The Product Works, End To End
 
-#### Step 1: Design & Colours
+This is the only place the full journey is described. Each module in Section 5 then covers its own screen in detail.
 
-Picking a design and a matching colour palette. Nothing here is ever left unset. Every account starts on a default design and palette (see [Section 6.1](#61-manual-builder-step-1-design--colours)), so this step is about changing that default, not filling in a blank.
+### 4.1 From Sign-In To A Live Website
 
-![Step 1: Design & Colours](screenshots/step1-design-colours.png)
+![How a professional gets from signing in to a live website](screenshots/user-flow-build.png)
 
-Each design carries its own set of 6 curated colour palettes, so the same layout can look completely different from one firm's site to the next. Switching either the design or the palette is instant and keeps every other answer the user has already given; only the look changes:
+1. The professional signs in.
+2. They choose a design and a colour theme.
+3. They fill in the content by one of three routes: upload an existing firm profile, answer the AI interview, or type it in themselves. The routes can be combined.
+4. They review the content across the six steps.
+5. They choose a web address and publish.
+6. The site is live. The address is fixed from this point.
 
-![Step 1: Colour palette picker](screenshots/step1-colour-palette.png)
+### 4.2 After The Website Is Live
 
-#### Step 2: Business & Contact
+![What happens once the website is live](screenshots/user-flow-live.png)
 
-The firm's identity and how clients reach them. This step is split into four sections:
+1. A prospective client finds the site and submits the contact form.
+2. The enquiry is saved to the inbox immediately.
+3. The owner is emailed. One click in that email opens the enquiry.
+4. The owner calls, sends a WhatsApp message, or emails the client, and sets the enquiry's status.
+5. The owner can edit the content and publish changes at any time, or take the site offline and bring it back.
 
-- **Firm Identity**: profession, firm/practice name, tagline, founded year, team size, city, and an optional firm logo.
-- **Contact Information**: phone number, WhatsApp number, email, office hours, office address, and optional membership/registration numbers (e.g. an ICAI membership number for a CA, or a firm registration number).
-- **Social Media Links**: LinkedIn, Facebook, Instagram, YouTube. Each is optional; leaving one blank hides its icon on the published site rather than showing a broken or dead link.
-- **Footer**: a short footer blurb and the copyright line shown at the bottom of every page. "Powered by KDK Software" is added automatically and cannot be removed.
+## 5. Modules
 
-![Step 2: Firm Identity and the start of Contact Information](screenshots/step2-business-contact.png)
-![Step 2: Contact Information continued, and Social Media Links](screenshots/step2-contact-details.png)
-![Step 2: Social Media Links and Footer](screenshots/step2-social-footer.png)
+### 5.1 Module 1: Sign In And Account
 
-#### Step 3: Hero & Stats
+**Purpose.** Protect each user's site and give them one place to reach their account.
 
-The banner text and key numbers a visitor sees first. This step covers:
+**What it covers.** The sign-in screen, account creation, the account menu, and sign-out.
 
-- **Hero Banner**: an eyebrow badge (e.g. "Now accepting clients for FY 2025-26"), the headline, a highlighted phrase within it (shown in the site's accent colour), a sub-heading, primary and secondary call-to-action buttons, and audience tags (short labels like "Small Businesses" or "NRI Clients" shown under the hero).
-- **Key Stats**: up to 6 numbers that build trust (clients served, years of practice, ratings, on-time percentage, etc.), each with a quick-insert button for common symbols (★, ₹, +, %, ✓). This follows the same "3 to 6, or none at all" reasoning as the AI Writer's equivalent screens ([Section 6.7](#67-ai-website-writer-screen-1-your-practice), [6.8](#68-ai-website-writer-screen-2-what-sets-you-apart)). The manual builder itself does not block a half-filled set, but the same design reasoning applies: a stats strip with one or two numbers looks unfinished.
+#### Fields and validation
 
-![Step 3: Hero Banner](screenshots/step3-hero-stats.png)
-![Step 3: Buttons, Audience Tags, and Key Stats](screenshots/step3-stats.png)
+| Field | Required | Validation |
+|---|---|---|
+| Email | Yes | Must be a valid email address |
+| Password | Yes | At least 6 characters when creating an account |
+| Full name | Yes, when creating an account | Cannot be blank |
 
-#### Step 4: Services
+#### Rules
 
-The profession's starter services, editable and extendable. Every pre-loaded service (see [Section 3.3](#33-who-this-is-for) for the list per profession) can be switched on or off with a toggle, and its name and description can be freely edited. A text box at the bottom lets the user add entirely custom services beyond the starter list, useful for a firm that offers something not in the standard set (e.g. "Virtual CFO Services").
-
-![Step 4: Services list](screenshots/step4-services.png)
-![Step 4: More services, and the "Add a custom service" box](screenshots/step4-add-custom.png)
-
-#### Step 5: About & Story
-
-The firm's story, partners, process, and reviews. This is the largest step, split into five sections:
-
-- **About Your Firm**: a short introduction (45 to 70 words) shown in the About section.
-- **Founders & Partners**: up to 4 partners, each with a name, role/designation, an optional portrait (auto-cropped to a square), and a short bio with credentials (one per line, rendered as bullet points).
-- **About Highlights**: exactly 3 short selling points shown alongside the About section (e.g. "Deep Experience," "Fast GST Services," "Error-Free Filing"), each with a one-line explanation.
-- **How We Work**: 3 to 5 numbered steps describing the client journey, shown as a connected row of cards on the published site.
-- **Client Testimonials**: optional; if used, 3 to 6 reviews, each with a star rating, quote, client name, role/company, and an optional photo.
-
-![Step 5: About Your Firm, and Founders & Partners](screenshots/step5-about-story.png)
-![Step 5: About Highlights, and How We Work](screenshots/step5-highlights-process.png)
-![Step 5: Client Testimonials](screenshots/step5-testimonials.png)
-
-#### Step 6: Publish
-
-The live preview, the web address, and every control for managing a live site. What this screen shows depends entirely on where the site currently stands: there are four distinct states, not one static screen:
-
-**1. Never published yet.** The very first time a user reaches this step, there is no live site to show: only a preview of what will go live, a checklist confirming what is included, and a single **Launch Website** button (shown disabled until the typed address is confirmed available). Once nothing is left to complete, the screen gives its last useful warning: *"Check your address before you launch. It cannot be changed afterwards, so that every link you share keeps working."* Until then that space is used to name whatever is still missing, since two warnings stacked together are both ignored.
-
-![Step 6: before the first publish, "Ready to go live"](screenshots/step6-never-published.png)
-
-**2. Live, with changes not yet published.** After the first publish, any further edit anywhere in the builder puts the site into this state: the live preview still shows what visitors currently see, but a banner makes clear that newer changes are waiting, naming the date of the version that is actually out there. The buttons are **Publish changes** and **Unpublish**.
-
-![Step 6: unpublished changes waiting to go live](screenshots/step6-publish.png)
-
-**3. Live, and fully up to date.** Once "Publish changes" is pressed (or nothing has been edited since the last publish), the hint changes to confirm the site matches what's live, and there is nothing to publish: **Unpublish** is the only button left.
-
-![Step 6: live and up to date, nothing pending](screenshots/step6-live-in-sync.png)
-
-**4. Taken offline (unpublished).** After pressing Unpublish, the preview dims and is stamped "NOT PUBLISHED," the browser-style bar shows an "OFFLINE" badge, and the only action is **Publish again**. The address itself is never released, so nobody else can claim it while the site sits offline: *"Your site is offline. Your address stays reserved for you."*
-
-![Step 6: site taken offline](screenshots/step6-offline.png)
-
-##### The address is permanent once the site is live
-
-**A published site's address cannot be changed.** The address is chosen once, before the site is launched, and the field is read-only from that moment on. There is no way for the professional to rename a live site, and no way to move it to a different domain in the pool.
-
-The reasoning matters more than the rule, because the rule looks restrictive on its own:
-
-- A changed address breaks **every link already shared**: visiting cards, WhatsApp forwards, client emails, the firm's letterhead.
-- Google has to find and re-rank the new address from scratch, undoing the site's search standing.
-- The old address becomes free for **someone else** to claim, so a competitor could end up sitting on the address a firm printed on its stationery.
-
-**What this means for a mistake.** A professional who launches with a typo in their address has to live with it: there is no correction path for the user, and no admin screen for KDK support either. There is also no Delete anywhere in the product, so a site cannot be removed and re-created at a better address. Unpublish keeps the address reserved and is the only way down. This is why the warning before launch is worded as firmly as it is.
-
-> **Open question, not yet decided.** Whether a **one-time correction** should be allowed, either within a short grace period after launch or only through KDK support, has not been settled. A typo at launch is the most likely support request this rule will generate.
-
-Two more rules worth knowing:
-
-- **The address is a pair** (a subdomain plus a domain; see [Section 7](#7-finalised-domain-names) for the domain pool). Because either half moving counts as a move, the permanence rule covers both: a live site cannot be shifted to a different domain in the pool any more than it can be renamed.
-- **Publishing is always gated on every step being complete.** Pressing Launch Website / Publish changes re-checks every required field across Steps 2 to 6 (not just Step 6 itself) and, if anything is missing, jumps the user straight to the first incomplete step rather than failing silently.
-
-#### Open Question: How Many Times Can a Site Be Published?
-
-> **Open question, not yet decided.** There is currently **no limit anywhere in the product** on how many times a professional can publish or re-publish their site. Every "Publish changes" click goes live immediately, with no daily cap, cooldown period, or review step in between. Whether a limit should exist (for abuse prevention, cost control, or as a lever tied to a future paid plan) has **not been decided**. Any future limit would change a promise this document currently makes throughout, that publishing is instant and always available.
-
-### 5.5 The AI Website Writer
-
-This is a short, conversational interview (7 screens plus a final review) that stands in for typing everything out by hand.
-
-![The AI Website Writer opens on a choice: start answering questions, or upload a profile the firm already has](screenshots/ai-writer-intro.png)
-
-**What it asks, screen by screen:**
-
-1. **Your practice**: profession, firm name, years practising
-2. **What sets you apart**: what you're best known for, your typical clients, and (optionally) key numbers to show off
-3. **How you work**: a step-by-step description of your process
-4. **Founders & partners**: name, role, what each partner handles, and a photo
-5. **Client reviews**: optional testimonials
-6. **Contact details**: city, phone, email, office address, office hours, social links
-7. **Anything else**: a free-text box for anything not already covered (awards, languages, specialisations)
-8. **Review & write**: a final summary before the AI generates the site
-
-![AI Website Writer: an answer screen](screenshots/ai-writer-question.png)
-
-**What makes it easier for a returning user:** if the firm already has a published site, opening the AI Writer automatically fills in every plain fact it already knows: firm name, city, years in practice, phone, email, address, office hours, social links, and every partner's name, role, and photo (shown highlighted in green below, with a note explaining where each came from). Only the more subjective, judgement-based answers (what you're known for, your typical clients, your review notes) are left blank for the user to (re)describe. This is because the site only stores the AI's polished write-up of those answers, not the user's original rough notes, and feeding the polished text back in as a "question" just produces blander answers on a second pass.
-
-![AI Website Writer: founders & partners, prefilled from the live site](screenshots/ai-writer-partners.png)
-
-**Why partners are asked what they handle:** a name and a designation alone give the AI nothing to write from, and it fills that gap by inventing plausible-sounding history for a real, named person. The box is optional, but whatever is typed into it is the only material the partner's write-up may be built from. Left empty, the AI writes a short factual line naming the person's role and nothing more.
-
-#### Starting From a Profile the Firm Already Has
-
-Most established firms already have a profile document: a firm brochure, a partner's CV, a capability statement sent to clients. Retyping it into an interview is work the professional has already done once. So the AI Writer opens with a choice:
-
-- **Start writing my website**, which begins the interview empty, exactly as described above, or
-- **I already have a firm profile**, which lets the user upload it.
-
-**Both choices carry equal visual weight.** Plenty of sole practitioners have no such document, and that path must never read as the lesser one.
-
-![Choosing to upload a profile, with "Answer a few questions instead" kept equally available](screenshots/ai-writer-import-upload.png)
-
-Uploading is a **starting point, not a shortcut, and the product must not imply otherwise.** The document pre-fills the interview; it does not replace it. Whatever the document did not cover is still asked for, screen by screen, before the site can be written. For the same reason, **Import from a profile** also sits permanently in the left-hand drawer, so someone who skipped it at the start, or who found their document later, can bring it in without discarding the answers they have already given. An import made part-way through fills empty boxes only and never overwrites anything the user has typed.
-
-Accepted formats are **PDF, Word documents, and photographs** of a printed profile, up to 10 MB. A photograph is deliberately included: for many firms the only copy that exists is a printed one.
-
-**What the user sees afterwards:** the interview opens with its answers already in place, every imported answer **tinted green**, under a banner naming the uploaded document as the source. This is the same visual treatment already used for answers carried over from a published site, so the user learns one convention rather than two, and can see at a glance exactly which answers came from a machine and need checking.
-
-##### The rule this feature is built around
-
-> **A field the document does not state comes back empty. It is never guessed.**
-
-This is [Section 6.15](#615-the-rule-behind-all-of-this-no-placeholder-content-on-a-live-site) applied one step earlier, and it is a hard rule rather than a quality preference. If the AI invents a plausible "best known for" or an impressive client count, the professional publishes a claim they never made and were never asked about. These users are ICAI and Bar Council registered and work under advertising and misrepresentation rules, so a fabricated credential on their website is their liability, written by our product.
-
-An empty field is therefore a correct outcome, not a shortfall: the interview treats it as unanswered and asks the user for it.
-
-A worked example, because this behaviour reads as a bug until it is explained. One firm's profile states *"more than 50 years in aggregate experience"*, meaning the total across its six partners. The correct result is to leave "Years practising" **empty** and keep the 50 only as a key number with its qualifier intact. Filling in 50 would publish "50 years of practice" for a firm that may be ten years old.
-
-##### What the document fills, and what the interview still asks
-
-| Taken from the document | Never taken from the document |
+| # | Rule |
 |---|---|
-| Firm name, city, phone, email, office address, office hours | Client reviews, so that skipping that screen leaves testimonials already live untouched |
-| Years practising, but only where stated or derivable from a founding year | Any figure for the stats strip that is not a genuine client-facing trust signal |
-| Partner names, and a partner's designation only where the document states a job title | A partner's role inferred from a qualification |
-| Which of the builder's own services to switch on, matched on meaning rather than wording | New services outside the builder's preset list |
-| Social links, and claims the document explicitly makes about the firm | Anything the document merely implies |
+| 1 | The builder cannot be used without signing in |
+| 2 | Signing in loads the user's saved site exactly as they left it, whether draft or published |
+| 3 | A new account must confirm its email address before signing in |
+| 4 | Signing out clears anything saved only on that device, so the next person to use the device sees nothing of the previous user's work |
 
-**Key numbers deserve their own note**, because an almost-empty result here looks like a failure and is not. A good website statistic is a trust signal aimed at a prospective client: "2,000+ clients", "4.9 star rating", "46 years in practice". A firm profile is an internal document, and its numbers are a different kind entirely: team size, partner count, staffing breakdown. Those are true and irrelevant, and putting them on the most prominent strip of the homepage produces lines like "13 team members" or "8 audit staffs", which make a practice look small. Across three real firm profiles, applying the correct bar yields one usable figure in total. This field belongs to the user, and the interview already asks for it in the right terms.
+#### The account menu
 
-##### Privacy
+![The account menu, opened from the profile card at the bottom left](screenshots/profile-menu.png)
 
-**The uploaded document is not kept.** It is read once, and discarded. It is not saved to the professional's account, not stored on KDK's servers, and not retained in any form afterwards. Only the extracted answers reach the user's own draft, and only after they have seen them on screen. Customers will ask this, and the answer must stay this simple.
-
-##### Cost to KDK
-
-Reading a profile costs about **₹0.35 per website**, once, measured across real firm profiles of 9 to 15 pages. It does not scale with file size, and it is not a per-visitor or recurring cost. Allowing for a user who imports, corrects, and regenerates, budget ₹1 to ₹2 per website.
-
-##### Open questions
-
-> **Not yet decided.**
->
-> 1. **Services with no equivalent in the preset list.** A firm offering "Valuation of Financial Assets" or "ESOP structuring" cannot show it today, because the list has no such service and the import is not allowed to invent one. Should an import be able to add a small, capped number of custom services? This is the largest remaining gap in the feature.
-> 2. **Poor scans.** A blurred photograph of a printed profile yields less. Do we set an expectation up front, or simply let the interview ask for whatever is missing?
-> 3. **More than one document.** Import currently takes a single file. Do firms commonly split the firm profile and the partner details across two?
-
-**Safety net:** every required question is checked twice, once as the user moves between screens, and again the moment they click "Write my website". This makes it impossible to jump ahead using the review screen and generate a site that is missing a mandatory answer.
-
-Once the interview is complete, an AI service (run securely on KDK's servers, not in the visitor's browser) writes the actual website copy and drops it into the same 6-step wizard, ready for the user to review, tweak, or publish immediately.
-
-### 5.6 Managing Enquiries
-
-Every website has a contact form. When a visitor submits it, the enquiry is saved instantly into a built-in **Enquiries inbox** inside the builder. The professional does not need any other tool to see it.
-
-![The built-in Enquiries inbox](screenshots/enquiries-inbox.png)
-
-> The names, numbers, and messages shown above are illustrative examples, not real visitor data, swapped in only for this document.
-
-From that inbox the professional can:
-
-- Search and filter enquiries by status (new, in progress, done, etc.)
-- Add private notes to any enquiry
-- Call, WhatsApp, or email the visitor directly from the same screen
-- Export enquiries to Excel, either individually selected or all at once
-
-#### Being Told an Enquiry Has Arrived
-
-An inbox nobody is told about is a missed client. A professional who opens the builder once a week leaves an enquiry sitting for a week, which is exactly the outcome this product exists to prevent, so **every enquiry is emailed to the professional the moment it is submitted, and one click in that email opens that enquiry.**
-
-**The enquiry is saved first, and the email is sent afterwards.** An email that fails, for any reason, must never be able to cost the professional the enquiry itself: the record is already safe in the inbox before any mail is attempted. Equally, the alert has to actually reach the inbox rather than a spam folder, which means it is sent from a properly configured KDK address through the transactional email service KDK already uses (ZeptoMail), not from the professional's own address.
-
-##### Who receives it
-
-> **Open question, not yet decided.** Three candidates, often but not always the same person:
->
-> 1. **The account's login email**, the recommended default, because it is the only address certain to belong to someone who can sign in and act on the link.
-> 2. **The firm's public contact email** as shown on the site, frequently a shared office inbox, which in a firm with staff may be exactly where enquiries should land.
-> 3. **KDK's own leads inbox.** This document already promises "lead capture to email plus KDK leads inbox". Whether KDK is copied on a client's enquiries is a privacy decision rather than a technical one, and needs an explicit answer.
-
-##### What the email says
-
-**Subject:** New enquiry from *[visitor's name]* for *[firm name]*
-
-**Preview line**, so the essentials are readable on a phone without opening the mail: *phone number · what they are interested in · when it arrived*
-
-```
-  [ KDK Sites logo ]
-
-  You have a new enquiry
-
-  Someone filled in the contact form on your website
-  [ the firm's web address ].
-
-  Name           [ visitor's name ]
-  Phone          [ visitor's phone ]        tap to call
-  Email          [ visitor's email ]        row hidden if not given
-  Interested in  [ service selected ]       row hidden if not given
-  Received       [ date and time, IST ]
-
-  Their message
-  [ the message ]                           block hidden if not given
-
-       [  View this enquiry  ]
-
-       [ Call ]     [ WhatsApp ]
-
-  You are receiving this because this enquiry came through your
-  website on KDK Sites.
-```
-
-Both the firm name and the web address appear because one account may own more than one site, and the owner has to be able to tell at a glance which of them the enquiry came from.
-
-Three rules the email must follow:
-
-1. **A blank field prints nothing at all.** Only a name and a phone number are compulsory on the contact form, so the email address, the chosen service, and the message may each be missing. Any missing row disappears from the email entirely. It is never filled with a placeholder or an example, which is [Section 6.15](#615-the-rule-behind-all-of-this-no-placeholder-content-on-a-live-site) applied to the alert.
-2. **Replying reaches the client.** When the visitor gave an email address, pressing Reply must write to them, not to an unattended KDK mailbox. When they did not, the email simply carries no reply address.
-3. **It must read correctly as plain text as well as with formatting.** Many corporate mail systems strip or distrust formatted mail, and this message has to survive that.
-
-Language is English to begin with; whether a Hindi version is offered is an open question below.
-
-##### The click through
-
-**"View this enquiry" opens that specific enquiry, not merely the inbox.** In practice that means the enquiry is found and shown wherever it sits in the list, however old it is, marked clearly on arrival and with its full message already open, so the professional reads it without searching. If they are not signed in, signing in must take them to that same enquiry rather than dropping them at the front of the builder: this click will often be their first visit of the day.
-
-##### Junk enquiries have to be handled alongside this
-
-The contact form on a published site currently accepts anything submitted to it. Today that means the occasional junk entry in an inbox the professional opens when they choose. **The moment alerts are switched on, the same automated junk goes straight to their mailbox**, and the resulting spam complaints damage the reputation of the single KDK address that every client's alerts are sent from, harming every client at once.
-
-**Basic protection is therefore part of this requirement, not a follow-up to it:** a hidden field that only automated submissions fill in, and a ceiling on how many alerts one site may send in an hour, with a single summary email once that ceiling is reached.
-
-##### Open questions
-
-> **Not yet decided.**
->
-> 1. **One email per enquiry, or a summary?** One per enquiry is what was asked for and is right at today's volumes. Should a busy site switch to an hourly or daily digest beyond some point?
-> 2. **Can the professional turn alerts off, or send them elsewhere?** There is no notification settings screen in the builder today, so answering yes means designing one. An email with no way to opt out is itself a complaint risk.
-> 3. **WhatsApp or SMS, instead of or alongside email?** Indian professionals often read WhatsApp faster than email, and every published site already carries a WhatsApp button.
-> 4. **Does anything tell the professional when alerts stop working**, for example when their mailbox repeatedly rejects them, or do they simply never find out?
-
----
-
-## 6. Functional Requirements & Validation Rules
-
-This section lists exactly what is required on every screen, and the rule the product enforces for each field. Anything not listed as required is optional. Each rule is written so both a non-technical reader and a developer can follow it.
-
-### 6.1 Manual Builder, Step 1: Design & Colours
-
-| Field | Required? | Validation rule |
-|---|---|---|
-| Website design | Always set | There is no "unselected" state: every account starts on a default design (Apex) with its first colour palette already applied, so nothing blocks progress here. The user can switch to any of the other 3 designs at any time, and switching keeps all of their content; only the look changes. |
-| Colour theme | Always set | Same as above: a palette from the chosen design's set of 6 is always active by default. Picking a different one is optional and instant. There is nothing to "submit"; the live preview updates immediately. |
-
-### 6.2 Manual Builder, Step 2: Business & Contact
-
-| Field | Required? | Validation rule |
-|---|---|---|
-| Profession | Yes | Must be selected from the list of 6 supported professions |
-| Firm / practice name | Yes | Cannot be left blank |
-| City | Yes | Cannot be left blank |
-| Phone number | Yes | Cannot be left blank |
-| Email address | Yes | Cannot be blank, and must be in a valid email format (some text, an @ symbol, more text, a dot, more text, e.g. `you@yourfirm.in`) |
-| Firm logo / any photo upload | No | If a file is chosen, it must be an image (PNG, JPG, SVG, WebP, or GIF) and no larger than 2 MB for a logo, or 5 MB for any other photo. A file outside these limits is rejected with a clear message rather than silently failing. |
-
-### 6.3 Manual Builder, Step 3: Hero & Stats
-
-| Field | Required? | Validation rule |
-|---|---|---|
-| Hero headline | Yes | Cannot be left blank |
-| Key numbers (stats) | No | Optional. If none are added, the section is left out entirely |
-
-### 6.4 Manual Builder, Step 4: Services
-
-| Field | Required? | Validation rule |
-|---|---|---|
-| Services shown on the site | At least 1 | At least one service must be switched on before the user can continue |
-
-### 6.5 Manual Builder, Step 5: About & Story
-
-| Field | Required? | Validation rule |
-|---|---|---|
-| Founders / partners | At least 1 | At least one partner must have a name entered |
-| Partner / reviewer photo | No | Same image-file rule as above: accepted formats only, 5 MB ceiling. Every accepted photo is automatically cropped to a square before it's stored, since every design displays it that way. |
-| Firm story, process steps, client reviews | No | All optional. Any section left empty is hidden from the published site rather than showing placeholder content |
-
-### 6.6 Manual Builder, Step 6: Publish
-
-| Field | Required? | Validation rule |
-|---|---|---|
-| Web address (subdomain) | Yes | Cannot be blank. Must be at least 3 characters, and may only contain lowercase letters, numbers, and hyphens (no spaces or other symbols). Must also pass a live availability check confirming nobody else already holds that address. |
-| Changing the address after launch | Not permitted | Once the site has been published even once, the address (both the name and the domain it sits on) is fixed and the field is read-only. There is no way for the professional to change it, and no admin override. The user is warned of this on screen before they launch, which is the last moment the warning is any use. |
-| Deleting a site | Not offered | There is no delete anywhere in the product. Unpublish is the only way down: it is reversible, it keeps the address reserved to that account, and it keeps every enquiry ever captured. |
-
-### 6.7 AI Website Writer, Screen 1: Your Practice
-
-| Field | Required? | Validation rule |
-|---|---|---|
-| Profession | Yes | Must be selected |
-| Firm / practice name | Yes | Cannot be left blank |
-| Years practising | Yes | Cannot be left blank. This is the one number the AI can always rely on: it sets the firm's "Founded Year" and anchors any stats the AI writes if no key numbers were supplied. |
-
-### 6.8 AI Website Writer, Screen 2: What Sets You Apart
-
-| Field | Required? | Validation rule |
-|---|---|---|
-| What you're best known for | Yes | At least 2 entries required |
-| Your typical clients | Yes | At least 2 entries required |
-| Key numbers worth showing | No | Optional, but if any are added, at least 3 must be added (up to a maximum of 6). A half-filled set (1 or 2 entries) is not allowed, because the stats strip on the published site is designed to hold several numbers, and a couple of entries would look incomplete. The AI never invents a number the user did not provide. |
-
-### 6.9 AI Website Writer, Screen 3: How You Work
-
-| Field | Required? | Validation rule |
-|---|---|---|
-| Process steps | Yes | At least 3 steps required (maximum 5). The "How We Work" section is a row of connected cards, and fewer than 3 reads as unfinished. |
-
-### 6.10 AI Website Writer, Screen 4: Founders & Partners
-
-| Field | Required? | Validation rule |
-|---|---|---|
-| At least one partner | Yes | At least 1 partner row required (maximum 4) |
-| Each partner's name | Yes, per row started | Any partner row that has been started must have both a name and a role before the interview can continue |
-| Each partner's role/designation | Yes, per row started | Same as above: required alongside the name, because the AI uses the role to make each partner's write-up distinct rather than four near-identical paragraphs |
-| What do they handle? | No | A free-text line describing that partner's area (for example, "leads the firm's valuation and M&A work"). It is the only source the AI is allowed to build a partner's write-up from: given nothing but a name and a designation, the writer was inventing career history for a real, named person, which for an ICAI or Bar-regulated professional is their liability, not ours. |
-| Partner photo | No | Optional. Cropped to a square on upload, because every design displays it that way. |
-
-### 6.11 AI Website Writer, Screen 5: Client Reviews
-
-| Field | Required? | Validation rule |
-|---|---|---|
-| Reviews | No | Entirely optional. The whole section can be skipped. But if the user adds any review, at least 3 are required (maximum 6). Skipping this screen keeps whatever reviews already exist on a previously published site untouched. |
-| Each review's client name | Yes, per row started | Any review row that has been started must have both a name and a note before the interview can continue |
-| Each review's note | Yes, per row started | Same as above: required alongside the name, since the note is what the AI turns into the polished review; a name with no note would force the AI to invent the review's content |
-
-### 6.12 AI Website Writer, Screen 6: Contact Details
-
-| Field | Required? | Validation rule |
-|---|---|---|
-| City | Yes | Cannot be left blank |
-| Phone number | Yes | Cannot be left blank |
-| Email address | Yes | Cannot be blank, and must be in valid email format |
-| Office address | Yes | Cannot be left blank. This field cannot be invented by the AI, and every template shows a real address or none, never a sample one. |
-| Office hours | Yes | Cannot be left blank. Pre-filled with a common default (`Mon to Sat: 10:00 AM to 7:00 PM`) that the user can edit or keep. |
-| Social media links | No | Optional. Each one supplied becomes an icon in the site's footer. |
-
-### 6.13 Import From a Profile Document
-
-| Field | Required? | Validation rule |
-|---|---|---|
-| The uploaded file | No | Import is always optional; every answer it fills can be given by hand instead. A file must be a PDF, a Word document, or an image (including a photograph of a printed profile), and no larger than 10 MB. Anything else is refused with a clear message naming what is accepted. |
-| Number of files | One per import | A single document is read at a time. Importing again later is allowed, and follows the same fill-blanks-only rule below. |
-| Every answer the document fills | Must be shown as imported | Each filled answer is tinted green, under a banner naming the uploaded document as its source, so the user can see exactly what to check before it becomes their website. |
-| Every answer the document does not state | Must be left empty | No inference, no estimate, no reasonable guess: a job title is never turned into an expertise claim, a past employer is never turned into a client, and an aggregate figure across partners is never turned into the firm's own age. The empty answer then becomes a question the interview asks, under the normal rules in 6.7 to 6.12. |
-| Importing part-way through the interview | Fills blanks only | An import can never overwrite an answer the user has typed. Where a document and a published site both offer a value for the same empty field, the document wins, because uploading it was a deliberate act. |
-| Services | Chosen from the preset list only | The import switches on the services the document supports, matched on meaning rather than exact wording. It cannot create a service that is not in the profession's preset list. |
-| The uploaded file afterwards | Must not be retained | The document is read once and discarded: not stored against the account, not kept on KDK's servers, not retained in any form. |
-
-### 6.14 Email Alert When an Enquiry Arrives
-
-| Requirement | Rule |
+| Menu item | Function |
 |---|---|
-| When it is sent | On every enquiry, as soon as it is submitted. |
-| Order of events | The enquiry is stored first, and the email sent afterwards. A failure to send must never cost the professional the enquiry. |
-| Who it goes to | The address on record for the site's owner (see the open question in [Section 5.6](#56-managing-enquiries)). |
-| What it contains | Visitor's name, phone, email, chosen service, message, when it arrived, and which of the owner's sites it came from, laid out as shown in Section 5.6. |
-| Missing details | Only a name and a phone number are compulsory on the contact form. Any field the visitor left blank is removed from the email entirely, never replaced by a placeholder or an example. |
-| Replying | When the visitor gave an email address, a reply goes to the visitor. When they did not, the email carries no reply address. |
-| The link | Opens that one enquiry, wherever it sits in the list, marked and with its message already expanded. Signing in on the way must not lose it. |
-| Automated junk | The contact form must reject automated submissions silently, and no site may send more than a set number of alerts in an hour; beyond that ceiling a single summary email is sent instead. |
-| Delivery | Sent from a KDK address configured so that these emails reach the inbox rather than the spam folder. |
+| Profile | Reserved. Not yet built |
+| Enquiries | Opens the enquiry inbox (Module 9) |
+| Settings | Reserved. Not yet built |
+| Subscription | Reserved. Not yet built |
+| Sign Out | Ends the session and returns to the sign-in screen |
 
-### 6.15 The Rule Behind All of This: No Placeholder Content on a Live Site
+### 5.2 Module 2: Design And Colour Theme
 
-Across every screen above, the product follows one consistent principle: **if a field is genuinely optional and the user leaves it empty, that section of the website disappears. It never falls back to showing the template's own sample text.** For example, a firm that adds no client reviews gets no testimonials section at all, rather than the design's built-in sample quotes. A firm that provides no key numbers gets no stats strip, rather than an invented one. This is treated as a hard product rule, not a preference: any new field added to the builder in future must have a clear, deliberate answer to "what does the published site show if this is left blank?"
+**Purpose.** Set how the published website looks.
 
-The same rule governs two surfaces beyond the website itself, and for the same reason:
+**What it covers.** Step 1 of the builder: the four designs, and the six colour themes belonging to each.
 
-- **What an import may fill in** ([Section 6.13](#613-import-from-a-profile-document)). A fact the uploaded document does not state is left empty and asked for, never estimated. An invented claim published under a professional's own name is their liability, and we would have written it.
-- **What an alert email prints** ([Section 6.14](#614-email-alert-when-an-enquiry-arrives)). A detail the visitor did not give is left out of the email entirely, rather than shown as an example address or a sample message.
+![Step 1: choosing a design](screenshots/step1-design-colours.png)
 
----
+![Step 1: choosing a colour theme for that design](screenshots/step1-colour-palette.png)
 
-## 7. Finalised Domain Names
+#### Fields and validation
 
-Every published site needs a web address in the form `<firm-name>.<domain>`. KDK is building a small pool of its own domain names so a professional can pick the one that best suits their profession, rather than every site sharing a single generic address.
+| Field | Required | Options | Default | Validation |
+|---|---|---|---|---|
+| Design | Yes | Apex, Nova, Heritage, Zenith | Apex | Always set. Cannot be empty |
+| Colour theme | Yes | Six per design | First theme of the selected design | Always set. Cannot be empty |
+
+#### Rules
+
+| # | Rule |
+|---|---|
+| 1 | Changing the design keeps all content already entered. Only the appearance changes |
+| 2 | Each design has its own six colour themes. Themes are not shared between designs |
+| 3 | The preview updates immediately when either is changed |
+| 4 | Changing the design on a published site does not change the live site until the user publishes again |
+
+### 5.3 Module 3: Creating The Content
+
+**Purpose.** Produce the website's written content.
+
+**What it covers.** Three routes to the same result. The user may use any one, or combine them.
+
+| Route | Module | Suits |
+|---|---|---|
+| Upload an existing firm profile | 5.4 | Firms that already have a profile, brochure or CV |
+| Answer the AI interview | 5.5 | Users who can describe their practice but do not want to write it |
+| Type it in directly | 5.6 to 5.9 | Users who want full control |
+
+#### Rules
+
+| # | Rule |
+|---|---|
+| 1 | All three routes produce the same six steps of content. Nothing is exclusive to one route |
+| 2 | Uploading a profile does not skip the interview. It fills what the document covers, and the interview then asks for the rest |
+| 3 | Whatever the user has typed themselves is never overwritten by either AI route |
+| 4 | Where two sources offer the same empty field, the uploaded document is used before the previously published site |
+| 5 | Nothing produced by either AI route goes live on its own. The user reviews it in the six steps and publishes it deliberately |
+
+### 5.4 Module 3A: Import From A Profile Document
+
+**Purpose.** Let a firm that already has a written profile reuse it instead of retyping it.
+
+**What it covers.** The upload screen, the reading of the document, and how the extracted answers enter the interview.
+
+![The upload screen, with the option to answer questions instead given equal weight](screenshots/ai-writer-import-upload.png)
+
+#### Fields and validation
+
+| Field | Required | Validation |
+|---|---|---|
+| Uploaded file | No. Import is always optional | Must be PDF, DOCX, JPG or PNG. Maximum 10 MB. One file per import. Anything else is refused with a message naming what is accepted |
+
+#### What the document fills
+
+| Filled from the document | Never taken from the document |
+|---|---|
+| Firm name, city, phone, email, office address, office hours | Client reviews |
+| Years practising, only if stated or derivable from a founding year | Key numbers that are not client-facing trust signals |
+| Partner names, and a partner's designation only where a job title is stated | A partner's role guessed from a qualification |
+| Which of the preset services to switch on, matched by meaning | Any service outside the preset list |
+| Social links, and claims the document states in plain words | Anything the document only implies |
+
+#### Rules
+
+| # | Rule |
+|---|---|
+| 1 | A field the document does not state is left empty. It is never guessed, estimated or improved |
+| 2 | An empty field is a correct result. The interview then asks the user for it |
+| 3 | Every imported answer is shown tinted green, under a banner naming the uploaded document as the source, so the user can see what to check |
+| 4 | An import made part way through the interview fills empty fields only, and never overwrites what the user has typed |
+| 5 | The uploaded file is read once and discarded. It is not saved to the account, not stored on KDK's servers, and not retained afterwards |
+| 6 | Import cannot create a service that is not in the profession's preset list |
+
+**Why rule 1 matters.** These users are registered with the ICAI or a Bar Council and work under rules on advertising and misrepresentation. A claim the AI invents is published under the professional's name and becomes their liability. Filling more fields is not a better result. Correctly leaving a field blank is.
+
+**Example.** A firm profile states "more than 50 years in aggregate experience", meaning the total across six partners. The correct result is to leave "Years practising" empty and keep 50 only as a key number with its wording intact. Filling 50 would publish "50 years of practice" for a firm that may be ten years old.
+
+### 5.5 Module 3B: AI Website Writer
+
+**Purpose.** Write the entire website from short answers given in the user's own words.
+
+**What it covers.** An interview of seven screens and a final review, then the writing of every line of content.
+
+![The AI Website Writer opens on a choice of two routes](screenshots/ai-writer-intro.png)
+
+![An interview screen](screenshots/ai-writer-question.png)
+
+#### Screen 1: Your practice
+
+| Field | Required | Validation |
+|---|---|---|
+| Profession | Yes | Must be selected from the six |
+| Firm or practice name | Yes | Cannot be blank |
+| Years practising | Yes | Cannot be blank. Sets the founded year and anchors any figures the AI writes |
+
+#### Screen 2: What sets you apart
+
+| Field | Required | Validation |
+|---|---|---|
+| What you are best known for | Yes | At least 2 entries |
+| Your typical clients | Yes | At least 2 entries |
+| Key numbers worth showing | No | Optional. If any are added, at least 3 and at most 6. One or two are not allowed |
+
+#### Screen 3: How you work
+
+| Field | Required | Validation |
+|---|---|---|
+| Process steps | Yes | At least 3 steps, at most 5 |
+
+#### Screen 4: Founders and partners
+
+![Screen 4, with answers carried over from the published site shown in green](screenshots/ai-writer-partners.png)
+
+| Field | Required | Validation |
+|---|---|---|
+| Partners | Yes | At least 1, at most 4 |
+| Full name | Yes, for every partner started | Cannot be blank |
+| Designation or role | Yes, for every partner started | Cannot be blank |
+| What do they handle | No | Free text, one line per partner |
+| Photo | No | Image file, up to 5 MB. Cropped to a square on upload |
+
+**Why "What do they handle" exists.** A name and a designation give the AI nothing to write from, and it fills the gap by inventing a career history for a real, named person. Whatever is typed here is the only material the partner's write-up may be built from. Left empty, the AI writes a short factual line naming the role and nothing more.
+
+#### Screen 5: Client reviews
+
+| Field | Required | Validation |
+|---|---|---|
+| Reviews | No | Optional. If any are added, at least 3 and at most 6 |
+| Client name | Yes, for every review started | Cannot be blank |
+| What they said | Yes, for every review started | Cannot be blank. This is what the AI turns into the finished review |
+
+#### Screen 6: Contact details
+
+| Field | Required | Validation |
+|---|---|---|
+| City | Yes | Cannot be blank |
+| Phone number | Yes | Cannot be blank |
+| Email address | Yes | Must be a valid email address |
+| Office address | Yes | Cannot be blank |
+| Office hours | Yes | Cannot be blank. Pre-filled with "Mon to Sat: 10:00 AM to 7:00 PM", which the user can change |
+| Social links | No | Each one given becomes an icon in the site footer |
+
+#### Screen 7: Anything else
+
+| Field | Required | Validation |
+|---|---|---|
+| Anything not already covered | No | Free text. Awards, languages spoken, specialisations |
+
+#### Screen 8: Review and write
+
+The user sees every answer on one screen before the AI writes anything.
+
+#### Rules
+
+| # | Rule |
+|---|---|
+| 1 | Every required answer is checked twice: when the user moves between screens, and again when they press "Write my website". A user cannot jump to the review screen and generate a site with answers missing |
+| 2 | The AI writes only from the answers given. It does not add facts, figures or credentials of its own |
+| 3 | If the firm already has a published site, the interview opens with the plain facts already filled in and tinted green: firm name, city, years, phone, email, address, hours, social links, and partner names, roles and photos |
+| 4 | Judgement answers are never carried over: what you are known for, typical clients, key numbers, process, review notes. The site stores only the AI's finished wording, and feeding that back produces weaker writing on the second pass |
+| 5 | Skipping the reviews screen leaves any reviews already live on the site untouched |
+| 6 | The finished content is placed into the six steps for the user to review. Nothing is published automatically |
+
+### 5.6 Module 4: Business And Contact Details
+
+**Purpose.** Record who the firm is and how a client reaches them.
+
+**What it covers.** Step 2 of the builder, in four parts: firm identity, contact information, social links, and footer.
+
+![Step 2: firm identity and contact information](screenshots/step2-business-contact.png)
+
+![Step 2: contact information and social links](screenshots/step2-contact-details.png)
+
+![Step 2: social links and footer](screenshots/step2-social-footer.png)
+
+#### Fields and validation
+
+| Field | Required | Validation | Message shown |
+|---|---|---|---|
+| Profession | Yes | Must be one of the six | "Please select your profession." |
+| Firm or practice name | Yes | Cannot be blank | "Enter your firm or practice name." |
+| City | Yes | Cannot be blank | "Enter the city you practise in." |
+| Phone number | Yes | Cannot be blank | "Enter a contact phone number." |
+| Email address | Yes | Cannot be blank, and must be a valid email address | "Enter an email address." / "Enter a valid email address." |
+| Tagline | No | Free text | |
+| Founded year | No | Year | |
+| Team size | No | Number | |
+| Firm logo | No | PNG, JPG, SVG, WebP or GIF, up to 2 MB | |
+| WhatsApp number | No | Powers the floating WhatsApp button on the site | |
+| Office hours | No | Free text | |
+| Office address | No | Free text | |
+| Membership or registration number | No | For example an ICAI membership number | |
+| LinkedIn, Facebook, Instagram, YouTube | No | Each is a link | |
+| Footer text and copyright line | No | Free text | |
+
+#### Rules
+
+| # | Rule |
+|---|---|
+| 1 | Changing the profession reloads that profession's preset services |
+| 2 | A social link left blank hides its icon on the published site. No dead link is shown |
+| 3 | A contact detail left blank removes that row from the published site. It is never replaced with sample text |
+| 4 | "Powered by KDK Software" appears in the footer of every site and cannot be removed |
+
+### 5.7 Module 5: Hero And Key Numbers
+
+**Purpose.** Set the first thing a visitor reads, and the figures that build trust.
+
+**What it covers.** Step 3 of the builder: the banner at the top of the site, and up to six key numbers.
+
+![Step 3: the hero banner](screenshots/step3-hero-stats.png)
+
+![Step 3: buttons, audience tags and key numbers](screenshots/step3-stats.png)
+
+#### Fields and validation
+
+| Field | Required | Validation | Message shown |
+|---|---|---|---|
+| Headline | Yes | Cannot be blank. Each new line becomes a new line on the site | "Add a headline for your hero section." |
+| Eyebrow badge | No | Short line above the headline, for example "Accepting new clients for FY 2026-27" | |
+| Highlighted phrase | No | The part of the headline shown in the site's accent colour | |
+| Sub-heading | No | One or two sentences, 20 to 35 words | |
+| Primary button | No | Button text, for example "Book a Consultation" | |
+| Secondary button | No | Button text, for example "View Services" | |
+| Audience tags | No | Short labels shown under the hero, for example "NRI Clients" | |
+| Key numbers | No | Up to 6. Each has a figure and a label | |
+
+#### Rules
+
+| # | Rule |
+|---|---|
+| 1 | If no key numbers are added, the whole strip is left off the published site |
+| 2 | Key numbers are entered by the user only. The AI does not invent a figure |
+| 3 | Quick-insert buttons are available for the common symbols: star, rupee, plus, per cent and tick |
+
+### 5.8 Module 6: Services
+
+**Purpose.** List what the firm does.
+
+**What it covers.** Step 4 of the builder: the preset services for the selected profession, and any custom services the firm adds.
+
+![Step 4: the preset services](screenshots/step4-services.png)
+
+![Step 4: adding a custom service](screenshots/step4-add-custom.png)
+
+#### Fields and validation
+
+| Field | Required | Validation | Message shown |
+|---|---|---|---|
+| Services shown on the site | At least 1 | At least one service must be switched on | "Turn on at least one service to show on your site." |
+| Service name and description | No | Every preset service can be renamed and rewritten | |
+| Custom service | No | Free text. Added to the same list | |
+
+#### Rules
+
+| # | Rule |
+|---|---|
+| 1 | Switching a service off removes it from the published site. It is not deleted, and can be switched back on |
+| 2 | Custom services behave exactly like preset ones once added |
+| 3 | Changing the profession replaces the preset list. Custom services are kept |
+
+### 5.9 Module 7: About, Partners, Process And Reviews
+
+**Purpose.** Establish who the firm is and why a client should trust it.
+
+**What it covers.** Step 5 of the builder, in five parts.
+
+![Step 5: about the firm, and founders and partners](screenshots/step5-about-story.png)
+
+![Step 5: about highlights, and how we work](screenshots/step5-highlights-process.png)
+
+![Step 5: client testimonials](screenshots/step5-testimonials.png)
+
+#### Fields and validation
+
+| Field | Required | Validation | Message shown |
+|---|---|---|---|
+| Partners | At least 1 | At least one partner must have a name. Maximum 4 | "Enter at least one founder or partner name." |
+| Partner name | Yes, for every partner added | Cannot be blank | |
+| Partner role or designation | No | Free text | |
+| Partner photo | No | Image up to 5 MB. Cropped to a square on upload | |
+| Partner credentials | No | One per line. Shown as bullet points | |
+| About the firm | No | 45 to 70 words | |
+| About highlights | No | Three short selling points, each with a one-line explanation | |
+| How we work | No | 3 to 5 numbered steps | |
+| Client testimonials | No | If used, 3 to 6. Each has a rating, the review, the client's name, their role, and an optional photo | |
+
+#### Rules
+
+| # | Rule |
+|---|---|
+| 1 | Every photo is cropped to a square when it is uploaded, because all four designs display it as a square |
+| 2 | The first partner leads the About section on the published site |
+| 3 | Any part left empty is left off the published site. It is never filled with the design's sample content |
+| 4 | If no testimonials are added, the reviews section does not appear on the site at all |
+
+### 5.10 Module 8: Publish
+
+**Purpose.** Put the site on the internet, and manage it once it is live.
+
+**What it covers.** Step 6 of the builder: choosing the web address, publishing, publishing changes, and taking the site offline.
+
+#### Fields and validation
+
+| Field | Required | Validation | Message shown |
+|---|---|---|---|
+| Web address | Yes | Cannot be blank | "Choose a subdomain for your site." |
+| Web address format | Yes | At least 3 characters. Lowercase letters, numbers and hyphens only. No spaces or other symbols | "Use at least 3 letters, numbers or hyphens (no spaces)." |
+| Web address availability | Yes | Checked against every existing site. Launch stays disabled until the address is confirmed free | The screen shows "Available" once confirmed |
+| Domain | Yes | Selected from KDK's domain list. See Section 7 | |
+
+#### The four states of this screen
+
+**State 1: Ready to launch.** The site has never been published.
+
+![Ready to launch, showing the warning that the address cannot be changed later](screenshots/step6-never-published.png)
+
+| Item | Detail |
+|---|---|
+| Buttons | Launch Website |
+| Message | "Check your address before you launch. It cannot be changed afterwards, so that every link you share keeps working." |
+| When the button is disabled | While any required field anywhere in Steps 2 to 6 is incomplete, or the address is not confirmed free |
+
+**State 2: Live, with changes not yet published.**
+
+![Live, with changes waiting to be published](screenshots/step6-publish.png)
+
+| Item | Detail |
+|---|---|
+| Buttons | Publish changes, Unpublish |
+| Message | "You have changes that are not live yet. Visitors still see the version you published on [date]." |
+
+**State 3: Live and up to date.**
+
+![Live, with nothing left to publish](screenshots/step6-live-in-sync.png)
+
+| Item | Detail |
+|---|---|
+| Buttons | Unpublish |
+| Message | "Your website is live and up to date. Hover the preview to open it." |
+
+**State 4: Offline.**
+
+![Offline, with the address still reserved](screenshots/step6-offline.png)
+
+| Item | Detail |
+|---|---|
+| Buttons | Publish again |
+| Message | "Your site is offline. Your address stays reserved for you." |
+| What visitors see | A "site unavailable" page |
+
+#### Rules
+
+| # | Rule |
+|---|---|
+| 1 | The web address cannot be changed once the site has been published. There is no way for the user to change it, and no admin screen to change it for them |
+| 2 | The address is a pair: the name and the domain it sits on. Neither half can be changed after publishing |
+| 3 | The user is warned that the address is permanent before they launch, which is the last point at which the warning is useful |
+| 4 | Publishing checks every required field across Steps 2 to 6, not only Step 6. If anything is missing, the user is taken to the first incomplete step |
+| 5 | Taking a site offline asks for confirmation first, and states what is kept |
+| 6 | Taking a site offline keeps the address reserved, keeps all content, and keeps every enquiry |
+| 7 | There is no delete. Unpublish is the only way to take a site down |
+| 8 | Editing the site while it is offline is allowed. Publishing again puts the current version live |
+
+**Why the address is permanent.** A changed address breaks every link already shared: visiting cards, WhatsApp forwards, client emails, and the firm's letterhead. Search engines have to find and rank the new address from the beginning. The old address becomes free for someone else to take, which can leave a competitor sitting on the address a firm printed on its stationery.
+
+### 5.11 Module 9: Enquiries Inbox
+
+**Purpose.** Collect every enquiry from the website in one place inside the KDK app, and let the firm work through it.
+
+**What it covers.** The inbox screen, reached from the account menu.
+
+![The enquiry inbox](screenshots/enquiries-inbox.png)
+
+The names, numbers and messages shown above are examples used for this document, not real visitor data.
+
+#### What is captured from each enquiry
+
+| Field | Source | Always present |
+|---|---|---|
+| Name | Contact form. Required from the visitor | Yes |
+| Phone number | Contact form. Required from the visitor | Yes |
+| Email address | Contact form. Optional for the visitor | No |
+| Service of interest | Contact form dropdown | No |
+| Message | Contact form. Optional for the visitor | No |
+| Received date and time | Recorded automatically | Yes |
+| Which site it came from | Recorded automatically | Yes |
+
+#### What the owner can do
+
+| Action | Detail |
+|---|---|
+| Set a status | New, Contacted, In Progress, Converted, Closed |
+| Add a private note | Visible only to the owner. Never shown to the visitor |
+| Call, WhatsApp or email | Directly from the row |
+| Search | Across name, phone, email and message |
+| Filter | By status |
+| Select several at once | To change status or export them together |
+| Export | To Excel, either the selected rows or all of them |
+
+#### Rules
+
+| # | Rule |
+|---|---|
+| 1 | An enquiry is saved the moment it is submitted, before anything else is attempted |
+| 2 | Only the owner of the site can see its enquiries |
+| 3 | Enquiries are kept when a site is taken offline |
+| 4 | No action anywhere in the product deletes an enquiry |
+| 5 | The list shows 10 enquiries per page, newest first |
+
+### 5.12 Module 10: Enquiry Email Alert
+
+**Purpose.** Tell the professional an enquiry has arrived, so they respond in minutes instead of whenever they next open the builder.
+
+**What it covers.** The email sent on every enquiry, and the link in it.
+
+#### What the email contains
+
+| Line | Content |
+|---|---|
+| Subject | New enquiry from [visitor's name] for [firm name] |
+| Preview line | Phone number, service of interest, and when it arrived |
+| Body | Visitor's name, phone, email, service of interest, the message, the date and time in IST, and which of the owner's sites it came from |
+| Buttons | View this enquiry, Call, WhatsApp |
+| Footer | A line stating why the email was received |
+
+#### Rules
+
+| # | Rule |
+|---|---|
+| 1 | The enquiry is saved first, and the email is sent afterwards. A failure to send can never lose an enquiry |
+| 2 | A field the visitor left blank is removed from the email. It is never filled with an example |
+| 3 | Replying to the email writes to the visitor, when the visitor gave an email address. When they did not, the email has no reply address |
+| 4 | "View this enquiry" opens that one enquiry, on whichever page of the list it sits, with its full message already open |
+| 5 | If the owner is not signed in, signing in takes them to that same enquiry |
+| 6 | The email is sent from a KDK address, configured so that it reaches the inbox and not the spam folder |
+| 7 | The email is sent in both formatted and plain-text form, because some corporate mail systems block formatted mail |
+| 8 | Automated submissions are filtered before they can trigger an email, and one site cannot send more than a set number of alerts in an hour. Beyond that, a single summary email is sent |
+
+**Why rule 8 is part of this module.** The contact form accepts anything submitted to it. Junk in an inbox is a nuisance. Junk that triggers email reaches the owner's mailbox and drives spam complaints, which damage the reputation of the single KDK address that every customer's alerts are sent from.
+
+### 5.13 Module 11: The Published Website
+
+**Purpose.** The website the visitor actually sees.
+
+**What it covers.** Everything a published site contains, whichever design was chosen.
+
+#### Sections of every published site
+
+| # | Section | Content |
+|---|---|---|
+| 1 | Navigation bar | Firm name or logo, and the menu. Becomes solid when the page is scrolled |
+| 2 | Hero banner | Headline, sub-heading, buttons and audience tags |
+| 3 | Key numbers | Up to 6 figures, if the firm added any |
+| 4 | Services | The services switched on in Module 6 |
+| 5 | About | The firm's story and credentials |
+| 6 | Founders and partners | Photo, name and role for each |
+| 7 | How we work | The numbered process |
+| 8 | Client reviews | The testimonials, if any were added |
+| 9 | Contact | Contact details, the enquiry form, and a floating WhatsApp button |
+| 10 | Footer | Firm details and "Powered by KDK Software" |
+
+#### Rules
+
+| # | Rule |
+|---|---|
+| 1 | Any section with no content is left off the site entirely. It never falls back to the design's sample content |
+| 2 | Every site works on a phone, which is where most visitors arrive |
+| 3 | Every site is served over https, so no browser shows a security warning |
+| 4 | Every site is given the page title, description, preview image and machine-readable business summary that search engines and WhatsApp use. This is generated from what the firm entered, and updates when they publish again |
+
+## 6. Designs And Colour System
+
+### 6.1 The Four Designs
+
+| Design | Intended for |
+|---|---|
+| Apex | Chartered Accountants, Tax and Financial Consultants. Marked "Most Popular" |
+| Heritage | Advocates and Legal Consultants |
+| Nova | Tax Consultants, GST Practitioners |
+| Zenith | Company Secretaries and Corporate professionals |
+
+Each design carries six colour themes of its own, giving 24 combinations. Every theme is checked so that text stays readable against its background.
+
+**Apex**
+
+![The Apex design](screenshots/template-apex.png)
+
+**Heritage**
+
+![The Heritage design](screenshots/template-heritage.png)
+
+**Nova**
+
+![The Nova design](screenshots/template-nova.png)
+
+**Zenith**
+
+![The Zenith design](screenshots/template-zenith.png)
+
+### 6.2 Design Rules
+
+| # | Rule |
+|---|---|
+| 1 | No emoji anywhere. All icons are drawn as line icons |
+| 2 | No external fonts. The device's own system font is used, so pages load with nothing to download |
+| 3 | Every design is fully responsive on a phone |
+| 4 | Colours are defined once as a set and reused, so a theme changes the whole site consistently |
+
+## 7. Domain Names
+
+Every published site takes the form `firm-name.domain`. KDK owns the domains, so the user buys nothing and configures nothing.
 
 | Domain | Positioning | Status |
 |---|---|---|
-| `kdksites.in` | The general, all-profession KDK Sites address | **Live**: this is what every site currently publishes to |
-| `CAworld.in` | Chartered Accountants | Name finalised, not yet purchased |
-| `Mycafirm.in` | Chartered accountancy firms | Name finalised, not yet purchased |
-| `caone.ai` | Modern, tech-forward practices | Name finalised, not yet purchased |
-| `cadesk.app` | A clean, app-style address | Name finalised, not yet purchased |
+| kdksites.in | General, all professions | Live. Every site currently publishes here |
+| CAworld.in | Chartered Accountants | Name finalised, purchase pending |
+| Mycafirm.in | Chartered accountancy firms | Name finalised, purchase pending |
+| caone.ai | Modern, technology-forward practices | Name finalised, purchase pending |
+| cadesk.app | Short, app-style address | Name finalised, purchase pending |
 
-Once a domain in this list is purchased and connected, it becomes selectable from the same address picker shown in Step 6 (Publish) above. No other change is needed anywhere else in the product.
+Once a domain is purchased and connected, it appears in the address picker in Module 8. No other change is needed anywhere in the product.
 
----
-
-## 8. Website Templates & Design System
-
-### 8.1 The Four Designs
-
-| Design | Best for |
-|---|---|
-| **Apex** | Chartered Accountants, Tax & Financial Consultants (marked "Most Popular") |
-| **Heritage** | Advocates & Legal Consultants |
-| **Nova** | Tax Consultants, GST Practitioners |
-| **Zenith** | Company Secretaries, Corporate professionals |
-
-Each design offers **6 curated colour palettes** of its own (24 combinations in total), each checked to make sure colours are genuinely distinguishable from one another and that text stays easily readable against its background.
-
-Below is each design as a visitor actually sees it, shown here with each template's own placeholder content (a real, published site shows the professional's own name, photos, and text in exactly this layout):
-
-**Apex**
-![Apex template](screenshots/template-apex.png)
-
-**Heritage**
-![Heritage template](screenshots/template-heritage.png)
-
-**Nova**
-![Nova template](screenshots/template-nova.png)
-
-**Zenith**
-![Zenith template](screenshots/template-zenith.png)
-
-### 8.2 What Every Published Site Includes
-
-Regardless of which design is chosen, every published site has the same set of sections, populated with that firm's own content:
-
-1. **Navigation bar**: firm name/logo and menu, becomes solid on scroll
-2. **Hero banner**: firm name, tagline, and calls to action
-3. **Key numbers**: up to 6 stats, if the user chose to add them
-4. **Services**: the profession's services, as toggled/edited by the user
-5. **About**: firm story and credentials
-6. **Founders/Partners**: photo, name, and role for each
-7. **How We Work**: a numbered process, at least 3 steps
-8. **Client Reviews**: testimonials, if the user chose to add them
-9. **Contact**: details, an enquiry form, and a floating WhatsApp button
-10. **Footer**: firm details and "Powered by KDK Software"
-
-### 8.3 Design Principles
-
-- No emoji anywhere: icons are hand-drawn, geometric line icons
-- No Google Fonts or other external assets: uses the device's own system font, so pages load instantly with nothing to download
-- Every design is fully responsive on mobile, where the large majority of a professional's clients will view it
-- Every published site is automatically secured (https/SSL): visitors never see a "not secure" warning
-
----
-
-## 9. Non-Functional Requirements
-
-Written for anyone checking "does this actually meet the bar," not just developers:
+## 8. Non-Functional Requirements
 
 | Requirement | What it means in practice |
 |---|---|
-| **Speed** | Pages should feel instant. No large downloads, no waiting on external fonts or scripts. |
-| **Mobile-first** | Every screen, in the builder and on published sites, must work cleanly on a phone, not just a desktop. |
-| **Security** | Every published site is served over https automatically. The AI's underlying key/credentials are never exposed to a visitor's browser. All AI requests go through KDK's own server-side service. |
-| **Accounts stay private** | A professional's draft and published site are tied to their login; nobody else can see or edit them. |
-| **Reversibility** | Taking a site offline always asks for confirmation first, and is always recoverable. There is currently no way to permanently delete a site at all; Unpublish (reversible) is the only way down, and it keeps both the address and every captured enquiry. |
-| **A live address never moves** | Once published, a site's web address is permanent, so every link a professional has already shared keeps working and cannot be re-pointed, by them or by anyone else ([Step 6](#step-6-publish)). The trade-off is deliberate: correcting a typed mistake after launch is currently impossible, which is an accepted, recorded open question rather than an oversight. |
-| **No broken defaults** | A skipped field must never show someone else's placeholder text on a real, live website (see [Section 6.15](#615-the-rule-behind-all-of-this-no-placeholder-content-on-a-live-site)). |
-| **Availability** | Once published, a site should stay reachable continuously; taking it down is something only its owner does deliberately. |
-| **Uploaded documents are not kept** | A profile document uploaded for import is read once and discarded. It is never stored against the account, never kept on KDK's servers, and never retained afterwards. Only the answers the professional then reviews on screen are saved. |
-| **Enquiries survive everything** | An enquiry is stored the moment it is submitted, before any notification is attempted, so no failure elsewhere can lose one. Enquiries are kept when a site is taken offline, and there is no action in the product that discards them. |
-| **Alerts must actually arrive** | Enquiry alerts are transactional email and have to reach the inbox rather than the spam folder, which is why they are sent from a properly configured KDK address and why automated junk is filtered before it can trigger them. |
+| Speed | Pages load without waiting on external fonts, scripts or large downloads |
+| Mobile | Every screen, in the builder and on published sites, works on a phone |
+| Security | Every published site is served over https. AI keys and credentials are never exposed to a visitor's browser |
+| Account privacy | A user's draft and published site are visible only to their own account |
+| Uploaded documents | A profile document is read once and discarded. It is never stored |
+| Enquiries are never lost | An enquiry is saved before any notification is attempted, and nothing in the product deletes one |
+| A live address never moves | Once published, the address is permanent, so every link already shared keeps working |
+| Reversibility | Taking a site offline asks for confirmation, and is always reversible |
+| No placeholder content | A field left blank removes its section from the published site. It never shows sample text |
+| Email delivery | Enquiry alerts are sent from a properly configured KDK address so they reach the inbox |
 
----
+## 9. Glossary
 
-## 10. SEO: Getting Published Sites Found on Google
-
-Every published site automatically gets the technical groundwork search engines look for: an accurate page title and description drawn from the firm's real details (not template placeholder text), a clean preview image and link summary for when the site is shared on WhatsApp, and a structured, machine-readable summary of the business (name, phone, address, hours, services) that can help a Google search result show more than just a plain blue link. None of this requires the professional to do anything extra: it's generated automatically from whatever they typed into the builder, and updates itself the next time they publish a change.
-
-Two things are known, current limitations rather than something to quickly fix:
-
-- A KDK-provided address (`name.kdksites.in`) will generally rank a little behind a firm's own domain name. This is true of every website builder, not unique to this product, and is part of why a wider pool of finalised KDK-owned domains (see [Section 7](#7-finalised-domain-names)) is being built out.
-- Since every site uses one of only four templates, at large scale (thousands of live sites) Google can recognise the shared structure across firms, which may affect ranking. This is a byproduct of how any template-based builder works, and isn't fixable with a small code change.
+| Term | Meaning |
+|---|---|
+| Published site | The firm's live website, visible to anyone on the internet |
+| Address | The web address a site is published at: a name chosen by the firm, plus a KDK-owned domain |
+| Enquiry | A message sent through the contact form on a published site |
+| The builder | The six-step screen where the firm creates and manages its site |
+| AI Website Writer | The interview that produces the site's content from the firm's answers |
+| Profile import | Uploading an existing firm profile so the AI can fill in the interview from it |
+| Preset services | The services loaded automatically for the selected profession |
