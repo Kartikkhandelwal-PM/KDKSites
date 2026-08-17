@@ -2,6 +2,11 @@
 .DS_Store
 Thumbs.db
 
+# Node tooling (puppeteer-core, used only to render mermaid diagrams to PNG)
+node_modules/
+docs/package.json
+docs/package-lock.json
+
 # Local editor / tooling config
 .claude/
 .vscode/
