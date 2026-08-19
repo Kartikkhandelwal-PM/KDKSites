@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Profile Import — test harness</title>
+<link rel="icon" href="assets/ca-india-logo.png"/>
+<style>
+  :root{
+    --navy:#0D1E35; --blue:#1D4ED8; --ground:#F0F4F8; --border:#DDE5EF; --muted:#5A7A9B;
+    --seed-bg:#F2FBF6; --seed-border:#BFE3CF; --seed-text:#0F6B45;
+    --err-bg:#FEF2F2; --err-border:#FECACA; --err-text:#B42318;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--navy);
+       font:400 14px/1.5 'Segoe UI',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:900px;margin:0 auto;padding:32px 20px 80px}
+  h1{font-size:20px;margin:0 0 6px}
+  .lede{color:var(--muted);margin:0 0 6px;max-width:62ch}
+  .warn{background:#FFFBEB;border:1px solid #FDE68A;color:#92400E;border-radius:10px;
+        padding:11px 13px;font-size:12.5px;margin:16px 0 0;line-height:1.5}
+  .warn code{background:rgba(0,0,0,.06);padding:1px 5px;border-radius:4px;font-size:12px}
+
+  .card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:22px;margin-top:20px}
+  .dz{border:1.5px dashed var(--border);border-radius:12px;padding:34px 16px;text-align:center;
+      cursor:pointer;background:var(--ground);transition:border-color .15s,background .15s}
+  .dz:hover,.dz.over{border-color:var(--blue);background:#F2F6FF}
+  .dz .ic{color:var(--blue);margin-bottom:8px}
+  .dz .t1{font-weight:700;margin:0 0 4px}
+  .dz .t2{color:var(--muted);font-size:12px;margin:0}
+  input[type=file]{display:none}
+
+  .row{display:flex;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap}
+  .chip{display:flex;align-items:center;gap:8px;background:var(--ground);border:1px solid var(--border);
+        border-radius:9px;padding:8px 11px;font-size:12.5px;flex:1;min-width:0}
+  .chip b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .chip span{color:var(--muted);flex:none}
+  button{font:inherit;font-size:13.5px;font-weight:700;border-radius:9px;padding:10px 18px;
+         border:none;cursor:pointer;background:var(--blue);color:#fff}
+  button:hover:not(:disabled){background:#1841b8}
+  button:disabled{opacity:.5;cursor:default}
+  select{font:inherit;font-size:12.5px;padding:9px 10px;border:1.5px solid var(--border);
+         border-radius:9px;background:#fff;color:var(--navy);max-width:100%}
+  select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(29,78,216,.1)}
+  .hint{font-size:12px;color:var(--muted);margin:10px 0 0;line-height:1.5}
+
+  .status{margin-top:16px;font-size:13px;display:flex;align-items:center;gap:9px;color:var(--muted)}
+  .spin{width:14px;height:14px;border-radius:50%;border:2px solid #DCE6F5;border-top-color:var(--blue);
+        animation:sp .8s linear infinite;flex:none}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  @media (prefers-reduced-motion:reduce){.spin{animation:none}}
+
+  .err{background:var(--err-bg);border:1px solid var(--err-border);color:var(--err-text);
+       border-radius:10px;padding:11px 13px;font-size:13px;margin-top:16px;font-weight:600}
+
+  .summary{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 4px}
+  .pill{font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:99px}
+  .pill.ok{background:var(--seed-bg);color:var(--seed-text);border:1px solid var(--seed-border)}
+  .pill.no{background:var(--ground);color:var(--muted);border:1px solid var(--border)}
+
+  table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
+  th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);
+     font-weight:700;padding:8px 10px;border-bottom:1px solid var(--border)}
+  td{padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+  td.k{color:var(--muted);width:170px;font-size:12px}
+  tr.filled td.v{background:var(--seed-bg)}
+  td.v.empty{color:var(--muted);font-style:italic}
+  .note{margin-top:14px;background:#FFFBEB;border:1px solid #FDE68A;color:#92400E;
+        border-radius:10px;padding:11px 13px;font-size:12.5px}
+  details{margin-top:16px}
+  summary{cursor:pointer;font-size:12.5px;font-weight:600;color:var(--muted)}
+  pre{background:var(--navy);color:#D7E3F4;border-radius:10px;padding:14px;overflow-x:auto;
+      font-size:11.5px;line-height:1.5;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Profile Import &mdash; test harness</h1>
+  <p class="lede">Upload a firm profile, resume, brochure, or a photo of one. This calls the real
+    <code>ai-generate</code> Edge Function in <code>mode:"extract"</code> and shows exactly what the
+    model pulled out. Nothing here touches the builder &mdash; it is for verifying the AI half only.</p>
+
+  <div class="warn" id="cfgWarn" hidden></div>
+
+  <div class="card">
+    <div class="dz" id="dz">
+      <div class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4 4 0 01-1-7.9A5 5 0 0115.9 8H17a3.5 3.5 0 010 7"/><path d="M12 11v8M9 14l3-3 3 3"/></svg></div>
+      <p class="t1">Drop a file here, or click to browse</p>
+      <p class="t2">PDF, DOCX, JPG, PNG, WEBP &middot; up to 10 MB</p>
+    </div>
+    <input type="file" id="fi" accept=".pdf,.docx,.jpg,.jpeg,.png,.webp,application/pdf,image/*"/>
+
+    <div class="row" id="picked" hidden>
+      <span class="chip"><b id="fname"></b><span id="fsize"></span></span>
+      <select id="model" title="Which model reads the document">
+        <option value="google/gemini-3.5-flash-lite">Gemini 3.5 Flash Lite — ₹0.35 (cheapest)</option>
+        <option value="google/gemini-3-flash-preview">Gemini 3 Flash Preview — ₹0.48 (preview, not for production)</option>
+        <option value="anthropic/claude-haiku-4.5">Claude Haiku 4.5 — ₹0.90</option>
+        <option value="google/gemini-3.6-flash">Gemini 3.6 Flash — ₹1.32</option>
+        <option value="google/gemini-3.5-flash">Gemini 3.5 Flash — ₹1.42</option>
+        <option value="anthropic/claude-sonnet-5">Claude Sonnet 5 — ₹2.10</option>
+        <option value="anthropic/claude-opus-5">Claude Opus 5 — ₹4.40 (most careful)</option>
+      </select>
+      <button id="go">Read this profile</button>
+    </div>
+    <p class="hint">Run the same file through two or three of these. What matters is not who finds
+      the most, but who correctly leaves a field <em>empty</em> when the document never said it.</p>
+
+    <div class="status" id="status" hidden></div>
+    <div class="err" id="err" hidden></div>
+  </div>
+
+  <div class="card" id="out" hidden>
+    <div class="summary" id="pills"></div>
+    <div id="noteBox"></div>
+    <table><thead><tr><th>Field</th><th>What the model found</th></tr></thead><tbody id="tb"></tbody></table>
+    <details><summary>Raw JSON response</summary><pre id="raw"></pre></details>
+  </div>
+</div>
+
+<script src="app-config.js"></script>
+<script src="local-ai-config.js" onerror="void 0"></script>
+<script>
+(function(){
+  var AI = window.KDK_AI || {};
+  var url = (AI.supabaseUrl||'').replace(/\/+$/,'');
+  var anon = AI.supabaseAnonKey||'';
+
+  var warn = document.getElementById('cfgWarn');
+  if(!url || !anon){
+    warn.hidden = false;
+    warn.innerHTML = 'Supabase is not configured in <code>app-config.js</code>, so this page cannot call the function.';
+  }
+
+  var fi=document.getElementById('fi'), dz=document.getElementById('dz'),
+      picked=document.getElementById('picked'), goBtn=document.getElementById('go'),
+      statusEl=document.getElementById('status'), errEl=document.getElementById('err'),
+      out=document.getElementById('out'), tb=document.getElementById('tb'),
+      pills=document.getElementById('pills'), raw=document.getElementById('raw'),
+      noteBox=document.getElementById('noteBox');
+  var file=null;
+
+  function human(n){ return n<1024?n+' B':n<1048576?(n/1024).toFixed(0)+' KB':(n/1048576).toFixed(1)+' MB'; }
+
+  function pick(f){
+    if(!f) return;
+    file=f;
+    document.getElementById('fname').textContent=f.name;
+    document.getElementById('fsize').textContent=human(f.size);
+    picked.hidden=false; errEl.hidden=true; out.hidden=true;
+  }
+
+  dz.addEventListener('click', function(){ fi.click(); });
+  fi.addEventListener('change', function(){ pick(fi.files[0]); });
+  ['dragenter','dragover'].forEach(function(e){
+    dz.addEventListener(e, function(ev){ ev.preventDefault(); dz.classList.add('over'); });
+  });
+  ['dragleave','drop'].forEach(function(e){
+    dz.addEventListener(e, function(ev){ ev.preventDefault(); dz.classList.remove('over'); });
+  });
+  dz.addEventListener('drop', function(ev){ pick(ev.dataTransfer.files[0]); });
+
+  function toBase64(f){
+    return new Promise(function(res, rej){
+      var r=new FileReader();
+      r.onload=function(){ res(String(r.result).split(',')[1]||''); };
+      r.onerror=function(){ rej(new Error('Could not read that file.')); };
+      r.readAsDataURL(f);
+    });
+  }
+
+  var LABELS = {
+    profession:'Profession', firm:'Firm name', years_practising:'Years practising',
+    city:'City', phone:'Phone', email:'Email', address:'Office address',
+    hours:'Office hours', website:'Website', socials:'Social links',
+    partners:'Partners', services:'Services', best_known_for:'Best known for',
+    typical_clients:'Typical clients', key_numbers:'Key numbers', workflow:'How they work'
+  };
+
+  function isEmpty(v){
+    if(v==null) return true;
+    if(typeof v==='string') return !v.trim();
+    if(Array.isArray(v)) return v.length===0;
+    if(typeof v==='object') return Object.keys(v).every(function(k){ return !String(v[k]||'').trim(); });
+    return false;
+  }
+
+  function show(v){
+    if(Array.isArray(v)){
+      return v.map(function(x){
+        if(x && typeof x==='object'){
+          return [x.name,x.role,x.qualification].filter(Boolean).join(' — ');
+        }
+        return String(x);
+      }).join('\n');
+    }
+    if(v && typeof v==='object'){
+      return Object.keys(v).filter(function(k){ return String(v[k]||'').trim(); })
+        .map(function(k){ return k+': '+v[k]; }).join('\n');
+    }
+    return String(v);
+  }
+
+  function render(p, usage, model){
+    tb.innerHTML=''; pills.innerHTML=''; noteBox.innerHTML='';
+    var found=0, total=0;
+
+    Object.keys(LABELS).forEach(function(k){
+      var v=p[k], empty=isEmpty(v);
+      total++; if(!empty) found++;
+      var tr=document.createElement('tr');
+      if(!empty) tr.className='filled';
+      var td1=document.createElement('td'); td1.className='k'; td1.textContent=LABELS[k];
+      var td2=document.createElement('td'); td2.className='v'+(empty?' empty':'');
+      td2.style.whiteSpace='pre-wrap';
+      td2.textContent = empty ? 'not stated in the document' : show(v);
+      tr.appendChild(td1); tr.appendChild(td2); tb.appendChild(tr);
+    });
+
+    var a=document.createElement('span'); a.className='pill ok';
+    a.textContent=found+' of '+total+' fields found';
+    var b=document.createElement('span'); b.className='pill no';
+    b.textContent=(total-found)+' left for the interview to ask';
+    pills.appendChild(a); pills.appendChild(b);
+
+    if(model){
+      var m=document.createElement('span'); m.className='pill no';
+      m.textContent=model; pills.appendChild(m);
+    }
+    if(usage){
+      var c=document.createElement('span'); c.className='pill no';
+      var txt=(usage.input_tokens||0)+' in / '+(usage.output_tokens||0)+' out tokens';
+      // OpenRouter reports what the call actually cost, so show real money.
+      if(usage.cost!=null){ txt+=' · $'+Number(usage.cost).toFixed(5)+' (~₹'+(Number(usage.cost)*88).toFixed(2)+')'; }
+      c.textContent=txt; pills.appendChild(c);
+    }
+    if(p.notes && String(p.notes).trim()){
+      var n=document.createElement('div'); n.className='note';
+      n.textContent='Model note: '+p.notes; noteBox.appendChild(n);
+    }
+    out.hidden=false;
+  }
+
+  goBtn.addEventListener('click', function(){
+    if(!file || !url || !anon) return;
+    goBtn.disabled=true; errEl.hidden=true; out.hidden=true;
+    statusEl.hidden=false;
+    statusEl.innerHTML='<span class="spin"></span> Reading '+file.name+'… this usually takes 10–30 seconds.';
+
+    var chosen = document.getElementById('model').value;
+    toBase64(file).then(function(b64){
+      return fetch(url+'/functions/v1/ai-generate',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+anon},
+        body:JSON.stringify({
+          mode:'extract',
+          model:chosen,
+          file:{ name:file.name, type:file.type, data:b64 }
+        })
+      });
+    }).then(function(r){
+      return r.text().then(function(t){
+        var d; try{ d=JSON.parse(t); }catch(e){ throw new Error('HTTP '+r.status+': '+t.slice(0,300)); }
+        if(!r.ok || d.error) throw new Error(d.error || ('HTTP '+r.status));
+        return d;
+      });
+    }).then(function(d){
+      statusEl.hidden=true;
+      raw.textContent=JSON.stringify(d.profile,null,2);
+      render(d.profile||{}, d.usage, d.model||chosen);
+    }).catch(function(e){
+      statusEl.hidden=true;
+      errEl.hidden=false;
+      errEl.textContent=e.message||String(e);
+    }).then(function(){ goBtn.disabled=false; });
+  });
+})();
+</script>
+</body>
+</html>

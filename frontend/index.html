@@ -1887,7 +1887,7 @@ const AI_SECTIONS = {
     label:'partner bios and credentials',
     guard:function(){ return namedPartners().length ? null : 'Add at least one partner name first, then AI can write about them.'; },
     context:function(){
-      return { partners: namedPartners().map(function(p){ return {name:p.name, role:p.role||''}; }) };
+      return { partners: namedPartners().map(function(p){ return {name:p.name, role:p.role||'', about:p.about||''}; }) };
     },
     shape:'{"partners":[{"bio":"a bio for THIS partner","credentials":["2 to 4 short credential lines"]}]}',
     rules:function(){
@@ -2701,14 +2701,36 @@ function renderPubActions(){
   function mainBtn(label,icon){
     return '<button class="btn btn-launch'+dead+'" onclick="launch()">'+icon+esc(label)+'</button>';
   }
-  /* Changing the address is a plain button, at the same weight as Unpublish. It
-     opens the panel under the preview; nothing on the page morphs. */
-  var chgBtn='<button class="btn btn-off" onclick="startAddressEdit()">'+PUB_IC.pen+'Change address</button>';
+  /* ══ ADDRESS IS FINAL ONCE PUBLISHED ══  (requirement from management, 2026-08-13)
+     A published site's address may no longer be changed, so the "Change address"
+     button is switched off here. Blanking `chgBtn` is enough on its own: it is the
+     ONLY way into the flow, and `subIn` stays readOnly because that is driven by
+     `isAddrEditing()`, which can now never become true.
+
+     The whole change-address flow is deliberately LEFT IN PLACE rather than deleted:
+     startAddressEdit / cancelAddressEdit / isAddrEditing / addressChanged /
+     askAddressMove / the addr-edit CSS / the launch() move branch. It all still
+     works and is simply unreachable, so this is one line to reverse if the rule is
+     relaxed (e.g. a one-time correction for a typo, or an admin override).
+
+     TO RESTORE: put the original markup back, shown below. Nothing else to undo.
+       var chgBtn='<button class="btn btn-off" onclick="startAddressEdit()">'+PUB_IC.pen+'Change address</button>';
+
+     Open questions still to settle are recorded in docs/REQUIREMENTS-PENDING.md,
+     the most important being what happens on Delete: if deleting a site frees the
+     subdomain and lets the user publish a new one, this rule is bypassable. */
+  var chgBtn='';
   var offBtn='<button class="btn btn-off" onclick="unpublishSite()">'+PUB_IC.off+'Unpublish</button>';
   var row;
 
   if(!isLiveSite()){
     row=mainBtn('Launch Website',PUB_IC.rocket);
+    /* The address becomes permanent at launch, so this is the last moment the warning
+       is any use. Said only when there are no gaps left, because until then the hint
+       is doing a more urgent job (naming what is still missing) and two messages
+       stacked here just get skipped. */
+    if(!hint) hint='<div class="pub-hint"><b>Check your address before you launch.</b> '+
+      'It cannot be changed afterwards, so that every link you share keeps working.</div>';
   } else if(isAddrEditing()){
     /* The panel is open. One thing to do, one way out. */
     var moving=addressChanged();
@@ -4047,6 +4069,19 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ if(typeof 
         {k:'role',label:'Designation / role',ph:[
           'e.g. Founder & Managing Partner','e.g. Partner, Audit & Assurance',
           'e.g. Partner, Tax Litigation','e.g. Associate Partner, Compliance'
+        ]},
+        /* Added 2026-08-13. Without this the model was handed a name and a job title
+           and still told to produce a 15 to 45 word bio, so it filled the gap with
+           invented character: "offers a blend of accounting and management skills to
+           assist clients effectively". Nobody had said that about anyone. A partner's
+           own website bio is not something that can be derived from their designation,
+           so it has to be asked for. Optional on purpose: left empty, the prompt now
+           writes a short factual line instead of inventing one. */
+        {k:'about',label:'What do they handle? (optional, helps the AI)',ta:true,ph:[
+          'e.g. handles GST litigation and department hearings',
+          'e.g. 20 years in statutory audit for manufacturing clients',
+          'e.g. looks after NRI clients and FEMA matters',
+          'e.g. leads the firm’s valuation and M&A work'
         ]}
       ]}},
     /* Three or none (minRows:3 + optRows). The testimonials block is a CAROUSEL in
@@ -4121,7 +4156,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ if(typeof 
   /* edge/clients/numbers are pill LISTS (arrays of short strings) and workflow is an
      ordered list of rough lines. They were all free-text before; `restore` migrates
      any saved draft written by the older version. */
-  function freshPartner(){ return {name:'',role:'',photo:''}; }
+  function freshPartner(){ return {name:'',role:'',photo:'',about:''}; }
   function freshReview(){ return {name:'',role:'',note:'',img:'',stars:5}; }
   function freshStep(){ return {line:''}; }
   function freshSocial(){ var o={}; SOCIALS.forEach(function(s){ o[s.k]=''; }); return o; }
@@ -4137,6 +4172,17 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ if(typeof 
     reviews:seedRows(freshReview,3),
     partners:[freshPartner()],
     phone:'',email:'',address:'',hours:HOURS_DEFAULT,social:freshSocial(),extra:'',
+    /* Service names an imported profile showed this firm actually offers. Held here
+       rather than applied once to S.services, because generate() calls loadServices()
+       and that REBUILDS S.services from the profession preset, resetting every `on`
+       flag. Toggling at import time alone was silently undone the moment the user
+       pressed "Write my website". apply() re-applies this list afterwards.
+       Must be declared here: `restore` only copies keys that already exist on A. */
+    svcOn:[],
+    /* Did an IMPORT choose the profession, rather than the user? Lets a later import
+       correct an earlier import's guess while never overriding the user's own pick.
+       Declared here because `restore` only copies keys that already exist on A. */
+    profFromImport:false,
     /* `__seeded`  the prefill from the user's existing site has already run once.
        `__touched` the USER has typed on a real screen, as opposed to us filling
                    facts in for them. Only the second one may send a returning
@@ -4469,6 +4515,55 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ if(typeof 
     '.aiw-istart:hover{transform:translateY(-1px);filter:brightness(1.06);box-shadow:0 16px 36px rgba(196,131,10,.46)}',
     '.aiw-ifnote{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:15px;font-size:11px;line-height:1.5;color:rgba(255,255,255,.4)}',
     '.aiw-ifnote svg{width:13px;height:13px;flex-shrink:0;color:rgba(126,214,170,.75)}',
+    /* The import route out of the intro. Sits on the dark hero, so it is a ghost
+       button: clearly a second option, deliberately not competing with the primary. */
+    '.aiw-ialt{display:flex;align-items:center;gap:8px;margin-top:13px;padding:10px 18px;cursor:pointer;'+
+      'border:1px solid rgba(255,255,255,.26);border-radius:11px;background:rgba(255,255,255,.06);'+
+      'font:600 12.5px "Segoe UI",system-ui,sans-serif;color:rgba(255,255,255,.92);transition:background .15s,border-color .15s}',
+    '.aiw-ialt svg{width:15px;height:15px;color:rgba(126,214,170,.9)}',
+    '.aiw-ialt:hover{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.44)}',
+
+    /* ══ IMPORT SCREEN ══  renders on the card's own white, not the dark hero.
+       The dropzone and the skip button are deliberately similar in weight: a user
+       with no profile document must not feel they took the lesser path. */
+    '.aiw-imp{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;'+
+      'flex:1;min-height:0;overflow-y:auto;padding:40px 32px;background:#fff}',
+    '.aiw-imp-h{margin:16px 0 8px;font:700 22px "Segoe UI",system-ui,sans-serif;color:#0D1E35}',
+    '.aiw-imp-s{margin:0 0 24px;max-width:46ch;font-size:13.5px;line-height:1.6;color:#5A7A9B}',
+    '.aiw-imp-dz{width:min(430px,100%);display:flex;flex-direction:column;align-items:center;gap:5px;'+
+      'padding:30px 22px;border:1.6px dashed #C7D2E4;border-radius:14px;background:#F7F9FC;cursor:pointer;'+
+      'transition:border-color .15s,background .15s}',
+    '.aiw-imp-dz:hover,.aiw-imp-dz.over{border-color:#1D4ED8;background:#F2F6FF}',
+    '.aiw-imp-dz:focus-visible{outline:2px solid #1D4ED8;outline-offset:2px}',
+    '.aiw-imp-dz.busy{opacity:.55;cursor:default;border-color:#C7D2E4;background:#F7F9FC}',
+    '.aiw-imp-ic{color:#1D4ED8;margin-bottom:3px}',
+    '.aiw-imp-ic svg{width:26px;height:26px}',
+    '.aiw-imp-dz b{font:700 14px "Segoe UI",system-ui,sans-serif;color:#0D1E35}',
+    '.aiw-imp-dz i{font-style:normal;font-size:11.5px;color:#5A7A9B}',
+    '.aiw-imp-msg{width:min(430px,100%);margin-top:14px;padding:11px 13px;border-radius:10px;text-align:left;'+
+      'font-size:12.5px;line-height:1.5;font-weight:600;display:flex;align-items:center;gap:9px}',
+    '.aiw-imp-msg.busy{background:#F2F6FF;border:1px solid #CFE0FA;color:#1D4ED8}',
+    '.aiw-imp-msg.bad{background:#FEF2F2;border:1px solid #FECACA;color:#B42318}',
+    '.aiw-imp-or{width:min(430px,100%);display:flex;align-items:center;gap:12px;margin:20px 0 16px;'+
+      'font:700 10.5px "Segoe UI",system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#8FA6BF}',
+    '.aiw-imp-or::before,.aiw-imp-or::after{content:"";flex:1;height:1px;background:#E2E8F0}',
+    '.aiw-imp-skip{display:flex;align-items:center;gap:8px;padding:12px 20px;cursor:pointer;'+
+      'border:1.5px solid #DDE5EF;border-radius:11px;background:#fff;'+
+      'font:700 13px "Segoe UI",system-ui,sans-serif;color:#0D1E35;transition:border-color .15s,color .15s}',
+    '.aiw-imp-skip svg{width:15px;height:15px;color:#5A7A9B;transition:color .15s}',
+    '.aiw-imp-skip:hover{border-color:#1D4ED8;color:#1D4ED8}',
+    '.aiw-imp-skip:hover svg{color:#1D4ED8}',
+    /* the re-import choice: two equal cards, because neither answer is safe to prefer */
+    '.aiw-impc{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:min(560px,100%)}',
+    '.aiw-impc-b{display:flex;flex-direction:column;gap:5px;text-align:left;padding:16px 17px;cursor:pointer;'+
+      'border:1.5px solid #DDE5EF;border-radius:13px;background:#fff;transition:border-color .15s,background .15s}',
+    '.aiw-impc-b b{font:700 13.5px "Segoe UI",system-ui,sans-serif;color:#0D1E35}',
+    '.aiw-impc-b i{font-style:normal;font-size:11.5px;line-height:1.5;color:#5A7A9B}',
+    '.aiw-impc-b:hover{border-color:#1D4ED8;background:#F7F9FC}',
+    '.aiw-impc-b.prime{border-color:#BFD3F5;background:#F7FAFF}',
+    '.aiw-impc-b.prime:hover{border-color:#1D4ED8;background:#F2F6FF}',
+    '.hint-sm{margin:18px 0 0;font-size:11.5px;color:#8FA6BF}',
+    '@media (max-width:640px){.aiw-impc{grid-template-columns:1fr}}',
 
     /* ── right: the demonstration ── */
     '.aiw-istage{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;padding:24px 30px 26px;overflow:hidden;'+
@@ -4613,6 +4708,9 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ if(typeof 
     '  .aiw-ihero{padding:26px 20px 28px}',
     '  .aiw-ih1{font-size:25px}',
     '  .aiw-istart{align-self:stretch;justify-content:center}',
+    '  .aiw-ialt{align-self:stretch;justify-content:center}',
+    '  .aiw-imp{padding:26px 20px}',
+    '  .aiw-imp-h{font-size:19px}',
     '  .aiw-mview{height:250px}',
     '  .aiw-istage{padding:22px 18px 26px}',
     '  .aiw-fly{min-height:0;margin-bottom:12px}',
@@ -4663,6 +4761,11 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ if(typeof 
           '<div class="aiw-prog-tx" id="aiwProgTx"></div></div>'+
         '<div class="aiw-steps" id="aiwSteps"></div>'+
         '<div class="aiw-side-ft">'+
+          /* Second chance at importing. Someone who skipped it on the way in (or who
+             only found the document later) must not have to clear their answers and
+             start over to use it. applyProfile() only fills blanks, so importing
+             mid-interview cannot overwrite anything already typed. */
+          '<button type="button" class="aiw-howto" onclick="__aiwImport()">Import from a profile</button>'+
           '<button type="button" class="aiw-howto" onclick="__aiwIntro()">How this works</button>'+
           '<button type="button" onclick="__aiwReset()">Clear all answers</button>'+
         '</div>'+
@@ -4712,12 +4815,12 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ if(typeof 
     if(!Array.isArray(A.partners)) A.partners=[];
     A.partners=A.partners.map(function(r){
       r=r||{};
-      return {name:String(r.name||''),role:String(r.role||''),photo:String(r.photo||'')};
+      return {name:String(r.name||''),role:String(r.role||''),photo:String(r.photo||''),about:String(r.about||'')};
     });
     /* older drafts stored partners as one-per-line text under `founder` */
     if(saved && saved.founder && !fieldAnswered('partners')){
       A.partners=parsePartners(saved.founder).map(function(r){
-        return {name:r.name||'',role:r.role||'',photo:''};
+        return {name:r.name||'',role:r.role||'',photo:'',about:''};
       });
     }
     if(!A.partners.length) A.partners=[freshPartner()];
@@ -4805,6 +4908,12 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ if(typeof 
         '<p class="aiw-isub">A few short questions, about three minutes. Every line comes back into the builder for you to change.</p>'+
         '<button type="button" class="aiw-istart" onclick="__aiwStart()">'+ic(IC_SPARK)+
           (hasResumableAnswers()?'Back to my answers':'Start writing my website')+'</button>'+
+        /* Second, quieter route in. Not on the floating button, and not styled as a
+           rival primary: upload and typing land in the same interview, so this is a
+           head start, not a different product. */
+        '<button type="button" class="aiw-ialt" onclick="__aiwImport()">'+
+          ic('<path d="M6 15a3.4 3.4 0 01-.8-6.7A4.2 4.2 0 0113.2 6.6H14a3 3 0 010 6"/><path d="M10 9v7M7.6 11.4L10 9l2.4 2.4"/>')+
+          'I already have a firm profile</button>'+
         '<span class="aiw-ifnote">'+ic('<path d="M10 2.6l6 2.4v4.6c0 3.5-2.5 6.3-6 7.8-3.5-1.5-6-4.3-6-7.8V5z"/><path d="M7.4 9.9l1.9 1.9 3.5-3.6"/>')+
           'Nothing goes live until you publish it yourself.</span>'+
       '</div>'+
@@ -4871,6 +4980,186 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ if(typeof 
     introOn = false;
     step = hasResumableAnswers() ? summaryStep() : 0;
     render();
+  };
+
+  /* ── IMPORT SCREEN ──
+     Deliberately NOT a second wizard, and not a second entry point on the floating
+     button. Upload and typing converge on the same interview two screens later, so
+     presenting them as separate features would promise a shortcut that does not
+     exist: whichever you pick, the interview still asks for whatever is missing.
+
+     The skip button carries the same weight as the dropzone on purpose. Plenty of
+     sole practitioners have no profile document at all, and that path must not read
+     as the lesser one. */
+  var IMP_MAX = 10 * 1024 * 1024;
+  var IMP_OK = /\.(pdf|docx|jpe?g|png|webp)$/i;
+  function importHTML(){
+    return '<div class="aiw-imp">'+
+      '<span class="aiw-chip">'+ic(IC_SPARK)+'Import from a profile</span>'+
+      '<h2 class="aiw-imp-h">Already have a firm profile?</h2>'+
+      '<p class="aiw-imp-s">Upload it and we will read it, then only ask you for what it '+
+        'does not cover. A resume, brochure, or even a photo of one works.</p>'+
+      '<div class="aiw-imp-dz" id="aiwImpDz" role="button" tabindex="0">'+
+        '<span class="aiw-imp-ic">'+ic('<path d="M6 15a3.4 3.4 0 01-.8-6.7A4.2 4.2 0 0113.2 6.6H14a3 3 0 010 6"/><path d="M10 9v7M7.6 11.4L10 9l2.4 2.4"/>')+'</span>'+
+        '<b>Choose a file, or drop one here</b>'+
+        '<i>PDF, DOCX, JPG, PNG &middot; up to 10 MB</i>'+
+      '</div>'+
+      '<input type="file" id="aiwImpFile" accept=".pdf,.docx,.jpg,.jpeg,.png,.webp" style="display:none">'+
+      '<div class="aiw-imp-msg" id="aiwImpMsg" hidden></div>'+
+      '<div class="aiw-imp-or"><span>or</span></div>'+
+      '<button type="button" class="aiw-imp-skip" onclick="__aiwStart()">'+
+        ic('<path d="M10 17h7"/><path d="M13.4 3.4a1.7 1.7 0 012.4 2.4L6 15.6 3 16.4l.8-3z"/>')+
+        'Answer a few questions instead</button>'+
+    '</div>';
+  }
+  function impMsg(kind,html){
+    var el=document.getElementById('aiwImpMsg');
+    if(!el) return;
+    el.hidden=false; el.className='aiw-imp-msg '+kind; el.innerHTML=html;
+  }
+  function readAsB64(f){
+    return new Promise(function(res,rej){
+      var r=new FileReader();
+      r.onload=function(){ res(String(r.result).split(',')[1]||''); };
+      r.onerror=function(){ rej(new Error('That file could not be read. Try another one.')); };
+      r.readAsDataURL(f);
+    });
+  }
+  function runImport(f){
+    if(!f) return;
+    if(!IMP_OK.test(f.name||'')){
+      impMsg('bad','That file type is not supported. Upload a PDF, DOCX, JPG, PNG or WEBP.'); return;
+    }
+    if(f.size>IMP_MAX){
+      impMsg('bad','That file is '+(f.size/1048576).toFixed(1)+' MB. Please upload one under 10 MB.'); return;
+    }
+    if(!edgeReady()){
+      impMsg('bad','Profile import is not configured on this site yet.'); return;
+    }
+    var dz=document.getElementById('aiwImpDz');
+    if(dz) dz.classList.add('busy');
+    impMsg('busy','<span class="aiw-bspin"></span>Reading '+esc(f.name)+'. This takes a few seconds.');
+
+    var pi=(AI.profileImport||{});
+    readAsB64(f).then(function(b64){
+      return fetch(AI.supabaseUrl.replace(/\/+$/,'')+'/functions/v1/ai-generate',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+AI.supabaseAnonKey},
+        body:JSON.stringify({
+          mode:'extract',
+          provider: pi.provider||'openrouter',
+          model:    pi.model||'google/gemini-3.5-flash-lite',
+          /* The builder's own service names for this profession, sent as a closed list
+             the model must pick from. Doing the matching there rather than here means
+             "Statutory Audits" in a PDF can light up "Statutory Audit" in the builder
+             without any string-similarity guesswork, and whatever comes back is always
+             a real service we can toggle. */
+          catalog: (window.S && Array.isArray(S.services))
+            ? S.services.map(function(r){ return (r&&r.name)||''; }).filter(Boolean)
+            : [],
+          file:{ name:f.name, type:f.type, data:b64 }
+        })
+      });
+    }).then(function(r){
+      return r.text().then(function(t){
+        var d; try{ d=JSON.parse(t); }catch(e){ throw new Error('Something went wrong reading that file. Please try again.'); }
+        if(!r.ok || d.error) throw new Error(d.error||'Something went wrong reading that file. Please try again.');
+        return d;
+      });
+    }).then(function(d){
+      /* Someone re-uploading a REVISED profile after publishing hits this. Every field
+         is already filled, so fill-blanks mode would apply nothing and then report the
+         file as unusable. Ask instead: only they know whether the document or their
+         edits are more current. */
+      var clash=profileConflicts(d.profile);
+      if(clash){
+        if(dz) dz.classList.remove('busy');
+        showImportChoice(d.profile, clash);
+        return;
+      }
+      var chg=applyProfile(d.profile,false), filled=chg.length;
+      if(!filled){
+        if(dz) dz.classList.remove('busy');
+        impMsg('bad','We could not find anything usable in that file. '+
+          'If it is a scan, a clearer photo helps. You can also answer the questions instead.');
+        return;
+      }
+      /* Straight into the interview, never the summary: the judgement questions have
+         still not been asked, and hasResumableAnswers() is what guards that. */
+      introOn=false;
+      step = hasResumableAnswers() ? summaryStep() : 0;
+      render();
+      toast('Filled in '+filled+' answer'+(filled===1?'':'s')+' from your profile: '+listBits(chg)+'. Check the highlighted ones.');
+    }).catch(function(e){
+      if(dz) dz.classList.remove('busy');
+      impMsg('bad', esc(e.message||String(e)));
+    });
+  }
+  function showImport(){
+    introOn=true;                       // same "not a step yet" state as the intro
+    card.classList.add('intro');
+    document.getElementById('aiwMain').innerHTML = importHTML();
+    var dz=document.getElementById('aiwImpDz'), fi=document.getElementById('aiwImpFile');
+    if(!dz||!fi) return;
+    var open=function(){ if(!dz.classList.contains('busy')) fi.click(); };
+    dz.addEventListener('click', open);
+    dz.addEventListener('keydown', function(e){
+      if(e.key==='Enter'||e.key===' '){ e.preventDefault(); open(); }
+    });
+    fi.addEventListener('change', function(){ runImport(fi.files&&fi.files[0]); });
+    ['dragenter','dragover'].forEach(function(ev){
+      dz.addEventListener(ev, function(e){ e.preventDefault(); dz.classList.add('over'); });
+    });
+    ['dragleave','drop'].forEach(function(ev){
+      dz.addEventListener(ev, function(e){ e.preventDefault(); dz.classList.remove('over'); });
+    });
+    dz.addEventListener('drop', function(e){
+      if(dz.classList.contains('busy')) return;
+      runImport(e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]);
+    });
+  }
+  window.__aiwImport = function(){ saveCurrent(); persist(); showImport(); };
+
+  /* ── RE-IMPORT CHOICE ──
+     Shown only when the document disagrees with answers already in place, which in
+     practice means a returning user uploading a revised profile. Neither answer is
+     safe to assume: their published answers may be hand-corrected and better than the
+     document, or the document may be the newer truth. So ask, and say plainly what
+     each button does. "Update" never clears a field the document is silent about. */
+  var pendingProfile = null;
+  function showImportChoice(profile, clash){
+    pendingProfile = profile;
+    document.getElementById('aiwMain').innerHTML =
+      '<div class="aiw-imp">'+
+        '<span class="aiw-chip">'+ic(IC_SPARK)+'Profile read</span>'+
+        '<h2 class="aiw-imp-h">This differs from your current answers</h2>'+
+        '<p class="aiw-imp-s">We read the file and found <b>'+clash+' '+
+          (clash===1?'detail that does not match':'details that do not match')+
+          '</b> what you already have. Which should win?</p>'+
+        '<div class="aiw-impc">'+
+          '<button type="button" class="aiw-impc-b prime" onclick="__aiwImportApply(1)">'+
+            '<b>Use this file</b><i>Its details replace yours where they differ. '+
+            'Anything the file does not mention is left exactly as it is.</i></button>'+
+          '<button type="button" class="aiw-impc-b" onclick="__aiwImportApply(0)">'+
+            '<b>Keep my answers</b><i>Only fills in gaps. Nothing you already have changes.</i></button>'+
+        '</div>'+
+        '<p class="hint-sm">Either way, nothing is published until you press Publish yourself.</p>'+
+      '</div>';
+  }
+  window.__aiwImportApply = function(replace){
+    var p=pendingProfile; pendingProfile=null;
+    if(!p){ showImport(); return; }
+    var chg=applyProfile(p, !!replace), filled=chg.length;
+    introOn=false;
+    step = hasResumableAnswers() ? summaryStep() : 0;
+    render();
+    if(typeof toast==='function'){
+      toast(!filled
+        ? (replace ? 'Nothing to update: that file matches your answers already.'
+                   : 'No gaps to fill. Your answers already cover that file.')
+        : (replace ? 'Updated '+listBits(chg)+' from your file.'
+                   : 'Filled '+listBits(chg)+' from your file. Nothing else changed.'));
+    }
   };
 
   /* ── PREFILL FROM THE SITE THE USER ALREADY HAS ─────────────────────────────
@@ -4976,9 +5265,348 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ if(typeof 
     if(!A.partners.length) A.partners=[freshPartner()];
     if(A.partners.length!==before) persist();
   };
+  /* ── IMPORT FROM AN UPLOADED PROFILE ─────────────────────────────────────────
+     The user uploads their existing firm profile / resume / brochure (PDF, DOCX or a
+     photo) and the Edge Function reads it. What comes back is deliberately RAW: only
+     what the document literally says, with anything it did not state left empty.
+
+     Those empty fields are the point, not a shortfall. `screenErr()` treats them as
+     unanswered, so the interview asks the user for exactly the gaps, and nothing is
+     ever published that the document did not support and the user did not confirm.
+
+     PRECEDENCE, strongest first:
+         what the user typed  >  the uploaded document  >  the published site  >  empty
+     The document beats the site because uploading is a deliberate act: someone who
+     hands us a fresh profile is telling us it is more current than their live page.
+     But `put()` below only ever fills a BLANK, so nothing the user typed is touched.
+
+     Note this is the same seeding machinery as seedFromSite(), on purpose. There is
+     one "this was filled in for you" visual language (`SEEDED` -> the pale green
+     `.aiw-seeded` tint) and both sources feed it, rather than a second one to learn. */
+  var profileImported = false;
+
+  /* Pills are short chips, so long entries have to be shortened. `toPills` does that
+     with a hard .slice(48), which is right for a user pasting their own comma list but
+     wrong here: extracted prose is often longer, and a blind cut lands mid-word. The
+     first real test produced the chip "value added services and client focus orientatio",
+     which reads as a bug on a live site. So clip on the last word boundary instead, and
+     only fall back to a hard cut when a single word is somehow longer than the chip. */
+  /* NOT clipWords(). There is already a global `clipWords(v, n, punct)` in this file
+     where n is a WORD count, and naming this one the same shadowed it inside this
+     IIFE: `clipWords(text, 48)` then meant 48 words, so a 164-character claim came
+     through a 48-character chip completely unclipped. Every existing caller lives
+     outside this scope so nothing broke, but the next one added in here would have
+     inherited the bug silently. Different job, different name. */
+  function clipChars(v,max){
+    v=String(v==null?'':v).trim().replace(/\s+/g,' ');
+    if(v.length<=max) return v;
+    var cut=v.slice(0,max+1).lastIndexOf(' ');
+    var out=(cut>Math.floor(max*0.55) ? v.slice(0,cut) : v.slice(0,max));
+    /* Tidy the cut: drop dangling punctuation, then a trailing joining word. Without
+       the second pass a chip reads "small and medium enterprises and large", which is
+       grammatical but obviously unfinished. */
+    return out.replace(/[\s,;:\-–]+$/,'')
+              .replace(/\s+(?:and|or|with|for|in|of|to|the|a|an|&)$/i,'')
+              .replace(/[\s,;:\-–]+$/,'');
+  }
+  /* SPLIT before clipping. The extractor sometimes returns what is plainly a list as
+     one long string ("in-dept study, quality excellence, independence, value added
+     services"), and clipping that to a single chip throws three real answers away to
+     keep one. Commas and semicolons are the list separators, exactly as `toPills`
+     treats them for a user pasting their own list, so split on those first and only
+     clip whatever is still too long to be a chip. */
+  function pillsFrom(list){
+    var seen={}, out=[];
+    (Array.isArray(list)?list:[]).forEach(function(raw){
+      String(raw==null?'':raw).split(/[;\n]+|,(?!\s*(?:Inc|Ltd|LLP|Pvt)\b)/i).forEach(function(part){
+        var v=clipChars(part,48);
+        if(!v || v.length<3) return;
+        var key=v.toLowerCase();
+        if(seen[key]) return;
+        seen[key]=1; out.push(v);
+      });
+    });
+    return out.slice(0,10);
+  }
+  /* Key numbers are different: a stat chip has to READ as a stat. The extractor is told
+     to keep the words that make a figure true, which is right ("more than 50 years in
+     aggregate experience" must not become "50 years"), but it means some entries come
+     back as full sentences. Clipping those at 48 chars would cut mid-word and could
+     even strip the qualifier we just fought for, turning a true statement into a false
+     one. So anything too long to be a chip is dropped from the strip and handed to the
+     writer as context instead (see `overflow` in applyProfile). */
+  /* Words that carry no meaning for telling two figures apart. */
+  var STAT_STOP={plus:1,about:1,over:1,more:1,than:1,with:1,plusmore:1,plusthan:1,
+                 plusover:1,total:1,approx:1,nearly:1,around:1,size:1,and:1,the:1,our:1};
+  function statWords(v){
+    return String(v).toLowerCase().replace(/[^a-z\s]/g,' ').split(/\s+/)
+      .filter(function(w){ return w.length>3 && !STAT_STOP[w]; });
+  }
+  function statsFrom(list){
+    var kept=[], spill=[];
+    (Array.isArray(list)?list:[]).forEach(function(raw){
+      var v=String(raw==null?'':raw).trim().replace(/\s+/g,' ');
+      if(!v) return;
+      var nums=(v.match(/\d+/g)||[]).join('-'), words=statWords(v);
+      /* Two entries are the same fact only if they share the SAME NUMBER **and** at
+         least one meaningful word. Keying on the number alone was too blunt: it
+         collapsed "40 plus team members" with "team size of about 40" (correct, same
+         fact) but also "5 partners" with "5 founding chartered accountants" and would
+         have collapsed "5 partners" with "5 offices" (both wrong, different facts). */
+      var dup=kept.concat(spill).some(function(o){
+        if(o.nums!==nums) return false;
+        if(!nums) return o.v.toLowerCase()===v.toLowerCase();
+        return words.some(function(w){ return o.words.indexOf(w)>=0; });
+      });
+      if(dup) return;
+      (v.length<=48 ? kept : spill).push({v:v, nums:nums, words:words});
+    });
+    return {
+      pills: kept.slice(0,6).map(function(o){ return o.v; }),
+      spill: spill.map(function(o){ return o.v; })
+    };
+  }
+
+  /* Switch on the services an imported profile showed the firm offers. Called twice on
+     purpose: at import time so Step 4 reflects it immediately, and again from apply()
+     after generation, because generate() rebuilds S.services from the profession preset
+     and would otherwise discard the whole match. Only ever turns services ON, so a
+     service the user switched off by hand is not forced back. */
+  function applySvcOn(){
+    var list=(Array.isArray(A.svcOn)?A.svcOn:[]);
+    if(!list.length || !window.S || !Array.isArray(S.services) || !S.services.length) return 0;
+    var want={};
+    list.forEach(function(m){ want[String(m).trim().toLowerCase()]=1; });
+    var flipped=0;
+    S.services.forEach(function(row){
+      if(row && want[String(row.name||'').trim().toLowerCase()] && !row.on){ row.on=true; flipped++; }
+    });
+    if(flipped){
+      if(typeof renderServices==='function') renderServices();
+      if(typeof markBlock==='function') markBlock('svcList');
+      if(typeof livePush==='function') livePush();
+    }
+    return flipped;
+  }
+
+  /* Map the extracted object onto the interview's answers. Returns a count of how many
+     fields it actually filled, so the caller can tell the user something truthful. */
+  /* "firm name, city and phone" - so a confirmation names what moved rather than
+     counting it. A count alone left the two re-import modes looking identical. */
+  function listBits(a){
+    a=(a||[]).slice(0,4);
+    if(!a.length) return 'nothing';
+    if(a.length===1) return a[0];
+    return a.slice(0,-1).join(', ')+' and '+a[a.length-1];
+  }
+  /* Would this document change anything already answered? Counts only real
+     disagreements, so re-uploading the SAME file reports nothing to decide. */
+  function profileConflicts(p){
+    if(!p || typeof p!=='object') return 0;
+    var hits=0;
+    var cmp=function(k,val){
+      var v=String(val==null?'':val).trim(), cur=String(A[k]||'').trim();
+      if(v && cur && v.toLowerCase()!==cur.toLowerCase()) hits++;
+    };
+    cmp('firm',p.firm); cmp('city',p.city); cmp('phone',p.phone);
+    cmp('email',p.email); cmp('address',p.address); cmp('hours',p.hours);
+    cmp('years',String(p.years_practising||'').replace(/[^0-9]/g,''));
+    [['best_known_for','edge'],['typical_clients','clients'],
+     ['key_numbers','numbers'],['workflow','workflow']].forEach(function(pair){
+      if((p[pair[0]]||[]).length && fieldAnswered(pair[1])) hits++;
+    });
+    (Array.isArray(p.partners)?p.partners:[]).forEach(function(x){
+      var nm=String((x&&x.name)||'').trim().toLowerCase().replace(/\s+/g,' ');
+      var role=String((x&&x.role)||'').trim();
+      if(!nm || !role) return;
+      (Array.isArray(A.partners)?A.partners:[]).forEach(function(r){
+        if(String(r.name||'').trim().toLowerCase().replace(/\s+/g,' ')!==nm) return;
+        if(String(r.role||'').trim() && String(r.role).trim().toLowerCase()!==role.toLowerCase()) hits++;
+      });
+    });
+    return hits;
+  }
+
+  /* `replace` decides what happens where the document and the existing answers
+     disagree. Default false = fill blanks only, which is right for a first import.
+     True = the document wins, which is what someone re-uploading a REVISED profile
+     after publishing actually wants. Without the second mode a revised file applied
+     nothing at all: every field was already filled, so the import reported zero
+     changes and the user was told the file was unusable.
+     In BOTH modes a field the document is silent about is left alone. "Replace" means
+     the document's values win, never that anything gets cleared. */
+  function applyProfile(p,replace){
+    if(!p || typeof p!=='object') return 0;
+    var n=0, pQuals=[], names=[];   // partner letters + a list of what actually changed
+    /* Names of the fields that changed, so the confirmation can say "updated firm name,
+       city, phone" instead of a bare count. A count alone made the two re-import modes
+       indistinguishable from the outside, which is exactly the confusion to avoid. */
+    var hit=function(label){ if(names.indexOf(label)<0) names.push(label); };
+    var put=function(k,val,label){
+      var v=String(val==null?'':val).trim();
+      if(!v) return;
+      var cur=String(A[k]||'').trim();
+      if(cur && !replace) return;      // fill-blanks mode: never touch an answer
+      if(cur===v) return;              // identical, so nothing to report
+      A[k]=v; SEEDED[k]=v; n++; if(label) hit(label);
+    };
+
+    put('firm',    p.firm,    'firm name');
+    put('city',    p.city,    'city');
+    put('phone',   p.phone,   'phone');
+    put('email',   p.email,   'email');
+    put('address', p.address, 'office address');
+    /* years must be digits: the field feeds Founded Year in Step 2, and the extractor
+       is told to leave it empty rather than derive it from "aggregate experience" */
+    var yrs=String(p.years_practising||'').replace(/[^0-9]/g,'');
+    if(yrs) put('years', yrs, 'years practising');
+    /* hours ships with a default, so only displace it, never "fill a blank" */
+    var hrs=String(p.hours||'').trim();
+    if(hrs && (replace || String(A.hours||'')===HOURS_DEFAULT) && String(A.hours||'')!==hrs){
+      A.hours=hrs; SEEDED.hours=hrs; n++; hit('office hours');
+    }
+
+    /* PROFESSION. profChosen has to be set, or openW() puts the builder's own dropdown
+       value back over the top on the next open. But setting it alone was a bug: a
+       SECOND import could then never correct the first, because the guard could not
+       tell "the user picked this" from "a previous import picked this". Uploading a CA
+       profile and then an advocate's resume left the dropdown stuck on Chartered
+       Accountant. profFromImport records who set it, so a user's own choice is still
+       never overridden while an earlier import's guess can be. */
+    var prof=String(p.profession||'').trim();
+    if(prof && PROF_LABEL[prof] && (!A.profChosen || A.profFromImport) && prof!==A.profession){
+      A.profession=prof; A.profChosen=true; A.profFromImport=true; SEEDED.profession=prof; n++; hit('profession');
+      /* the service list is per profession, so the old profession's matches are void */
+      A.svcOn=[];
+      if(window.S){ S.profession=prof; }
+      var psel=document.getElementById('fProfession'); if(psel) psel.value=prof;
+      if(typeof loadServices==='function'){ loadServices(prof); if(typeof renderServices==='function') renderServices(); }
+    }
+
+    if(!A.social || typeof A.social!=='object') A.social=freshSocial();
+    var soc=p.socials||{};
+    SOCIALS.forEach(function(s){
+      var url=String(soc[s.k]||'').trim();
+      if(url && !String(A.social[s.k]||'').trim()){ A.social[s.k]=url; SEEDED.social=1; n++; }
+    });
+
+    var edge=pillsFrom(p.best_known_for);
+    if(edge.length && (replace || !fieldAnswered('edge'))){ A.edge=edge; SEEDED.edge=1; n++; hit('best known for'); }
+    var cl=pillsFrom(p.typical_clients);
+    if(cl.length && (replace || !fieldAnswered('clients'))){ A.clients=cl; SEEDED.clients=1; n++; hit('typical clients'); }
+
+    /* Seed whatever figures the document gave, even below the strip's floor of 3.
+       An earlier version held them back unless there were 3, reasoning that a
+       half-filled stat row looks broken. In testing that was clearly the wrong call:
+       a profile plainly stating "40 plus team members" came back with an empty stats
+       screen, and the only way to discover the figure had been read at all was to go
+       looking for it. Silently withholding the user's own number reads as the AI
+       having missed it. Showing 2 and letting screenErr() ask for a third keeps the
+       fact visible and turns it into a one-item request instead of a mystery. */
+    var st=statsFrom(p.key_numbers);
+    var overflow=st.spill.slice();
+    if(st.pills.length && (replace || !fieldAnswered('numbers'))){
+      A.numbers=st.pills; SEEDED.numbers=1; n++; hit('key numbers');
+    }
+
+    /* Workflow keeps whatever it found even below its floor of 3: two real steps plus
+       "add one more" is a useful head start, unlike a broken-looking stat row. */
+    var wf=(Array.isArray(p.workflow)?p.workflow:[])
+      .map(function(x){ return String(x==null?'':x).trim(); })
+      .filter(Boolean).slice(0,5);
+    if(wf.length && (replace || !fieldAnswered('workflow'))){
+      var rows=wf.map(function(line){ var r=freshStep(); r.line=line.slice(0,160); return r; });
+      while(rows.length<3) rows.push(freshStep());
+      A.workflow=rows; SEEDED.workflow=1; n++; hit('how you work');
+    }
+
+    /* Partners MERGE, matching seedFromSite: a row typed by hand must never be
+       replaced, and a partner already known keeps the user's wording. */
+    var pp=(Array.isArray(p.partners)?p.partners:[])
+      .filter(function(x){ return x && String(x.name||'').trim(); });
+    if(pp.length){
+      var cap=(typeof PTR_MAX==='number')?PTR_MAX:4;
+      var pKey=function(s){ return String(s||'').trim().toLowerCase().replace(/\s+/g,' '); };
+      var rows2=(Array.isArray(A.partners)?A.partners:[])
+        .filter(function(r){ return String((r&&r.name)||'').trim(); });
+      var by={}; rows2.forEach(function(r){ by[pKey(r.name)]=r; });
+      var touched=false;
+      pp.forEach(function(x){
+        var nm=clipChars(x.name,64);
+        /* ROLE ONLY IF THE DOCUMENT GAVE ONE. These profiles usually print letters
+           after a name (FCA, DISA, IP-IBBI) and no job title, and an earlier version
+           of this used the qualification as a stand-in role. The first real test then
+           produced role = "FCA, CS, RV - SF&A, IP-IBBI, FAFD-ICAI", which would sit
+           under that partner's name on the published site as their job title.
+           That is the same mistake this whole feature exists to avoid, so: leave role
+           blank, let screenErr() ask for it, and keep the letters as writer context
+           below, where they belong in the bio. */
+        var role=clipChars(x.role,64);
+        var q=String(x.qualification||'').trim();
+        if(nm && q) pQuals.push(nm+' ('+q+')');
+        /* Seed the About note with the letters the document printed after their name.
+           It is thin, but it is TRUE, and it gives the writer something real to build
+           a bio from instead of reaching for "a blend of skills". The user sees it
+           tinted and can replace it with what the person actually handles. */
+        var about=q?('Qualified '+q+'.'):'';
+        var row=by[pKey(nm)];
+        if(row){
+          if(role && (replace || !String(row.role||'').trim()) && row.role!==role){ row.role=role; touched=true; }
+          if(about && (replace || !String(row.about||'').trim()) && row.about!==about){ row.about=about; touched=true; }
+          return;
+        }
+        if(rows2.length>=cap) return;
+        row={name:nm, role:role, photo:'', about:about};
+        by[pKey(nm)]=row; rows2.push(row); touched=true;
+      });
+      if(touched){ A.partners=rows2.length?rows2:[freshPartner()]; SEEDED.partners=1; n++; hit('partners'); }
+    }
+
+    /* SERVICES. The document lists flat line items ("Statutory Audits", "Tax audits",
+       "GSTR-9C", "Drafting reply to SCNs"), often 25 of them. The builder instead
+       ships ~10 grouped services per profession whose descriptions already carry the
+       specifics, which is the right shape for a website. So the model was handed the
+       builder's own list and asked which ones the document supports; `services_matched`
+       comes back as exact names from that list, and all we do here is switch them on.
+       Nothing is invented and no new service is created: a name that is not already
+       in S.services is ignored. */
+    var matched=(Array.isArray(p.services_matched)?p.services_matched:[])
+      .map(function(x){ return String(x==null?'':x).trim(); }).filter(Boolean);
+    if(matched.length){
+      /* Remembered on A so it survives generate()'s loadServices() rebuild, and
+         applied to S.services now as well so Step 4 shows it straight away. */
+      A.svcOn=matched.slice(0,40);
+      if(applySvcOn()){ n++; hit('services'); }
+    }
+
+    /* Nothing the document said is thrown away: the raw service lines and any figure
+       too long to be a chip become notes for the writer, which is what `extra` is for.
+       The writer uses them to describe the services that are switched on, so a firm's
+       own wording still reaches the page even where it had no matching service. */
+    var svc=(Array.isArray(p.services)?p.services:[])
+      .map(function(x){ return String(x==null?'':x).trim(); }).filter(Boolean);
+    var notes=[];
+    if(svc.length)      notes.push('Services listed in our profile: '+svc.slice(0,30).join(', ')+'.');
+    if(overflow.length) notes.push('Figures from our profile: '+overflow.join('; ')+'.');
+    /* Partner letters, kept out of the role field on purpose (see above) so the writer
+       can work them into a bio instead of publishing them as somebody's job title. */
+    if(pQuals.length) notes.push('Partner qualifications: '+pQuals.join('; ')+'.');
+    if(notes.length){
+      var cur=String(A.extra||'').trim();
+      var add=notes.join(' ');
+      if(cur.indexOf(add)<0){ A.extra=(cur?cur+'\n\n':'')+add; SEEDED.extra=1; n++; hit('extra notes'); }
+    }
+
+    if(n){ profileImported=true; persist(); }
+    return names;
+  }
+
   /* Has the USER engaged, as opposed to us prefilling their facts? Seeding alone must
      not skip the interview: landing a first-time writer on the review list would show
-     them a list of things they have never been asked. */
+     them a list of things they have never been asked.
+
+     An imported profile counts as seeding, NOT engagement, for exactly the same reason
+     seedFromSite() does: it fills facts, it does not answer the judgement questions. */
   function userHasEngaged(){
     if(A.__touched) return true;
     /* drafts saved before __touched existed: infer it from the fields seeding never
@@ -5021,6 +5649,11 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ if(typeof 
        here and now rather than waiting for the next open. */
     A.__seeded=false; A.__touched=false;
     SEEDED={};
+    /* and forget that an upload ever happened, or the seed note keeps crediting a
+       profile document for values seedFromSite() is about to put back from the site */
+    profileImported=false;
+    A.svcOn=[];
+    A.profFromImport=false;
     try{ localStorage.removeItem(AIW_KEY); }catch(e){}
     seedFromSite();
     /* back to a blank slate means back to the start of the story, intro included */
@@ -5274,7 +5907,12 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ if(typeof 
       '<div class="aiw-body">'+
         '<h2 class="aiw-q">'+q.q+'</h2>'+
         (q.hint?'<p class="aiw-hint">'+q.hint+'</p>':'<div style="height:14px"></div>')+
-        (seededHere?'<div class="aiw-seednote">The highlighted answers are from the website you already published. Change anything that is out of date.</div>':'')+
+        /* Name the real source. Telling someone their answers came from "the website
+           you already published" when they just uploaded a PDF makes them distrust
+           the whole screen, and this note is what prompts them to check the values. */
+        (seededHere?'<div class="aiw-seednote">'+(profileImported
+          ? 'The highlighted answers came from the profile you uploaded. Check them before moving on.'
+          : 'The highlighted answers are from the website you already published. Change anything that is out of date.')+'</div>':'')+
         field+
         /* One message slot per screen, empty until something is rejected. It sits with
            the fields rather than in the footer because a list screen has no single
@@ -5359,7 +5997,11 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ if(typeof 
     var inp=document.getElementById('aiwPillIn_'+k);
     if(inp && ev.target!==inp){ ev.preventDefault(); inp.focus(); }
   };
-  window.__aiwProf=function(v){ A.profession=v; A.profChosen=true; persist(); };
+  window.__aiwProf=function(v){
+    /* profFromImport goes false: the user has now chosen for themselves, so a later
+       profile import must not quietly change it back. */
+    A.profession=v; A.profChosen=true; A.profFromImport=false; persist();
+  };
 
   /* An empty portrait slot. Round, with a human silhouette rather than a picture
      icon: the slot is asking for a PERSON, and a generic image glyph reads as
@@ -5737,10 +6379,10 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ if(typeof 
     /* Bios shrink as partners are added, because the cards they sit in get smaller:
        one large card, two equal cards, or a row of compact team cards. */
     var seedPartners = (Array.isArray(A.partners)?A.partners:[])
-      .map(function(r){ return {name:String(r.name||'').trim(), role:String(r.role||'').trim(), photo:String(r.photo||'')}; })
+      .map(function(r){ return {name:String(r.name||'').trim(), role:String(r.role||'').trim(), photo:String(r.photo||''), about:String(r.about||'').trim()}; })
       .filter(function(r){ return r.name; }).slice(0,PTR_MAX);
     /* same reason as reviews: never send a portrait data URL to the model */
-    var partnersForPrompt = seedPartners.map(function(r){ return {name:r.name, role:r.role}; });
+    var partnersForPrompt = seedPartners.map(function(r){ return {name:r.name, role:r.role, about:r.about}; });
     var workSteps = (Array.isArray(A.workflow)?A.workflow:[])
       .map(function(r){ return String((r&&r.line)||'').trim(); }).filter(Boolean).slice(0,5);
     var nP = Math.max(1, seedPartners.length);
@@ -5783,12 +6425,40 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ if(typeof 
       '  "process": [ {"title": "2 to 4 words", "desc": "8 to 16 words describing this step of working with you"} ],\n'+
       '  "testimonials": [ {"quote": "the review text", "name": "client name if given", "role": "role or company if given"} ],\n'+
       '  "about": "45 to 70 words, 3 to 4 sentences. The ONLY place the city may appear, and only once. Weave in years, the differentiator and typical clients naturally.",\n'+
-      '  "partners": [ {"bio": "'+bioWords+' words about this partner, written in the third person.", "credentials": ["2 to 4 short professional credential lines for THIS partner, generic (no fake registration numbers)"]} ],\n'+
+      '  "partners": [ {"bio": "'+bioWords+' words about this partner in the third person, or \\"\\" if there is nothing to say beyond their role and qualifications", "credentials": ["one line per qualification this partner actually holds, expanded, e.g. Chartered Accountant / DISA (ICAI) / Company Secretary. Empty list if none were stated."]} ],\n'+
       '  "footerBlurb": "20 to 30 words. No city.",\n'+
       '  "services": [ {"name": "<exact service name>", "desc": "15 to 28 words, one sentence, focused on the client benefit. No city."} ]\n'+
       '}\n'+
-      'STATS: keyNumbers is a list of figures the user typed, one per entry, and it holds either nothing or 3 to 6 entries. Build ONE stat per entry, in the same order, splitting each into a short value and a 2 to 3 word label (so "800+ clients served" becomes {value:"800+",label:"Clients Served"}). Keep every entry given, up to 6. If keyNumbers is empty, give exactly 3 stats where only one uses a number (the yearsPractising figure, label like Years of Practice) and the other two are qualitative, e.g. {value:"On time",label:"Every deadline"}, {value:"Direct",label:"Partner access"}. NEVER invent client counts, percentages, ratings, or any figure you were not explicitly told.\n'+
-      'PARTNERS: return exactly one entry per partner in INPUTS.partners, in the SAME ORDER, so entry 1 describes partner 1. Use each partner\'s stated role to decide what their bio and credentials emphasise, and do not repeat the same wording across partners. If INPUTS.partners is empty, return exactly one entry for the founder. Never invent registration numbers, university names, or awards.\n'+
+      /* keyNumbers used to arrive as either nothing or 3 to 6 entries, because the
+         interview enforced that floor. Profile import broke that assumption: a
+         document often yields only 1 or 2 real figures, and withholding them so the
+         strip stayed empty hid numbers the user could read in their own PDF. So the
+         partial case is now explicit here - keep every real figure, then top up to 3
+         with qualitative stats so the strip does not render half-built. */
+      'STATS: keyNumbers is a list of figures the user gave, one per entry, and may hold anything from 0 to 6. Build ONE stat per entry, in the same order, splitting each into a short value and a 2 to 3 word label (so "800+ clients served" becomes {value:"800+",label:"Clients Served"}). Keep EVERY entry given, up to 6, and never drop or merge one.\n'+
+      'STATS, REACHING THREE: the strip needs 3 to render properly, so if keyNumbers gives you 0, 1 or 2 entries, add qualitative stats until you have 3 in total, putting any real figures first. A qualitative stat states how the firm works, carries NO number, and cannot be checked and found false: {value:"On time",label:"Every deadline"}, {value:"Direct",label:"Partner access"}, {value:"Year round",label:"Not just filing season"}, {value:"One point",label:"Single contact"}. If yearsPractising is known you may use it as one numeric stat, labelled like Years of Practice. NEVER invent a measurable claim to fill a slot: no client counts, no percentages, no ratings, no "100% accuracy", no "zero errors", no "24/7" unless the user stated it. An unverifiable boast on a chartered accountant\'s own website is worse than a modest one.\n'+
+      /* The "no inventing" rule used to list only registration numbers, universities
+         and awards, while the shape above still demanded 15 to 45 words per partner.
+         Given a bare name the model had nothing true to write and no permission to
+         write less, so it filled the gap with skill claims: "Nagendra Hegde offers a
+         blend of accounting and management skills to assist clients effectively."
+         Nothing in that sentence came from the user. The credentials line made it
+         worse by asking for "generic" lines, which is an instruction to invent.
+         So: bios must now be built only from stated facts, and a thin input is
+         allowed to produce a thin bio. */
+      'PARTNERS: return exactly one entry per partner in INPUTS.partners, in the SAME ORDER, so entry 1 describes partner 1. Use each partner\'s stated role to decide what their bio and credentials emphasise, and do not repeat the same wording across partners. If INPUTS.partners is empty, return exactly one entry for the founder.\n'+
+      /* The card already prints the name, the designation and the credential bullets.
+         An earlier version told the model to write "a short factual line" when it knew
+         nothing else, and it obediently produced "Sandip Dey is the Managing Partner
+         and a qualified Chartered Accountant" - which states the designation shown
+         directly above it and the credential shown directly below it, so the same fact
+         appeared three times on one card and all four partners read identically.
+         Restating what is already on screen is padding, not content. An empty bio is
+         the correct output when there is nothing else true to say; the template drops
+         the paragraph entirely and the card still reads well. */
+      'PARTNER TRUTHFULNESS: each partner may carry an "about" note written by the user. That note is the raw material for their bio: rewrite it into polished third-person prose, keeping every fact in it and adding none. Do not describe anyone\'s skills, strengths, temperament, client approach or years of experience unless the inputs state it. Never invent registration numbers, university names, awards, or prior employers.\n'+
+      'PARTNER BIO, WHAT NOT TO SAY: the card already displays the partner\'s name, their designation and their credentials, so the bio must NOT restate any of them. Do not write "X is the Managing Partner", do not write "a qualified Chartered Accountant", and do not open with the person\'s own name. If the "about" note is empty, then after removing the role and the qualifications there is nothing left to write, so return an EMPTY STRING for that bio. That is the expected result and the design handles it. Four partners whose bios are the same sentence reworded is worse than four partners with no bio at all.\n'+
+      'PARTNER CREDENTIALS: one entry per qualification the person actually holds, each expanded to its full name, e.g. ["Chartered Accountant", "DISA (ICAI)"] for someone listed as "FCA, DISA". Do not merge several qualifications into one line, and do not pad the list to reach a count. If no qualification was stated, return an empty list.\n'+
       'HIGHLIGHTS: exactly 3, drawn from what makes the firm different.\n'+
       'PROCESS (the "How We Work" section): howYouWork is an ORDERED list of rough lines, one per step, written by the user. Return EXACTLY ONE process entry per line, in the SAME ORDER, keeping that line\'s meaning: give each a short title of 2 to 4 words and a description of 8 to 16 words that expands it. Do not merge lines, drop lines, or add steps of your own. If howYouWork is empty, draft a sensible 3 to 4 step client journey instead. Every step must have both a title and a description.\n'+
       'TESTIMONIALS: clientReviews is a list of {name, role, note, rating}. For EACH entry, WRITE a polished, natural, first-person client review of 1 to 2 sentences based on the note - rewrite it in warm, credible Indian English, do NOT copy the note words. Keep the given name and role. Let the rating set the warmth: 5 is delighted, 4 is happy with a measured tone, 3 or lower is satisfied but restrained, so never write glowing praise for a low rating. Do not mention the rating number in the text. If a note is missing, write a short believable review consistent with the services and the rating. Produce one testimonial per entry, in the same order, and none for clients not listed. If clientReviews is empty, return an empty testimonials array.\n'+
@@ -5969,6 +6639,10 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){ if(typeof 
       });
       if(typeof renderServices==='function'){ renderServices(); markBlock('svcList'); }
     }
+    /* AFTER the AI's descriptions land. generate() rebuilt S.services from the
+       profession preset, wiping the toggles an imported profile had set, so the
+       match is re-applied here or it is silently lost on every generation. */
+    applySvcOn();
     delete ov.dataset.busy;
     closeW();
     if(typeof go==='function') go(2);

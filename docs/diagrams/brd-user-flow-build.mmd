@@ -1,0 +1,12 @@
+flowchart TD
+    A[Professional opens the Website Builder] --> B{How do they want to build it?}
+    B -->|Do it themselves| C[6-step manual wizard]
+    B -->|Let AI do it| D[AI Website Writer interview]
+    B -->|Upload an existing profile| U[AI reads the document and pre-fills the interview]
+    U --> D
+    D --> E[AI writes the site content]
+    E --> C
+    C --> F[Step 6: Publish]
+    F --> G{Web address available?}
+    G -->|No| F
+    G -->|Yes| H[Website is live, address now permanent]

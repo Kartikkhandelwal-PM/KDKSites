@@ -1,0 +1,9 @@
+flowchart TD
+    H[Website is live] --> I[Visitor submits the contact form]
+    I --> J[Enquiry saved to the Enquiries inbox]
+    J --> K[Owner emailed. One click opens the enquiry]
+    K --> L[Professional calls / WhatsApps / emails the lead]
+    H --> M{Professional wants a change?}
+    M -->|Edit content| C[Back into the 6-step wizard]
+    M -->|Take site down| N[Unpublish: reversible, address kept reserved]
+    N -->|Publish again| H

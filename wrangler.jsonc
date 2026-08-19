@@ -1,0 +1,22 @@
+{
+  // Cloudflare Workers config for the daily-deploy branch. Serves frontend/ as
+  // static assets, with src/index.ts (ported from
+  // backend/netlify/edge-functions/render.ts) handling published-site requests
+  // at /s/<subdomain> — mirrors the Netlify prototype (netlify.toml).
+  "name": "kdksites",
+  "compatibility_date": "2026-07-29",
+  "main": "src/index.ts",
+  "assets": {
+    "directory": "./frontend",
+    "binding": "ASSETS"
+  },
+  // SUPABASE_URL and SUPABASE_ANON_KEY are public by design (same values
+  // committed in frontend/app-config.js). SUPABASE_SERVICE_KEY is the real
+  // secret and is set with `wrangler secret put SUPABASE_SERVICE_KEY` instead —
+  // never committed here.
+  "vars": {
+    "SITE_DOMAINS": "kdksites.in",
+    "SUPABASE_URL": "https://hlhtopqbzfzlxxmolkok.supabase.co",
+    "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhsaHRvcHFiemZ6bHh4bW9sa29rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3NTMyOTAsImV4cCI6MjA5OTMyOTI5MH0.K5UZ9CbqbNEfMRTMaOVTtlrx9HGi544iy2zf5CVZXww"
+  }
+}

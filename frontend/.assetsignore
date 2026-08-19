@@ -1,0 +1,5 @@
+# Wrangler reads frontend/ straight from disk, not from git, so gitignored
+# local-only files (e.g. local-ai-config.js, which holds a live API key) would
+# otherwise be uploaded as public static assets. Keep this list in sync with
+# the root .gitignore's local-only entries.
+local-ai-config.js

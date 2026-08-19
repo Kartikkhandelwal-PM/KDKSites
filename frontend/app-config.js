@@ -14,7 +14,34 @@ window.KDK_AI = {
   supabaseUrl:     'https://hlhtopqbzfzlxxmolkok.supabase.co',
   supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhsaHRvcHFiemZ6bHh4bW9sa29rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3NTMyOTAsImV4cCI6MjA5OTMyOTI5MH0.K5UZ9CbqbNEfMRTMaOVTtlrx9HGi544iy2zf5CVZXww',
   openai:    { model: 'gpt-4o-mini' },
-  anthropic: { model: 'claude-opus-4-8' },
+  anthropic: { model: 'claude-opus-5' },
+
+  /* ---------- Profile import ----------
+     The AI Writer can read an uploaded firm profile / resume / brochure
+     (PDF, DOCX, or a photo of one) and pre-fill the interview from it.
+
+     This runs through OpenRouter so a single key reaches every model, and
+     swapping models is a one-line change here. The models below all accept
+     files natively, so the PDF goes straight to the model with no OCR fee
+     and no client-side parsing library (which the no-CDN rule forbids).
+
+     Rough cost per profile at ~6k in / 800 out tokens:
+       google/gemini-3.5-flash-lite   ~₹0.35   <- default: cheapest that can do the job
+       google/gemini-3-flash-preview  ~₹0.48   avoid in production, "preview" can vanish
+       anthropic/claude-haiku-4.5     ~₹0.90   step up here if Lite invents content
+       google/gemini-3.6-flash        ~₹1.32
+       google/gemini-3.5-flash        ~₹1.42
+       anthropic/claude-sonnet-5      ~₹2.10
+       anthropic/claude-opus-5        ~₹4.40   most careful, rarely worth it for this
+
+     Compare them on YOUR documents at frontend/test-profile-import.html before
+     changing this. The thing to judge is not who fills the most fields, but who
+     correctly leaves one EMPTY when the document never said it - an invented
+     "best known for" publishes a claim your user never made. */
+  profileImport: {
+    provider: 'openrouter',
+    model:    'google/gemini-3.5-flash-lite'
+  },
   // Where published sites are actually served today (path-based, no custom domain needed).
   // Computed from wherever the builder itself is running, so the share link
   // matches the host that generated it (Netlify build shows a Netlify link,

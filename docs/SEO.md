@@ -1,66 +1,37 @@
-# SEO: what's done, what's not, and why it matters
-> Written 2026-07-31, in plain English on purpose. Read this if you want to know how findable a client's published website actually is on Google, WhatsApp, etc.
-> Scope: this is about the **published client sites** (`name.kdksites.in`), not the builder tool itself. Nobody needs to find the builder on Google, only the firm's own site.
+# SEO for published client sites
+> Written 2026-07-31. Covers only the **published client sites** (`name.kdksites.in`), not the builder tool itself, since nobody needs to find the builder on Google, only the firm's own site.
 
----
+## How it actually works, in plain terms
 
-## The one-sentence version
+Every time someone visits a published site, the request passes through a small piece of server code before the page is sent back (this lives in `src/index.ts` for the Cloudflare-hosted version, and `backend/netlify/edge-functions/render.ts` for the Netlify one, both do the same thing). That code looks up the firm's saved details (name, phone, address, services, etc.) and stamps them into the page automatically:
 
-The technical basics (how fast the page loads, whether a shared link shows a nice preview, whether Google can read the page at all, structured business facts for Google) are handled. What's left is mostly structural, not a quick code fix: the subdomain address itself, and the fact that every site is one of only 4 templates.
+- The **page title** and a short **description**, using the firm's real name and tagline instead of the template's placeholder text.
+- A **preview card** for when the link is shared on WhatsApp, with the firm's actual logo (or their lead partner's photo if there's no logo), so it doesn't show a broken or blank image.
+- A **canonical address**: one line that tells Google "this is the one true address for this page," so if the same site can be reached two different ways, Google doesn't get confused about which one to rank.
+- A **robots.txt and sitemap.xml file**, the two small files search engines look for to know a site exists and is allowed to be read.
+- A hidden **fact-sheet about the business** (name, phone, address, opening hours, founding year, the founder's name, the actual list of services offered, what the firm is best known for, and its social media links), written in a format Google can read directly instead of having to guess by parsing paragraphs. This is what can make a search result show more than just a blue link.
 
----
+None of this needs a human to fill in a separate form or upload a separate file anywhere. It is generated fresh, automatically, every time the page is requested, straight from whatever the professional typed into the builder. If they update their phone number in the builder and publish again, the very next visit picks up the new number in all of the above, nothing to redo elsewhere.
 
-## Glossary (read this first if any of the terms below are unfamiliar)
+**One thing was deliberately left out**: star ratings from client reviews. The builder already has testimonials, and it would be easy to add that data to the fact-sheet too, but Google specifically ignores review markup that a business publishes about itself on its own site (that rule exists to stop businesses writing themselves fake five-star reviews). The only way to actually get stars showing in search results is the firm claiming its own **Google Business Profile** and collecting real reviews there, that is a separate action for the professional to take on Google's site, has nothing to do with this codebase, and cannot be automated by us.
 
-| Term | What it actually means |
-|---|---|
-| **SEO** | Search Engine Optimisation. Anything that affects whether, and how well, a page shows up when someone searches Google. |
-| **Crawler / bot** | An automated program (Google's, WhatsApp's, Facebook's, etc.) that visits a page to read it, without a human or a browser involved. It only sees the raw HTML unless it specifically runs JavaScript, so anything that only appears after the page "loads and does stuff" may be invisible to it. |
-| **Meta description** | A short summary of the page, invisible on the page itself, but shown by Google under the blue link in search results. |
-| **Open Graph (OG) tags** | Hidden tags that control the preview card when a link is shared on WhatsApp, Facebook, LinkedIn, iMessage, etc.: the title, description, and image shown. |
-| **og:image** | The specific OG tag for the preview image. Needs to be a real image address (a URL), not a photo embedded directly in the page's code. |
-| **Canonical tag** | One line telling Google "this exact address is the official version of this page," used when the same content can be reached at more than one URL. |
-| **Structured data (JSON-LD)** | A block of hidden, structured facts about the business (name, phone, address, hours, services) written in a fixed format Google can read directly, instead of having to guess by reading sentences. Note: this does **not** get you the star-rating rich snippet, see below. |
-| **Sitemap** | A tiny file listing every page on a site, so a crawler knows what exists without having to guess by following links. |
-| **robots.txt** | A tiny file at the root of a site telling crawlers what they're allowed to look at. |
+## Who needs to do what
 
----
+**The professional using the builder: nothing extra.** They just fill in the builder normally (firm name, services, contact details, etc.) and publish. Everything above is generated from that automatically. There is no separate SEO step, no file to upload, no setting to turn on.
 
-## What's already working today
+**KDK (us): a few one-time setup steps**, none of them per-professional, done once for the whole platform:
 
-| Item | Plain-English explanation | Status |
-|---|---|---|
-| Page title & description | Every published site gets its own real `<title>` and meta description built from that firm's actual name, tagline and city, not the template's demo text. | ✅ Done |
-| Social share preview (text) | Sharing a site's link on WhatsApp shows the real firm name and a short description, not the template's placeholder firm. | ✅ Done |
-| Social share preview (image) | The preview card also shows an image now: the firm's own logo, or their lead partner's photo if there's no logo. Sites with neither just show a plain text card, never a broken image. | ✅ Done (2026-07-31) |
-| Canonical tag | Each site tells Google which address is its "real" one, so Google doesn't get confused if the same site is reachable at more than one URL. | ✅ Done (2026-07-31) |
-| robots.txt / sitemap.xml | Each site (once it has its own subdomain address, e.g. `sharma.kdksites.in`) serves these two small files automatically. | ✅ Done (2026-07-31) |
-| Structured data (JSON-LD) | Each site now carries a hidden, structured fact-sheet for Google: business name and type (matched to the actual profession: `AccountingService`, `LegalService`, etc.), phone, email, address, opening hours, founding year, the founder's name and role, the firm's actual service list, its "best known for" points, and its social media links. This is what lets Google potentially build a richer result than a plain blue link. | ✅ Done (2026-07-31) |
-| Mobile-friendly | All 4 templates use flexible layouts that work on a phone screen. Google specifically checks for this and ranks mobile-unfriendly sites lower. | ✅ Already in place |
-| Fast page load | Every page is one self-contained file, no heavy external scripts or fonts to wait for. Fast-loading pages are also something Google's ranking directly rewards. | ✅ Already in place |
-| HTTPS (the padlock) | Both hosts (Netlify and Cloudflare) provide this automatically. Google penalises sites without it. | ✅ Already in place |
+1. **Wildcard DNS**, already known, not yet done. Right now every published site is only reachable at `.../s/<name>` (a path). The pretty address `name.kdksites.in` only starts working once wildcard DNS for `kdksites.in` is pointed at the hosting provider, and the same for any of the other domain names once one is actually purchased. Until this is done, everything in this document still works, just at the `/s/<name>` address instead of the pretty one.
+2. **Tell each host which domains it's allowed to answer for** (the `SITE_DOMAINS` setting, one per host). Already set for `kdksites.in` and covered in [CLOUDFLARE-DEPLOY.md](CLOUDFLARE-DEPLOY.md).
+3. **(Recommended, not yet done) Verify `kdksites.in` in Google Search Console and submit its sitemap.** This is a free, one-time action on Google's own site: prove ownership of the domain (Google gives a DNS record to add), then Google can discover every subdomain under it, all client sites, without waiting to stumble onto them naturally. This step is optional (Google finds public sites eventually on its own) but it's the fastest way to get new sites indexed quickly, and it costs nothing.
+4. **Nothing to do for JSON-LD, robots.txt, sitemap.xml, or the preview image**, they are generated automatically per request, as described above. There's no dashboard to configure, no CDN to upload a file to.
 
-### One thing deliberately left out of structured data: reviews / star ratings
+## What's still a limitation, not a quick fix
 
-The builder already collects client testimonials, and schema.org has fields for exactly this (`review`, `aggregateRating`). They were left out on purpose: Google specifically restricts the star-rating rich snippet from a business's own self-published review markup on its own site, precisely to stop businesses writing five-star reviews about themselves into their own page. Adding this markup would look like it does something, but Google would simply ignore it. The real way to get those stars in search results is a firm claiming and collecting reviews on its **Google Business Profile**, which is a separate, per-firm action outside this codebase entirely, not something the builder can automate.
+- **A subdomain address carries less search weight than a firm's own domain.** `sharma.kdksites.in` will generally rank a little behind `sharmaassociates.com` for the same content, because Google is cautious by default about subdomains of a shared platform. Every no-code website builder (Wix, Squarespace, etc.) has had this exact issue. It goes away only if/when custom domains become part of the product, that's a future item, not something to fix with a code change today.
+- **Every site is one of only 4 templates.** At a handful of live sites this is invisible. At thousands of sites, every firm on the same template has identical headings, layout and footer text, only the name, photos and AI-written paragraphs differ, and Google is good at spotting that pattern and ranking it lower as a result. This only becomes a real problem once there are a lot of live sites, and there's no code fix for it, it's a direct consequence of how a template-based builder works.
 
----
+## Where this lives in the code
 
-## What's NOT done yet, and what it would actually get you
-
-### The subdomain trade-off (structural, not really fixable right now)
-
-A site at `sharma.kdksites.in` (a subdomain of a shared domain) generally carries less search authority than `sharmaassociates.com` (a domain the firm owns outright), because Google treats subdomains of a shared platform somewhat cautiously by default. This is the same trade-off every "no-code website builder" product has (Wix, Squarespace, etc. all had this exact issue in their early years). It is not a bug, and not something to fix with a code change. It only goes away if/when custom domains become part of the product (already flagged as a future item, not Phase 1).
-
-### Template duplication at scale (a longer-term ceiling)
-
-There are only 4 templates. At a handful of sites, this is invisible. At thousands of sites, every firm using, say, the Heritage template has identical section headings, identical layout, identical footer text, and only the firm's name, photos and AI-written paragraphs actually differ. Google is good at noticing "these thousands of pages are the same template with names swapped in," and tends to rank that kind of content lower, because it reads as mass-produced rather than genuinely distinct. There's no quick fix for this: it's a direct consequence of how a template-based builder works, and only becomes a real problem once there are a lot of live sites.
-
----
-
-## Where this actually lives in the code
-
-- **Per-site title, description, OG tags, og:image, canonical tag, robots.txt, sitemap.xml, JSON-LD structured data**: all generated on the fly, per request, by the edge functions that serve a published site:
-  - `src/index.ts` (Cloudflare Worker, the daily-dev host) — see `buildJsonLd()` for the structured data
-  - `backend/netlify/edge-functions/render.ts` (Netlify, mirrors the Cloudflare version by hand: the two are not automatically kept in sync, see [CLOUDFLARE-DEPLOY.md](CLOUDFLARE-DEPLOY.md))
-- **The actual firm data used to fill all of the above** (firm name, tagline, city, logo, partner photo, services, socials) comes from the config saved by the builder in `frontend/index.html`'s `collectConfig()`, stored as JSON in Supabase's `wb_websites` table.
+- `src/index.ts` (Cloudflare Worker) and `backend/netlify/edge-functions/render.ts` (Netlify) both generate the title, description, preview image, canonical tag, robots.txt, sitemap.xml, and the JSON-LD fact-sheet (`buildJsonLd()`), on every request. The two files do the same thing but are kept in sync by hand, not automatically, see [CLOUDFLARE-DEPLOY.md](CLOUDFLARE-DEPLOY.md).
+- All of the firm data used to fill the above comes from `collectConfig()` in `frontend/index.html`, saved as JSON in Supabase's `wb_websites` table.

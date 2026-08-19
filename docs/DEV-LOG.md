@@ -4,6 +4,385 @@
 
 ---
 
+## 2026-08-17 (Session 26): The PRD rewritten module by module
+
+The document was rejected on structure and on tone, and rewritten from scratch. What was
+wrong, and what replaced it:
+
+| Problem | Fix |
+|---|---|
+| Organised by document convention, not by the product | Section 5 is now eleven modules, in the order the user meets them |
+| Validation sat in its own section, away from the screen it applied to | Every module carries its own fields and validation table |
+| AI import and the AI interview sat near the end | They are Module 3, straight after design, which is where the user meets them |
+| Writing was indirect: "this step is about changing that default, not filling in a blank" | Short statements. One fact per line. Tables instead of paragraphs |
+| Objective was never stated | Section 1 states it plainly: a professional digital presence for CAs and other practitioners, in under ten minutes, with no technical knowledge |
+| "Open question, not yet decided" blocks throughout | Removed from the PRD. They live in REQUIREMENTS-PENDING.md, which is where status belongs |
+| A user flow repeated inside each module | One journey, in section 4, once |
+| Horizontal rules between sections, and a rule under every heading | Both gone. Sections are separated by spacing and heading size alone |
+
+### The Word export
+
+**The diagram source printed itself into the document.** The Mermaid was kept in an HTML
+comment in the Markdown, and a comment containing a blank line stops being one comment:
+Word printed the second half as body text on page 5. The sources now live in
+`docs/diagrams/*.mmd`, outside the document entirely.
+
+**Styling now comes from the 1 August `.docx` itself**, passed to pandoc as the reference
+document, rather than from a template built by hand. Simpler, and it matches what was
+already approved. `docs/build-word.py` runs the export and then fixes what pandoc leaves:
+repeating table header rows, rows split across page breaks, headings stranded at the foot
+of a page, and the reference file's own images left in the package as orphans, which had
+doubled the file to 14 MB.
+
+**The size check that matters** is in that script: the document is Letter, not A4, so the
+usable height is 9.40in against a 6.69in text column. Anything taller than about 1.40:1 is
+cut off. The flow diagram was 1.49:1 and lost its last inch, which is what the reader saw.
+
+---
+
+## 2026-08-17 (Session 25): Screenshots retaken from a real session, and a Word file that is actually designed
+
+Session 24 corrected the PRD's text but left three things wrong: the screenshots still
+showed the 1 August build, the flow diagram was cut off in Word, and the Word file was
+pandoc's unstyled default. All three are fixed.
+
+### Screenshots are now taken by a script, not by hand
+
+A demo account was supplied, so the builder was driven with **puppeteer-core against the
+installed Chrome** (no Chromium download) at `http://localhost:8765/`, which is the only
+place the current UI runs: the `cloudflare` deploy is manual and still serves an older
+build. Ten screenshots were retaken at 1440x900 to match the existing set.
+
+Three things that cost time and are worth knowing before doing this again:
+
+- **`page.click()` on the login button silently does nothing.** The card animates in, so
+  the coordinate click lands on empty space, with no error and no request. Calling the
+  handler in-page (`document.getElementById('auGo').click()`) is reliable.
+- **Waiting for the gate to disappear does not work.** The overlay stays in the DOM and
+  `#fFirmName` belongs to step 2, so it is invisible on arrival. The dependable signal is
+  `document.body.classList.contains('kdk-authed')`.
+- **Step 6 renders its state on entry.** Publishing while sitting on the step leaves the
+  old markup on screen, so the "live" screenshot came out identical to "ready to launch".
+  Leaving and re-entering the step (`go(3)` then `go(6)`) fixes it.
+
+The account was filled with a fictional firm (Sharma & Associates, Jaipur) by setting the
+builder's fields directly, with no AI call, then published as `demo-sharma-associates` to
+photograph the live states, then taken offline. Five demo enquiries were inserted through
+the same public path the contact form uses.
+
+### The AI half of profile import cannot run: no OpenRouter balance
+
+Uploading a real PDF returns `402: This request requires at least $0.50 in balance for
+file processing`. **Session 24's claim that import was unblocked was wrong**, and wrong in
+an instructive way: the probe that "proved" it used a 1x1 blank image, which is small
+enough to slip under OpenRouter's file-processing floor. A genuine document is not. The
+notes now say funding, not code.
+
+One screenshot is therefore still missing: the interview after a document has been read,
+with the imported answers tinted green.
+
+### One tall diagram became two
+
+The single flow diagram was 1:2.94, so Word scaled it to the text width and ran it off the
+bottom of the page. It is now two diagrams that each fit: **getting the site live**
+(1:1.45) and **what happens once it is live** (1:0.96). `flowchart LR` was tried and
+rejected again, at 3392x369 it becomes an unreadable band.
+
+Rendering is now `render-mermaid.js`, which screenshots the SVG element itself rather than
+guessing a window size. The check that matters is arithmetic: at A4 with 2.2cm margins the
+text column is 6.61in and the usable height is 9.96in, so any image taller than about
+1.5:1 will overflow a page.
+
+### The Word file is now built from a designed template
+
+`make-reference.py` rebuilds pandoc's own `reference.docx` with KDK's styling: navy
+headings with a gold rule under H1, Segoe UI throughout, tables with real borders and a
+shaded header row, figures centred with their captions beneath, blockquotes with a gold
+left rule, code blocks boxed, A4 page setup, a contents list, and a page number in the
+footer. It is a script rather than a hand-edited file so the styling survives every
+rebuild.
+
+**A bug worth remembering:** `open(p,'w').write(patch(open(p).read()))` truncates the file
+before it is read, because Python evaluates the outer `open` first. The template came out
+empty and the error looked like a failed regex.
+
+---
+
+## 2026-08-17 (Session 24): The PRD brought up to date, and two of our own notes found to be wrong
+
+The PRD and its 26 screenshots were written on 1 August. The UI moved on 13 August and the
+document did not, so it was describing a publish step that no longer exists.
+
+### The structural decision, which was corrected mid-session
+
+The first draft added a section 11, "Approved and Not Yet Live", holding profile import and
+the enquiry alert. **That was wrong and was taken out.** A PRD states what the product must
+do; how much of it is built is delivery status, and organising a document around build state
+means restructuring it after every release and splitting one feature across two places.
+
+So the rule now is:
+
+- **The PRD carries requirements only.** Profile import lives inside 5.5 (it is a way into
+  the AI Writer, not a feature of its own) with its rules in 6.13. The enquiry alert lives
+  inside 5.6 with its rules in 6.14. Open questions sit inline, following the convention the
+  document already had for the publish-limit question.
+- **`REQUIREMENTS-PENDING.md` was rewritten as the status file**: what is live, what is built
+  but unreleased, what is only specified, every open decision and what it blocks, the facts
+  about the code that the PRD must not carry, and the screenshot retake list. It no longer
+  duplicates any requirement.
+
+### What was actually stale in the PRD
+
+- **"Change address" appeared in four of five publish states**, plus a flow-diagram branch, a
+  whole sub-section, and a screenshot. The button was removed on 13 August. Step 6 now has
+  four states, and the permanence rule is written with its reasoning: shared links, printed
+  stationery, Google's index, and the old address becoming free for a competitor to take.
+- **The new pre-launch warning and the offline wording** had never been recorded.
+- **The AI Writer's partner field "What do they handle?"** was missing from both 5.5 and 6.10.
+- **Profile import and enquiry alerts** were absent entirely.
+
+### Two of our own notes were wrong, and both are now fixed
+
+1. **There is no Delete anywhere in the product.** No button, no `deleteSite()`. Both CLAUDE.md
+   and the old requirements note claimed the publish step still offered one, and the note built
+   an open question on top of it: *"Delete is the bypass, and it is the important one."* There
+   is no bypass, because there is no Delete.
+2. **Profile import is not blocked on its API key.** Probing the deployed function with a blank
+   1x1 image returned a wholly empty profile, which means `mode:"extract"` is deployed **and**
+   `OPENROUTER_API_KEY` is set. It is also a neat demonstration of the never-guess rule: given
+   an image with nothing in it, the extractor invented nothing. What is genuinely unfinished is
+   the UI and the untested published-site-plus-upload path.
+
+### Regenerating the user-flow diagram
+
+The old PNG still showed the change-address branch. The Mermaid source now lives in an HTML
+comment directly beside the image in the PRD, so the two cannot drift apart unnoticed. To
+regenerate after editing that source, with no toolchain to install:
+
+```
+# 1. mermaid into a scratch folder
+curl -sL -o mermaid.min.js https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js
+# 2. an HTML file: <pre class="mermaid">…source…</pre> + <script src="mermaid.min.js">, with
+#    mermaid.initialize({theme:'default',themeVariables:{fontSize:'13px'},
+#      flowchart:{useMaxWidth:false,nodeSpacing:22,rankSpacing:30,padding:6}})
+# 3. measure it, because a headless screenshot only captures the window:
+"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless --disable-gpu \
+  --virtual-time-budget=8000 --dump-dom "file://$PWD/diagram.html" | grep -o 'viewBox="0 0 [0-9.]* [0-9.]*"'
+# 4. shoot it at 2x, window = viewBox + the 16px padding on each side:
+"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless --disable-gpu \
+  --hide-scrollbars --force-device-scale-factor=2 --window-size=552,1562 \
+  --virtual-time-budget=8000 --screenshot=out.png "file://$PWD/diagram.html"
+```
+
+`nodeSpacing`/`rankSpacing`/`fontSize` are load-bearing: at Mermaid 11's defaults the same graph
+renders 668x2271, nearly three times the height of the original 600x1064 image. Tightened, it is
+519x1527. `flowchart LR` was tried and rejected: it produces a 3392x369 strip that shrinks to an
+unreadable band once Word fits it to the page width.
+
+### Screenshots
+
+Five need retaking and cannot be taken from here: the builder is behind a Supabase login and the
+shots show populated real data. The exact list, with the state each one must show, is at the end
+of `REQUIREMENTS-PENDING.md`. Keeping the existing filenames means the PRD needs no further edit
+when they are replaced.
+
+`step6-change-address.png` is now unused. It was left on disk rather than deleted, because the
+open question about allowing a one-time address correction could bring that panel back.
+
+### The Word version
+
+The 1 August `.docx` was last saved by **Microsoft Word**, not by pandoc: `docProps/app.xml`
+reads "Microsoft Macintosh Word", and it embeds 27 images where the Markdown referenced only 26,
+the extra one being the flow diagram. In other words it carries hand edits. The regenerated file
+is therefore written alongside it under a dated name rather than over it.
+
+---
+
+## 2026-08-17 (Session 23): Email alert on a new enquiry — specified, not built
+
+**New requirement from management:** when an enquiry arrives on a user's website, the
+user gets an email about it, and clicking that email takes them to the Enquiries page.
+
+**Nothing was built this session, deliberately.** The ask was to write it up so it can go
+into the BRD, with the email template included, before any code exists. It was first
+drafted into `REQUIREMENTS-PENDING.md`; Session 24 moved the requirement itself into the
+PRD (sections 5.6 and 6.14) and left only the status and open decisions in that file.
+
+### What the audit of the existing code found
+
+- **Capture already works.** The published site posts into `wb_leads` with the anon key,
+  and the Enquiries inbox (status, notes, search, export) is complete.
+- **Nothing sends mail.** Still unticked in the CHANGELOG, and listed as skipped through
+  Sessions 16 to 19.
+- **There is no per-enquiry address.** The inbox holds `#enquiries` in the URL, so a
+  reload survives, but an email cannot point at one specific enquiry. This needs
+  `#enquiries/<lead id>`, and it is not a one-liner: the list paginates at ten rows, so
+  the deep link has to find and open the page holding that row, mark it, expand its
+  clamped message, and survive the login screen on the way in.
+
+### Decisions taken
+
+- **ZeptoMail** as the sender, since KDK already has it. One HTTPS POST, no dependency,
+  which suits an Edge Function. Confirm whether the account is on the India data centre,
+  because the API host differs.
+- **Database webhook on insert, not a client-side call.** The visitor closes the tab, the
+  published page is static, and any credential in it is public. The lead is saved first
+  and the email attempted after, so a mail outage can never lose an enquiry.
+- **The template lives in the ZeptoMail console**, not in code, so the wording can change
+  without a deploy. Caveat recorded: ZeptoMail merge fields substitute values but do not
+  reliably hide an entire row, and a blank field must print nothing at all (the same rule
+  as the 2026-07-28 "no demo data" fix). If the hosted template cannot hide rows, the
+  function renders the optional rows itself.
+
+### The blocker worth raising early
+
+The contact form has **no captcha, no rate limit, no honeypot**. Today that means junk
+rows in an inbox. With alerts on, the same bot floods the owner's mailbox and the
+complaint rate damages the sending reputation of KDK's domain for every client at once.
+Some abuse control should ship with this feature rather than after it.
+
+### Next steps
+
+1. Get answers to the six open questions in the requirement, chiefly which address
+   receives the alert and whether the user can turn it off.
+2. Set up the ZeptoMail Mail Agent, SPF/DKIM/DMARC, and the template, which yields the
+   send token and template key.
+3. Then build: the webhook, the `lead-notify` Edge Function, and the `#enquiries/<id>`
+   deep link.
+
+---
+
+## 2026-08-13 (Session 22): Profile upload — AI half, UI, and the BRD record
+
+> **The business-facing record for this feature is [FEATURE-Profile-Import.md](FEATURE-Profile-Import.md).**
+> It holds the requirement, the decisions and why, open questions for management, and
+> the exact list of PRD sections to edit once the feature is finished. Read that first
+> if you are updating the BRD; read on here for the build detail.
+
+**New requirement from management:** let the user upload their existing profile
+(PDF, document, or image); AI reads it and builds the site from it.
+
+### What the flow is (agreed after several rounds)
+
+Not a separate screen. Upload is an **alternate entry point into the existing AI
+Writer interview**. AI fills what the document supports; anything it cannot fill
+stays empty, so `screenErr()` still sees those screens as incomplete and the
+interview asks the user for exactly the gaps. Upload and "skip and answer
+questions" carry **equal weight** on the entry screen, because plenty of users
+have no profile document at all and must not feel they picked the lesser path.
+`Import from a profile` also lives permanently in the side drawer, so someone
+who skipped at the start can still pull one in later without restarting.
+
+UI is not built yet, and is expected to change. Clickable mockups (design only,
+no logic) were made in Claude Artifacts for the management conversation.
+
+### What was actually built this session — the AI half
+
+`backend/supabase/functions/ai-generate/index.ts` grew a second mode alongside
+the existing text-prompt path, which is untouched:
+
+```
+{ mode:"extract", model:"...", file:{name,type,data(base64)} }  ->  { profile, usage, model }
+```
+
+- **PDF and images are never parsed client-side.** Current models read both
+  natively, so the file goes straight to the model. This matters because the
+  no-CDN / no-build rule rules out pdf.js and every OCR library, which would
+  otherwise have been the blocker for the whole feature.
+- **DOCX is unzipped in the function**, in ~50 lines using Deno's built-in
+  `DecompressionStream`, with **no dependency** — deliberate, in a function that
+  holds API keys. It reads the ZIP *central directory* rather than scanning local
+  headers, because Word often defers entry sizes to a trailing data descriptor
+  and leaves the local header zeroed. Verified against a real generated .docx:
+  multi-run paragraphs, tabs, `<w:br/>`, and XML entities all come out correct.
+- **Output is schema-validated JSON**, so there is no prose to parse.
+- **The extraction prompt's whole job is restraint.** It forbids inference by
+  name: do not turn a job title into an expertise claim, do not turn past
+  employers into a client list, never estimate a number. A field the document
+  does not state must come back empty. This is the 2026-07-28 "no demo data on
+  live sites" rule applied one layer earlier — an invented "best known for"
+  publishes a claim the user never made and never saw a prompt about, and for
+  ICAI/Bar-regulated professionals that is their problem, not just ours.
+
+### Provider: OpenRouter, and why
+
+A probe against the deployed function proved **`ANTHROPIC_API_KEY` is not set**
+(only `OPENAI_API_KEY` is), so the Anthropic-direct path could not run at all.
+KDK already has OpenRouter, which removes that blocker entirely: one key reaches
+Gemini, Claude and the rest, so comparing models is a config change instead of a
+new billing relationship. `provider:"anthropic"` is still supported if a key is
+ever set. Sending `plugins:[{id:"file-parser",pdf:{engine:"native"}}]` is
+load-bearing — without it OpenRouter defaults to `mistral-ocr`, which bills
+$2/1,000 pages on top of tokens and flattens the layout first.
+
+Model IDs and prices were read from the live `/api/v1/models` endpoint, not
+guessed. All the listed candidates accept `file` input. Default is
+**`google/gemini-3.5-flash-lite` (~₹0.35/profile)**: cheapest GA option that can
+do the job. Escalation path if it invents content is `anthropic/claude-haiku-4.5`
+(~₹0.90). Avoid `gemini-3-flash-preview` in production — a *preview* model can be
+renamed or retired with no notice and would break the feature silently.
+Full cost table and the reasoning live in `frontend/app-config.js` under
+`profileImport`.
+
+Note the real decision here is **not cost**. Per profile this is under ₹5 even at
+the top of the range, one time per website. The thing worth testing is which
+model correctly leaves a field *empty*, and no benchmark measures that.
+
+### Testable now: `frontend/test-profile-import.html`
+
+Standalone harness, touches nothing in the builder. Upload a file, pick a model
+from the dropdown, see every field with found/empty state, the token counts, and
+the actual USD OpenRouter reports. Built to answer one question: run the same
+document through two or three models and see which ones stay honest.
+
+### Blocked on
+
+`supabase secrets set OPENROUTER_API_KEY=...` then
+`supabase functions deploy ai-generate` (both from `backend/`). Nothing else.
+
+### Next
+
+1. Set the key, deploy, run a real profile through 2–3 models, pick one.
+2. Map the extracted object onto the AI Writer's `A` answers object. Reuse the
+   existing `seedFromSite()` seeding path and its pale-green `.aiw-seeded`
+   styling rather than inventing a second "this was prefilled" visual language.
+   **Trap already documented on 2026-07-28: prefilling makes `anyAnswered()`
+   true before the user types.** Use `hasResumableAnswers()` for any resume
+   decision, exactly as `seedFromSite()` had to.
+3. Then the UI (entry screen + drawer action), which is expected to change.
+
+### Also changed
+
+- `anthropic.model` was pinned to the superseded `claude-opus-4-8` -> `claude-opus-5`.
+- `backend/README.md` now documents all three secrets and which are actually set.
+
+---
+
+## 2026-07-29 (Session 21): A second host, on its own branch, so Netlify's usage isn't spent on every experiment
+
+### Why
+Netlify's free tier has usage limits, and every push to `feature/ai-website-writer` costs a real deploy there. The idea: a separate host for daily iteration, promote to Netlify only when something is actually ready. See [docs/CLOUDFLARE-DEPLOY.md](CLOUDFLARE-DEPLOY.md) for the full reference — this entry is the narrative version.
+
+### What got built
+- **New `cloudflare` branch**, forked from `feature/ai-website-writer`. Netlify keeps deploying the other branch automatically, untouched; the two do not sync automatically going forward.
+- **Cloudflare Workers, not Cloudflare Pages.** The dashboard's "Create a Worker" flow was tried first (Cloudflare has merged Pages into Workers), but its setup wizard has no branch picker — it would have deployed from `main`, which has neither this work nor a `wrangler.jsonc`. Switched to deploying via the `wrangler` CLI directly instead (`npm install -g wrangler`, `wrangler login`, `wrangler deploy`), which sidesteps the dashboard entirely.
+- **`backend/netlify/edge-functions/render.ts` ported to `src/index.ts`.** Same logic — resolve a subdomain, look up Supabase with the service key, inject the config into the right template — adapted to Cloudflare's `fetch(request, env)` signature and `env.ASSETS.fetch()` instead of Netlify's Deno `Deno.env.get()` and same-origin fetch. `/s/<subdomain>` now renders identically on both hosts, since they share one Supabase project.
+- **`publicBase` (the share-link shown after Publish) changed from a hardcoded `kdksites.netlify.app` string to `location.origin + '/s/'`.** Before this, publishing from the Cloudflare-served builder still showed a Netlify link (functionally fine, since both hosts read the same database, but confusing). Now the link matches whichever host actually served the builder.
+
+### A secret briefly leaked, caught the same session
+`wrangler deploy` reads `frontend/` straight off local disk, not from a git clone — unlike Netlify, which only ever sees committed files. `frontend/local-ai-config.js` is gitignored (holds a live OpenAI key) but still existed on disk, so the very first Cloudflare deploy uploaded it as a public static file for a few minutes. Caught immediately; fixed with `frontend/.assetsignore` (same syntax as `.gitignore`, but Cloudflare-specific — gitignore alone doesn't protect a disk-based deploy). Confirmed after the fix: the file 404s, it was never committed to git in any branch's history, and a repo-wide grep found no other copies of the key. **Any new local-only file added under `frontend/` must go in both `.gitignore` and `.assetsignore`, or this happens again.**
+
+### Also caught: a reflexive push to the Netlify branch
+Mid-session, a one-line `.gitignore` fix (ignoring the local `.wrangler/` cache folder) was pushed to `feature/ai-website-writer` without stopping to flag that this triggers an automatic Netlify production redeploy. Harmless in this case (`.gitignore` isn't even inside `frontend/`, Netlify's publish directory, so the deployed site was byte-identical before and after), but it's now a standing rule: ask before pushing anything to that branch, not just before making functional changes.
+
+### Notes for whoever is next
+- Live: builder at `kdksites.kartik-khandelwal.workers.dev`, published sites at the same host's `/s/<subdomain>`.
+- No custom domain is wired up on the Cloudflare side yet — it only has the default `workers.dev` URL.
+- No CI deploys the `cloudflare` branch automatically; every deploy so far has been a manual `wrangler deploy` run on request.
+- `cloudflare` and `feature/ai-website-writer` will drift unless changes are deliberately ported both ways — check [docs/CLOUDFLARE-DEPLOY.md](CLOUDFLARE-DEPLOY.md) before assuming either branch's docs or deploy state matches the other.
+
+---
+
 ## 2026-07-28 (Session 20): Live-site polish, and colour palettes that were measured rather than eyeballed
 
 ### Session shape
