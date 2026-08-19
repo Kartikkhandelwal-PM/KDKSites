@@ -2,9 +2,24 @@
 .DS_Store
 Thumbs.db
 
+# Node tooling (puppeteer-core, used only to render mermaid diagrams to PNG)
+node_modules/
+docs/package.json
+docs/package-lock.json
+
 # Local editor / tooling config
 .claude/
 .vscode/
+.wrangler/
 
-# Working duplicates (not for publishing)
-New Design copy/
+# Finder duplicates (never publish these)
+* copy/
+* copy */
+
+# Local AI test config (contains API key — NEVER commit)
+local-ai-config.js
+
+# Real client firm profiles used to test the profile-import feature. These are other
+# people's business documents (names, phone numbers, office addresses, partner
+# details) and must not go into a public repo. Keep test files here locally.
+CA Profile/

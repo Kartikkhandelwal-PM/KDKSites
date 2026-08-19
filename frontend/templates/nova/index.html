@@ -1,0 +1,1518 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Professional Website | KDK Sites</title>
+<link rel="icon" type="image/png" href="../../assets/ca-india-logo.png">
+<style>
+:root {
+  --navy:   #0F1E3C;
+  --blue:   #1A44C0;
+  --blue-dk:#1238A8;
+  --coral:  #EA580C;
+  --emerald:#0F6B45;
+  --off:    #F7F9FC;
+  --text:   #0F1729;
+  --text2:  #4B5563;
+  --bdr:    #E2E8F0;
+  --muted:  #6B7280;
+  --t: .22s cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
+html { scroll-behavior:smooth }
+body { font-family:'Segoe UI',system-ui,-apple-system,sans-serif; color:var(--text); background:#fff; font-size:15px; line-height:1.6 }
+a { color:inherit; text-decoration:none }
+button { cursor:pointer; font-family:inherit }
+
+@keyframes fadeUp  { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:none} }
+@keyframes floatA  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-18px)} }
+@keyframes floatB  { 0%,100%{transform:translateY(-8px)} 50%{transform:translateY(12px)} }
+@keyframes shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
+@keyframes pulse   { 0%,100%{box-shadow:0 0 0 0 rgba(26,68,192,.3)} 50%{box-shadow:0 0 0 10px rgba(26,68,192,0)} }
+
+.reveal { opacity:0; transform:translateY(26px); transition:opacity .65s ease,transform .65s ease }
+.reveal.vis { opacity:1; transform:none }
+.d1{transition-delay:.1s} .d2{transition-delay:.2s} .d3{transition-delay:.3s} .d4{transition-delay:.4s}
+
+/* ── NAV ── */
+.nav {
+  position:fixed; top:0; left:0; right:0; z-index:200; height:68px;
+  display:flex; align-items:center; padding:0 6%;
+  background:#fff; border-bottom:1px solid var(--bdr);
+  box-shadow:0 1px 8px rgba(15,30,60,.06);
+}
+.nav-logo { display:flex; align-items:center; gap:12px; flex-shrink:0 }
+.nav-mono {
+  width:38px; height:38px; border-radius:9px;
+  background:linear-gradient(135deg,var(--blue),#4F6DF5);
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:800; color:#fff;
+}
+/* Uploaded firm logo — white chip keeps it crisp on any nav/footer background. */
+.nav-logo-img { box-sizing:border-box; display:none; height:40px; width:auto; max-width:180px; object-fit:contain; background:#fff; border:1px solid rgba(15,23,42,.08); border-radius:8px; padding:4px 8px; box-shadow:0 2px 8px rgba(0,0,0,.12); flex-shrink:0 }
+.foot-logo-img { box-sizing:border-box; display:none; height:40px; width:auto; max-width:170px; object-fit:contain; background:#fff; border-radius:8px; padding:4px 8px; flex-shrink:0 }
+/* A long firm name shrinks to an ellipsis instead of overflowing the header;
+   the logo/monogram stays intact. */
+.nav-logo { flex-shrink:1; min-width:0 }
+.nav-mono, .nav-logo-img { flex-shrink:0 }
+.nav-logo > div { min-width:0 }
+.nav-nm, .nav-sub { white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+@media(max-width:600px){ .nav-logo-img { height:34px; max-width:130px } }
+.nav-nm  { font-size:14px; font-weight:700; color:var(--text); line-height:1.2 }
+.nav-sub { font-size:10px; color:var(--muted); letter-spacing:.07em; text-transform:uppercase }
+.nav-space { flex:1 }
+.nav-links { display:none; align-items:center; gap:28px }
+.nav-link  { font-size:13px; font-weight:500; color:var(--text2); transition:color var(--t) }
+.nav-link:hover { color:var(--text) }
+.nav-cta {
+  background:var(--blue); color:#fff; padding:9px 20px; border-radius:7px;
+  font-size:13px; font-weight:600; transition:all var(--t);
+}
+.nav-cta:hover { background:var(--blue-dk); transform:translateY(-1px); box-shadow:0 4px 14px rgba(26,68,192,.35) }
+
+/* ── HERO ── */
+.hero {
+  display:grid; grid-template-columns:1fr;
+  padding-top:68px; position:relative;
+}
+/* Left: text on white */
+.hero-left {
+  display:flex; flex-direction:column; justify-content:center;
+  padding:48px 5% 40px; position:relative; overflow:hidden;
+}
+.hero-left::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(ellipse 80% 60% at -10% 50%, rgba(26,68,192,.05) 0%, transparent 70%);
+}
+.hero-left::after {
+  content:''; position:absolute; bottom:0; left:0; right:0; height:1px;
+  background:var(--bdr); display:none;
+}
+.hero-eye {
+  display:inline-flex; align-items:center; gap:9px; align-self:flex-start;
+  font-size:10px; font-weight:600; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--coral);
+  background:rgba(234,88,12,.07); border:1px solid rgba(234,88,12,.2);
+  padding:6px 14px; border-radius:100px; margin-bottom:22px;
+  animation:fadeUp .75s .05s ease both;
+}
+.hero-eye::before {
+  content:''; width:7px; height:7px; border-radius:50%; flex-shrink:0;
+  background:var(--coral); animation:pulse 2.5s ease-in-out infinite;
+}
+.hero-h1 {
+  font-size:clamp(36px,3.5vw,56px); font-weight:900; line-height:1.06;
+  letter-spacing:-.04em; color:var(--text); margin-bottom:0;
+  animation:fadeUp .75s .12s ease both;
+}
+.hero-h1 .hl { color:var(--blue) }
+.hero-rule {
+  width:48px; height:3px; border-radius:2px;
+  background:linear-gradient(90deg,var(--blue),var(--coral));
+  margin:26px 0 26px; animation:fadeUp .75s .18s ease both;
+}
+.hero-para {
+  font-size:16px; color:var(--text2); line-height:1.78; max-width:430px;
+  margin-bottom:28px; animation:fadeUp .75s .22s ease both;
+}
+.hero-types {
+  display:flex; flex-wrap:wrap; gap:8px;
+  margin-bottom:36px; animation:fadeUp .75s .28s ease both;
+}
+.ht {
+  display:inline-flex; align-items:center; gap:7px;
+  font-size:12px; font-weight:600; padding:5px 13px; border-radius:100px;
+  background:var(--off); border:1px solid var(--bdr);
+  color:var(--text2); transition:all var(--t);
+}
+.ht:hover { background:#fff; border-color:rgba(26,68,192,.35); color:var(--blue) }
+.ht::before { content:''; width:5px; height:5px; border-radius:50%; flex-shrink:0 }
+.ht-sal::before { background:#3B82F6 }
+.ht-biz::before { background:#10B981 }
+.ht-nri::before { background:#F59E0B }
+.ht-fre::before { background:#EC4899 }
+.ht-sta::before { background:#8B5CF6 }
+.hero-acts { display:flex; gap:10px; flex-direction:column; animation:fadeUp .75s .34s ease both }
+.hero-acts .btn-dk,
+.hero-acts .btn-ol { display:block; width:100%; text-align:center }
+.btn-dk {
+  background:var(--navy); color:#fff; padding:14px 28px; border-radius:10px;
+  font-size:14px; font-weight:700; display:inline-block; transition:all var(--t);
+}
+.btn-dk:hover { background:var(--blue); transform:translateY(-2px); box-shadow:0 8px 26px rgba(26,68,192,.32) }
+.btn-ol {
+  background:#fff; border:1.5px solid var(--bdr); color:var(--text);
+  padding:14px 28px; border-radius:10px; font-size:14px; font-weight:600;
+  display:inline-block; transition:all var(--t);
+}
+.btn-ol:hover { border-color:var(--blue); color:var(--blue) }
+
+/* Right: image carousel — min-height keeps the photo visible on small phones
+   where the hero has no fixed height (slides are absolutely positioned). */
+.hero-right { position:relative; overflow:hidden; min-height:60vw }
+.hv-car { position:absolute; inset:0 }
+.hv-slide { position:absolute; inset:0; opacity:0; transition:opacity 1.1s ease; pointer-events:none }
+.hv-slide.act { opacity:1; pointer-events:auto }
+.hv-slide img { width:100%; height:100%; object-fit:cover; display:block }
+.hv-shade {
+  position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:linear-gradient(
+    160deg,
+    rgba(6,15,40,.2) 0%,
+    rgba(6,15,40,.04) 40%,
+    rgba(6,15,40,.0) 58%,
+    rgba(6,15,40,.78) 100%
+  );
+}
+.hv-ledge-left {
+  position:absolute; top:0; bottom:0; left:0; width:56px; z-index:1; pointer-events:none;
+  background:linear-gradient(to right, rgba(6,15,40,.38), transparent);
+}
+.hv-info {
+  position:absolute; bottom:0; left:0; right:0; z-index:2;
+  padding:28px 36px 32px; display:flex; flex-direction:column; align-items:center; gap:14px;
+}
+.hv-dots { display:flex; gap:7px }
+.hv-dot {
+  height:3px; border-radius:2px; background:rgba(255,255,255,.32);
+  border:none; padding:0; cursor:pointer; transition:all .4s ease; width:22px;
+}
+.hv-dot.act { background:#fff; width:38px }
+.hv-cap { text-align:center }
+.hv-cap-tag {
+  display:inline-flex; align-items:center; gap:7px;
+  background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.18);
+  border-radius:100px; padding:5px 16px; margin-bottom:10px;
+  font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase;
+  color:rgba(255,255,255,.88);
+}
+.hv-cap-tag::before {
+  content:''; width:6px; height:6px; border-radius:50%; background:#4ADE80;
+  box-shadow:0 0 6px rgba(74,222,128,.8); flex-shrink:0;
+}
+.hv-cap-stats {
+  display:flex; gap:0; border:1px solid rgba(255,255,255,.14); border-radius:14px;
+  overflow:hidden; background:rgba(6,15,40,.52); backdrop-filter:blur(8px);
+}
+.hv-cs { flex:1; text-align:center; padding:12px 20px }
+.hv-cs+.hv-cs { border-left:1px solid rgba(255,255,255,.1) }
+.hv-cs em { display:block; font-style:normal; font-size:20px; font-weight:900; color:#fff; letter-spacing:-.04em; line-height:1; margin-bottom:4px }
+.hv-cs span { font-size:9px; color:rgba(255,255,255,.45); font-weight:600; letter-spacing:.07em; text-transform:uppercase }
+
+/* ── STATS STRIP ── */
+.stats-strip {
+  background:var(--navy); padding:24px 5%;
+  display:flex; justify-content:center; flex-wrap:wrap;
+}
+.stat-item { flex:1; min-width:50%; max-width:220px; text-align:center; padding:12px 16px; position:relative }
+.stat-item+.stat-item::before {
+  content:''; position:absolute; left:0; top:50%; transform:translateY(-50%);
+  width:1px; height:34px; background:rgba(255,255,255,.15);
+}
+.stat-num { font-size:34px; font-weight:900; color:#fff; letter-spacing:-.04em; line-height:1 }
+.stat-lbl { font-size:11px; font-weight:600; color:rgba(255,255,255,.4); letter-spacing:.07em; text-transform:uppercase; margin-top:6px }
+
+/* ── SECTIONS ── */
+.sec { padding:60px 5% }
+.sec-eye  { font-size:10px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--blue); margin-bottom:10px }
+.sec-h2   { font-size:clamp(24px,3.5vw,38px); font-weight:800; color:var(--text); letter-spacing:-.03em; line-height:1.15; margin-bottom:12px }
+.sec-lead { font-size:15px; color:var(--text2); line-height:1.75; max-width:500px; margin-bottom:52px }
+
+/* ── SERVICES ── */
+.svc-sec { background:var(--off) }
+.svc-grid { display:grid; grid-template-columns:1fr; gap:16px }
+.svc-card {
+  background:#fff; border:1px solid var(--bdr); border-radius:16px;
+  padding:28px 24px 26px; position:relative; overflow:hidden;
+  display:flex; flex-direction:column;
+  transition:transform var(--t),box-shadow var(--t),border-color var(--t);
+}
+.svc-card::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; border-radius:16px 16px 0 0 }
+.svc-card::after  { content:''; position:absolute; width:200px; height:200px; border-radius:50%; right:-55px; bottom:-70px; pointer-events:none; opacity:.05 }
+.svc-card:hover { transform:translateY(-5px) }
+.svc-c1::before{background:linear-gradient(90deg,#1A44C0,#60A5FA)} .svc-c1::after{background:#1D4ED8} .svc-c1:hover{box-shadow:0 18px 44px rgba(26,68,192,.14);border-color:rgba(26,68,192,.22)}
+.svc-c2::before{background:linear-gradient(90deg,#065F38,#34D399)} .svc-c2::after{background:#059669} .svc-c2:hover{box-shadow:0 18px 44px rgba(5,150,105,.14);border-color:rgba(5,150,105,.22)}
+.svc-c3::before{background:linear-gradient(90deg,#9F1239,#FB7185)} .svc-c3::after{background:#E11D48} .svc-c3:hover{box-shadow:0 18px 44px rgba(225,29,72,.14);border-color:rgba(225,29,72,.22)}
+.svc-c4::before{background:linear-gradient(90deg,#4C1D95,#A78BFA)} .svc-c4::after{background:#7C3AED} .svc-c4:hover{box-shadow:0 18px 44px rgba(124,58,237,.14);border-color:rgba(124,58,237,.22)}
+.svc-c5::before{background:linear-gradient(90deg,#B45309,#FCD34D)} .svc-c5::after{background:#D97706} .svc-c5:hover{box-shadow:0 18px 44px rgba(217,119,6,.14);border-color:rgba(217,119,6,.22)}
+.svc-c6::before{background:linear-gradient(90deg,#0C6B85,#22D3EE)} .svc-c6::after{background:#0891B2} .svc-c6:hover{box-shadow:0 18px 44px rgba(8,145,178,.14);border-color:rgba(8,145,178,.22)}
+.svc-bar { width:36px; height:4px; border-radius:2px; margin-bottom:20px; margin-top:4px }
+.svc-c1 .svc-bar{background:linear-gradient(90deg,#1A44C0,#60A5FA)} .svc-c2 .svc-bar{background:linear-gradient(90deg,#065F38,#34D399)} .svc-c3 .svc-bar{background:linear-gradient(90deg,#9F1239,#FB7185)}
+.svc-c4 .svc-bar{background:linear-gradient(90deg,#4C1D95,#A78BFA)} .svc-c5 .svc-bar{background:linear-gradient(90deg,#B45309,#FCD34D)} .svc-c6 .svc-bar{background:linear-gradient(90deg,#0C6B85,#22D3EE)}
+.svc-name { font-size:16px; font-weight:700; color:var(--text); margin-bottom:10px; letter-spacing:-.02em; line-height:1.3 }
+.svc-desc { font-size:13px; color:var(--text2); line-height:1.72; flex:1 }
+.svc-enq  { display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:700; margin-top:20px; transition:gap var(--t) }
+.svc-enq:hover { gap:9px }
+.svc-c1 .svc-enq{color:#1A44C0} .svc-c2 .svc-enq{color:#065F38} .svc-c3 .svc-enq{color:#9F1239}
+.svc-c4 .svc-enq{color:#4C1D95} .svc-c5 .svc-enq{color:#B45309} .svc-c6 .svc-enq{color:#0C6B85}
+
+/* ── ABOUT ── */
+.about-grid { display:grid; grid-template-columns:1fr; gap:40px; align-items:start }
+.ab-highs { display:flex; flex-direction:column; gap:16px; margin-top:30px }
+.ab-item  { display:flex; gap:14px; align-items:flex-start }
+.ab-icon  {
+  width:40px; height:40px; border-radius:10px; flex-shrink:0; margin-top:2px;
+  background:linear-gradient(135deg,rgba(26,68,192,.1),rgba(26,68,192,.04));
+  border:1px solid rgba(26,68,192,.16);
+  display:flex; align-items:center; justify-content:center;
+}
+.ab-t { font-size:14px; font-weight:700; color:var(--text); margin-bottom:3px }
+.ab-d { font-size:13px; color:var(--text2); line-height:1.6 }
+.pc-card {
+  background:#fff; border:1px solid var(--bdr); border-radius:20px; padding:32px;
+  box-shadow:0 8px 36px rgba(15,30,60,.07); position:relative; overflow:hidden;
+}
+.pc-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:4px;
+  background:linear-gradient(90deg,var(--blue),var(--coral));
+}
+.pc-card::after {
+  content:''; position:absolute; top:-40px; right:-40px; width:160px; height:160px;
+  border-radius:50%; background:radial-gradient(circle,rgba(26,68,192,.06) 0%,transparent 70%);
+  pointer-events:none;
+}
+.pc-mono {
+  width:96px; height:96px; border-radius:22px; margin:16px 0 20px;
+  background:linear-gradient(135deg,var(--blue),#4F6DF5);
+  display:flex; align-items:center; justify-content:center;
+  font-size:32px; font-weight:900; color:#fff;
+  box-shadow:0 10px 28px rgba(26,68,192,.32);
+}
+.pc-name { font-size:20px; font-weight:800; color:var(--text); letter-spacing:-.02em; margin-bottom:4px }
+.pc-role { font-size:12px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:var(--coral); margin-bottom:18px }
+.pc-bio  { font-size:14px; color:var(--text2); line-height:1.75; margin-bottom:24px }
+.pc-quals { display:flex; flex-direction:column; gap:9px }
+.pc-q { display:flex; align-items:center; gap:10px; font-size:13px; font-weight:500; color:var(--text2) }
+.pc-q::before { content:''; width:6px; height:6px; border-radius:50%; flex-shrink:0; background:linear-gradient(135deg,var(--blue),var(--coral)) }
+
+/* ── FOUNDERS & PARTNERS ──
+   #about carries the layout class, set by applyConfig from the partner count:
+     .about-solo  one  — large card beside the About text (default)
+     .about-duo   two  — About text full width, two equal cards below
+     .about-team  3-4  — lead keeps the large card, the rest form a row
+   The id+class selectors outrank the plain .about-grid rule in the desktop
+   breakpoint, so these hold at every width. */
+#about.about-duo .about-grid { grid-template-columns:1fr; gap:40px }
+#about.about-duo .pc-col     { display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:stretch }
+#about.about-duo .pc-card    { display:flex; flex-direction:column; height:100% }
+#about.about-duo .pc-mono    { margin:8px 0 18px; width:76px; height:76px; border-radius:18px; font-size:26px }
+#about.about-duo .pc-quals   { margin-top:auto }   /* uneven bios, level credential lists */
+#about.about-duo .ab-highs   { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:22px; margin-top:4px }
+@media(max-width:760px){ #about.about-duo .pc-col { grid-template-columns:1fr } }
+
+/* An uploaded portrait is 3:4. Squeezed into the monogram square it was
+   unreadable, so a photo gets a real portrait block at the design's own radius.
+   Initials-only firms keep .pc-mono exactly as before, and if ANY partner has a
+   photo every card in the section uses the block, so a row never mixes shapes. */
+.pc-photo {
+  width:132px; height:132px; border-radius:24px; margin:16px 0 20px; overflow:hidden;
+  background:linear-gradient(135deg,var(--blue),#4F6DF5);
+  box-shadow:0 12px 30px rgba(26,68,192,.3);
+  display:flex; align-items:center; justify-content:center;
+  font-size:34px; font-weight:900; color:#fff;
+}
+/* faces sit above centre in a portrait, so the crop is biased upward */
+.pc-photo img { width:100%; height:100%; object-fit:cover; object-position:50% 28%; display:block }
+/* With a portrait the name sits BESIDE the photo, so the half-width card does not
+   carry a large empty block to the right of the picture. */
+.pc-top { display:flex; gap:20px; align-items:center; margin:16px 0 22px }
+.pc-top .pc-photo { margin:0 }
+.pc-top .pc-id   { min-width:0 }
+.pc-top .pc-name { margin-bottom:6px }
+.pc-top .pc-role { margin-bottom:0 }
+@media(max-width:600px){ .pc-photo { width:110px; height:110px; border-radius:20px } .pc-top { gap:15px } }
+
+.team-band { margin-top:56px; padding-top:36px; border-top:1px solid var(--bdr) }
+.team-hd   { margin-bottom:22px }
+.team-h3   { font-size:20px; font-weight:800; color:var(--text); letter-spacing:-.02em }
+.team-sub  { font-size:13px; color:var(--text2); margin-top:4px }
+.team-grid { display:grid; gap:18px; grid-template-columns:repeat(auto-fit,minmax(228px,1fr)) }
+.tm-card {
+  background:#fff; border:1px solid var(--bdr); border-radius:16px; padding:22px 20px;
+  box-shadow:0 2px 14px rgba(15,30,60,.05); position:relative; overflow:hidden;
+  transition:box-shadow var(--t),transform var(--t);
+}
+.tm-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--blue),var(--coral)) }
+.tm-card:hover { box-shadow:0 12px 32px rgba(15,30,60,.1); transform:translateY(-2px) }
+.tm-mono {
+  width:52px; height:52px; border-radius:14px; margin-bottom:14px; overflow:hidden;
+  background:linear-gradient(135deg,var(--blue),#4F6DF5);
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px; font-weight:900; color:#fff;
+  box-shadow:0 6px 16px rgba(26,68,192,.26);
+}
+.tm-mono.has-img { background:none; box-shadow:none; border:1px solid var(--bdr) }
+.tm-mono img { width:100%; height:100%; object-fit:cover }
+/* photo variant: a 3:4 portrait beside the name, so the face is actually visible */
+.tm-top   { display:flex; gap:14px; align-items:flex-start; margin-bottom:14px }
+.tm-photo {
+  width:72px; height:72px; border-radius:16px; overflow:hidden; flex-shrink:0;
+  background:linear-gradient(135deg,var(--blue),#4F6DF5);
+  display:flex; align-items:center; justify-content:center;
+  font-size:19px; font-weight:800; color:#fff;
+}
+.tm-photo img { width:100%; height:100%; object-fit:cover; object-position:50% 28%; display:block }
+.tm-top .tm-nm { margin-top:2px }
+.tm-top .tm-rl { margin-bottom:0 }
+.tm-nm   { font-size:15px; font-weight:800; color:var(--text); letter-spacing:-.015em; margin-bottom:3px }
+.tm-rl   { font-size:10.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--coral); margin-bottom:10px }
+.tm-bio  { font-size:13px; color:var(--text2); line-height:1.65; margin-bottom:12px }
+.tm-cred { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text2); font-weight:500 }
+.tm-cred svg { flex-shrink:0 }
+
+/* ── PROCESS — light indigo bg ── */
+.process-sec {
+  background:linear-gradient(140deg,#EFF2FF 0%,#E0E7FF 50%,#F3E8FF 100%);
+  position:relative; overflow:hidden;
+}
+.process-sec .sec-eye  { color:var(--blue) }
+.process-sec .sec-h2   { color:var(--navy) }
+.process-sec .sec-lead { color:var(--text2) }
+.proc-inner { position:relative; z-index:1 }
+.proc-grid  { display:flex; flex-wrap:wrap; justify-content:center; gap:16px }
+.proc-grid > .proc-card { flex-basis:100% }
+.proc-card  {
+  background:#fff; border:1px solid rgba(26,68,192,.1);
+  border-radius:16px; padding:34px 28px; position:relative;
+  box-shadow:0 4px 20px rgba(15,30,60,.07);
+  transition:box-shadow var(--t),transform var(--t);
+}
+.proc-card:hover { box-shadow:0 14px 40px rgba(15,30,60,.12); transform:translateY(-2px) }
+.proc-n {
+  font-size:64px; font-weight:900; letter-spacing:-.04em; line-height:1; margin-bottom:20px;
+  background:linear-gradient(135deg,var(--blue),var(--coral));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.proc-t { font-size:16px; font-weight:700; color:var(--navy); margin-bottom:10px }
+.proc-d { font-size:13px; color:var(--text2); line-height:1.7 }
+.proc-arr {
+  position:absolute; top:38px; right:-15px; z-index:2;
+  width:30px; height:30px; border-radius:50%;
+  background:linear-gradient(135deg,var(--blue),var(--coral));
+  display:none; align-items:center; justify-content:center;
+  box-shadow:0 4px 14px rgba(26,68,192,.4);
+}
+.proc-card:last-child .proc-arr { display:none }
+
+/* ── TESTIMONIALS ── */
+.testi-sec { background:var(--off) }
+.testi-carousel { position:relative; overflow:hidden }
+.testi-track { display:flex; gap:20px; transition:transform .5s cubic-bezier(.4,0,.2,1); will-change:transform }
+.tc {
+  flex:0 0 100%; background:#fff; border:1px solid var(--bdr);
+  border-radius:16px; padding:28px; display:flex; flex-direction:column; position:relative; overflow:hidden;
+  transition:box-shadow var(--t);
+}
+.tc:hover { box-shadow:0 14px 40px rgba(15,30,60,.1) }
+.tc::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--blue),var(--coral)) }
+.tc-qm   { font-size:64px; font-weight:900; color:rgba(26,68,192,.07); line-height:.75; margin-bottom:6px; font-family:Georgia,serif; user-select:none }
+.tc-stars { display:flex; gap:3px; margin-bottom:14px }
+.tc-star  { width:13px; height:13px; background:#F59E0B; clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%) }
+.tc-q  { font-size:14px; color:var(--text); line-height:1.75; font-style:italic; flex:1; margin-bottom:20px }
+.tc-au { display:flex; align-items:center; gap:10px }
+.tc-av { width:48px; height:48px; border-radius:50%; overflow:hidden; flex-shrink:0; display:flex }
+.tc-nm { font-size:13px; font-weight:700; color:var(--text) }
+.tc-rl { font-size:11px; color:var(--muted) }
+.testi-outer { position:relative }
+.testi-arrow {
+  width:36px; height:36px; border-radius:50%; border:1px solid var(--bdr); background:#fff;
+  display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0;
+  transition:all var(--t); color:var(--text2);
+}
+.testi-arrow:hover { background:var(--blue); border-color:var(--blue); color:#fff; box-shadow:0 4px 16px rgba(26,68,192,.25) }
+.testi-nav  { display:flex; align-items:center; justify-content:center; gap:14px; margin-top:22px }
+.testi-dots { display:flex; gap:6px; align-items:center }
+.testi-dot  { width:7px; height:7px; border-radius:50%; background:var(--bdr); cursor:pointer; transition:all .3s }
+.testi-dot.act { background:var(--blue); width:22px; border-radius:4px }
+
+/* ── CONTACT ── */
+.contact-grid { display:grid; grid-template-columns:1fr; gap:32px; align-items:start }
+.ct-list  { display:flex; flex-direction:column; gap:14px }
+.ct-item  {
+  display:flex; gap:14px; background:var(--off); border:1px solid var(--bdr);
+  border-radius:12px; padding:16px 18px; transition:border-color var(--t),box-shadow var(--t);
+}
+.ct-item:hover { border-color:rgba(26,68,192,.22); box-shadow:0 4px 16px rgba(26,68,192,.07) }
+.ct-ic {
+  width:40px; height:40px; border-radius:10px; flex-shrink:0;
+  background:linear-gradient(135deg,rgba(26,68,192,.1),rgba(26,68,192,.04));
+  border:1px solid rgba(26,68,192,.16);
+  display:flex; align-items:center; justify-content:center;
+}
+.ct-l { font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:3px }
+.ct-v { font-size:14px; font-weight:600; color:var(--text) }
+.ct-s { font-size:12px; color:var(--muted); margin-top:2px }
+.form-card {
+  background:#fff; border:1px solid var(--bdr); border-radius:20px;
+  padding:36px; box-shadow:0 8px 36px rgba(15,30,60,.08); position:relative; overflow:hidden;
+}
+.form-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:4px;
+  background:linear-gradient(90deg,var(--blue),var(--coral) 50%,var(--blue) 100%);
+  background-size:200% 100%; animation:shimmer 4s linear infinite;
+}
+.form-t { font-size:18px; font-weight:800; color:var(--text); letter-spacing:-.02em; margin-bottom:4px }
+.form-s { font-size:13px; color:var(--text2); margin-bottom:24px }
+.f-row  { display:grid; grid-template-columns:1fr; gap:14px; margin-bottom:14px }
+.fg  { display:flex; flex-direction:column; gap:5px; margin-bottom:14px }
+.fl  { font-size:11px; font-weight:600; color:var(--text) }
+.fi,.fta,.fsel {
+  border:1.5px solid var(--bdr); border-radius:9px; padding:11px 13px;
+  font-size:14px; font-family:inherit; color:var(--text); background:var(--off);
+  transition:border-color var(--t),box-shadow var(--t); outline:none; width:100%;
+}
+.fi:focus,.fta:focus,.fsel:focus { border-color:var(--blue); background:#fff; box-shadow:0 0 0 3px rgba(26,68,192,.09) }
+.fta { min-height:96px; resize:vertical; line-height:1.6 }
+.btn-submit {
+  width:100%; background:linear-gradient(135deg,var(--blue),var(--blue-dk)); color:#fff;
+  padding:14px; border:none; border-radius:10px; font-size:15px; font-weight:700;
+  transition:all var(--t); box-shadow:0 6px 22px rgba(26,68,192,.28); font-family:inherit;
+}
+.btn-submit:hover { transform:translateY(-1px); box-shadow:0 10px 30px rgba(26,68,192,.38) }
+.btn-wa {
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  width:100%; margin-top:10px; background:#25D366; color:#fff; padding:12px;
+  border:none; border-radius:10px; font-size:14px; font-weight:600;
+  transition:all var(--t); font-family:inherit;
+}
+.btn-wa:hover { background:#1ebe59; transform:translateY(-1px); box-shadow:0 6px 20px rgba(37,211,102,.3) }
+
+/* ── FOOTER ── */
+footer {
+  background:var(--navy);
+  padding:56px 6% 28px; position:relative; overflow:hidden;
+}
+footer::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background-image:radial-gradient(circle,rgba(255,255,255,.04) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+.foot-grid {
+  display:grid; grid-template-columns:1fr; gap:28px;
+  padding-bottom:40px; border-bottom:1px solid rgba(255,255,255,.07);
+  margin-bottom:26px; position:relative; z-index:1;
+}
+.foot-logo-row { display:flex; align-items:center; gap:12px }
+.foot-mono {
+  width:36px; height:36px; border-radius:7px; flex-shrink:0;
+  background:linear-gradient(135deg,var(--blue),#4F6DF5);
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:800; color:#fff;
+}
+.foot-nm   { font-size:14px; font-weight:700; color:#fff }
+.foot-sub  { font-size:10px; color:rgba(255,255,255,.35); letter-spacing:.06em; text-transform:uppercase }
+.foot-desc { font-size:13px; color:rgba(255,255,255,.38); line-height:1.8; max-width:260px; margin-top:14px }
+.foot-ct   { font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.28); margin-bottom:14px }
+.foot-lnk  { display:block; font-size:13px; color:rgba(255,255,255,.48); margin-bottom:9px; transition:color var(--t) }
+.foot-lnk:hover { color:#fff }
+.foot-bot  { display:flex; flex-direction:column; align-items:center; gap:10px; position:relative; z-index:1 }
+.foot-copy { font-size:12px; color:rgba(255,255,255,.22) }
+.foot-pow  { font-size:11px; color:rgba(255,255,255,.2) }
+.foot-pow a { color:rgba(99,102,241,.7) }
+.foot-social { display:flex; gap:9px; margin-top:20px; flex-wrap:wrap }
+.foot-soc-a {
+  width:34px; height:34px; border-radius:8px; flex-shrink:0;
+  border:1px solid rgba(26,68,192,.3); background:rgba(26,68,192,.1);
+  display:flex; align-items:center; justify-content:center;
+  color:rgba(255,255,255,.55); transition:all var(--t);
+}
+.foot-soc-a:hover { background:rgba(26,68,192,.22); border-color:rgba(26,68,192,.5); color:#fff; transform:translateY(-2px) }
+
+.wa-float {
+  position:fixed; bottom:28px; right:28px; z-index:999;
+  width:54px; height:54px; background:#25D366; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 4px 20px rgba(37,211,102,.5); transition:all var(--t); border:none;
+}
+.wa-float:hover { transform:scale(1.12); box-shadow:0 8px 32px rgba(37,211,102,.65) }
+
+/* ── HAMBURGER NAV ── */
+.nav-hamburger {
+  display:flex; flex-direction:column; justify-content:center; gap:5px;
+  background:none; border:none; padding:8px; cursor:pointer; width:40px; height:40px; flex-shrink:0;
+}
+.nav-hamburger span {
+  display:block; width:22px; height:2px; border-radius:2px; background:var(--text);
+  transition:transform .25s ease,opacity .2s ease;
+}
+.nav-hamburger.open span:nth-child(1) { transform:rotate(45deg) translate(5px,5px) }
+.nav-hamburger.open span:nth-child(2) { opacity:0 }
+.nav-hamburger.open span:nth-child(3) { transform:rotate(-45deg) translate(5px,-5px) }
+.nav-mob {
+  display:none; position:fixed; top:68px; left:0; right:0; z-index:199;
+  background:#fff; border-bottom:1px solid var(--bdr); flex-direction:column;
+  padding:8px 6% 24px; box-shadow:0 16px 40px rgba(15,30,60,.12);
+}
+.nav-mob.open { display:flex }
+.nm-link {
+  display:block; font-size:16px; font-weight:500; color:var(--text);
+  padding:15px 0; border-bottom:1px solid var(--bdr); transition:color var(--t);
+}
+.nm-link:hover { color:var(--blue) }
+.nm-cta {
+  display:block; margin-top:16px; background:var(--blue); color:#fff;
+  padding:14px; border-radius:10px; text-align:center;
+  font-size:15px; font-weight:700; transition:background var(--t);
+}
+.nm-cta:hover { background:var(--blue-dk) }
+
+/* ── RESPONSIVE (mobile-first: min-width) ── */
+/* The photo overlay's tag and stats duplicate the hero badge and the main stats
+   strip, so hide the overlay caption at every size; the carousel dots remain. */
+.hv-cap{ display:none !important }
+@media(min-width:520px){
+  .hero-right    { min-height:42vh }
+  .svc-grid      { grid-template-columns:repeat(2,1fr); gap:18px }
+  .f-row         { grid-template-columns:1fr 1fr }
+}
+@media(min-width:760px){
+  .hero-left     { padding:56px 6% 48px }
+  .hero-acts     { flex-direction:row; flex-wrap:wrap; gap:12px }
+  .hero-acts .btn-dk,
+  .hero-acts .btn-ol { display:inline-block; width:auto }
+  .hero-eye      { font-size:11px; padding:7px 18px; margin-bottom:30px }
+  .hv-info       { padding:22px 28px 26px }
+  .hv-cs em      { font-size:19px }
+  .sec           { padding:80px 6% }
+  .stats-strip   { padding:28px 6% }
+}
+@media(min-width:960px){
+  .nav-links     { display:flex }
+  .nav-hamburger { display:none }
+  .hero          { grid-template-columns:1fr 1fr; min-height:100vh }
+  .hero-left     { padding:72px 7% 80px 10% }
+  .hero-right    { min-height:100% }
+  .hv-info       { padding:28px 36px 32px }
+  .hv-cs         { padding:12px 20px }
+  .hv-cs em      { font-size:20px }
+  .hv-cs span    { font-size:9px }
+  .hv-cap-tag    { font-size:11px; padding:5px 16px }
+  .svc-grid      { grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:22px }
+  .about-grid    { grid-template-columns:1fr 1fr; gap:64px }
+  .proc-grid     { gap:24px }
+  .proc-grid > .proc-card { flex-basis:calc((100% - 48px) / 3) } /* 3 per row on desktop */
+  .proc-arr      { display:flex }
+  .tc            { flex:0 0 calc((100% - 40px)/3) }
+  .contact-grid  { grid-template-columns:1fr 1.4fr; gap:56px }
+  .foot-grid     { grid-template-columns:2fr 1fr 1fr; gap:44px }
+  .foot-bot      { flex-direction:row; justify-content:space-between }
+  .stats-strip   { flex-wrap:nowrap; padding:30px 6% }
+  .stat-item     { min-width:0 }
+  .sec           { padding:96px 6% }
+}
+/* ── MOBILE POLISH (phones / small tablets) ── */
+@media(max-width:600px){
+  .sec           { padding:52px 5% }
+  .sec-lead      { margin-bottom:36px }
+  .hero-left     { padding:40px 5% 36px }
+  .hero-h1       { font-size:clamp(30px,8vw,40px) }
+  .hero-para     { font-size:15px; line-height:1.7 }
+  .stats-strip   { padding:20px 5% }
+  .stat-num      { font-size:28px }
+  /* stat cards wrap 2-per-row; drop the divider on cards that start a new row */
+  .stat-item:nth-child(2n+1)::before { display:none }
+  .svc-card      { padding:24px 20px 22px }
+  .pc-card       { padding:26px 22px }
+  .pc-mono       { width:76px; height:76px; border-radius:18px; font-size:26px; margin:8px 0 16px }
+  .pc-name       { font-size:18px }
+  .proc-card     { padding:28px 24px }
+  .proc-n        { font-size:52px; margin-bottom:14px }
+  .form-card     { padding:26px 22px }
+  .tc            { padding:22px 18px; border-radius:14px }
+  .tc-qm         { font-size:44px; margin-bottom:2px }
+  .tc-stars      { margin-bottom:10px }
+  .tc-q          { font-size:13.5px; line-height:1.62; margin-bottom:16px }
+  .tc-av         { width:44px; height:44px }
+  .testi-arrow   { width:34px; height:34px }
+  footer         { padding:44px 6% 26px }
+  .wa-float      { bottom:20px; right:20px; width:50px; height:50px }
+}
+@media(max-width:400px){
+  .hero-types .ht { font-size:11px; padding:4px 10px }
+  .stat-num       { font-size:24px }
+  .hv-cs          { padding:10px 12px }
+  .hv-cs em       { font-size:17px }
+  .hv-info        { padding:18px 18px 22px }
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after { transition:none !important; animation:none !important }
+  .reveal { opacity:1 !important; transform:none !important }
+}
+</style>
+
+<!-- NAV -->
+<nav class="nav" id="mainNav">
+  <div class="nav-logo">
+    <div class="nav-mono">PM</div>
+    <img class="nav-logo-img" alt="">
+    <div>
+      <div class="nav-nm">Priya Mehta &amp; Co.</div>
+      <div class="nav-sub">Tax Consultants</div>
+    </div>
+  </div>
+  <div class="nav-space"></div>
+  <button class="nav-hamburger" id="navHamburger" aria-label="Open menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="nav-links">
+    <a class="nav-link" href="#services">Services</a>
+    <a class="nav-link" href="#about">About</a>
+    <a class="nav-link" href="#contact">Contact</a>
+    <a class="nav-cta" href="#contact">Free Consultation</a>
+  </div>
+</nav>
+<div class="nav-mob" id="navMob">
+  <a class="nm-link" href="#services">Services</a>
+  <a class="nm-link" href="#about">About</a>
+  <a class="nm-link" href="#contact">Contact</a>
+  <a class="nm-cta" href="#contact">Book Free Consultation</a>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="home">
+
+  <!-- Left: text on white -->
+  <div class="hero-left">
+    <div class="hero-eye">Accepting new clients for FY 2025-26</div>
+    <h1 class="hero-h1">Every Indian<br>deserves <span class="hl">expert</span><br>tax advice.</h1>
+    <div class="hero-rule"></div>
+    <p class="hero-para">Salaried, self-employed, NRI, or running a business — we have handled every tax situation for over 18 years. Clean filings, zero penalties, and a team that actually picks up the phone.</p>
+    <div class="hero-types">
+      <span class="ht ht-sal">Salaried Individuals</span>
+      <span class="ht ht-biz">Business Owners</span>
+      <span class="ht ht-nri">NRI Clients</span>
+      <span class="ht ht-fre">Freelancers</span>
+      <span class="ht ht-sta">Startups &amp; MSMEs</span>
+    </div>
+    <div class="hero-acts">
+      <a class="btn-dk" href="#contact">Book Free Consultation</a>
+      <a class="btn-ol" href="#services">View Services</a>
+    </div>
+  </div>
+
+  <!-- Right: image carousel -->
+  <div class="hero-right">
+    <div class="hv-car" id="hvCar">
+
+      <div class="hv-slide act">
+        <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=900&h=1100&q=82&auto=format&fit=crop" alt="Professional consultation">
+      </div>
+
+      <div class="hv-slide">
+        <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=900&h=1100&q=82&auto=format&fit=crop" alt="Business team meeting">
+      </div>
+
+      <div class="hv-slide">
+        <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=900&h=1100&q=82&auto=format&fit=crop" alt="Financial planning">
+      </div>
+
+      <div class="hv-slide">
+        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=900&h=1100&q=82&auto=format&fit=crop" alt="Business analytics">
+      </div>
+
+    </div><!-- /hv-car -->
+
+    <div class="hv-shade"></div>
+    <div class="hv-ledge-left"></div>
+
+    <div class="hv-info">
+      <div class="hv-dots" id="hvDots">
+        <button class="hv-dot act" aria-label="Slide 1"></button>
+        <button class="hv-dot" aria-label="Slide 2"></button>
+        <button class="hv-dot" aria-label="Slide 3"></button>
+        <button class="hv-dot" aria-label="Slide 4"></button>
+      </div>
+      <div class="hv-cap">
+        <div class="hv-cap-tag">Accepting clients for FY 2025-26</div>
+        <div class="hv-cap-stats">
+          <div class="hv-cs"><em>18+</em><span>Years</span></div>
+          <div class="hv-cs"><em>350+</em><span>Clients</span></div>
+          <div class="hv-cs"><em>4.9&#9733;</em><span>Rating</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /hero-right -->
+</section>
+
+<!-- STATS STRIP -->
+<div class="stats-strip">
+  <div class="stat-item reveal">
+    <div class="stat-num" data-count="18" data-suffix="+">18+</div>
+    <div class="stat-lbl">Years of Practice</div>
+  </div>
+  <div class="stat-item reveal d1">
+    <div class="stat-num" data-count="350" data-suffix="+">350+</div>
+    <div class="stat-lbl">Clients Served</div>
+  </div>
+  <div class="stat-item reveal d2">
+    <div class="stat-num" data-count="800" data-suffix="+">800+</div>
+    <div class="stat-lbl">Returns Filed Yearly</div>
+  </div>
+  <div class="stat-item reveal d3">
+    <div class="stat-num">&#8377;0</div>
+    <div class="stat-lbl">Penalty Record</div>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section class="sec svc-sec" id="services">
+  <div class="reveal"><div class="sec-eye">What We Do</div></div>
+  <div class="reveal d1"><h2 class="sec-h2">From first salary slip to full business compliance</h2></div>
+  <div class="reveal d2"><p class="sec-lead">Whether you are filing for the first time or managing a multi-entity business, we have the right service and the right experience to get it done.</p></div>
+  <div class="svc-grid">
+
+    <div class="svc-card svc-c1 reveal">
+      <div class="svc-bar"></div>
+      <div class="svc-name">Income Tax Filing</div>
+      <div class="svc-desc">ITR-1 to ITR-6 covered. Salaried individuals, freelancers, business owners, NRIs, and HUFs. Accurate computation, maximum deductions, and filed well ahead of every deadline.</div>
+      <a class="svc-enq" href="#contact">Enquire &#8594;</a>
+    </div>
+
+    <div class="svc-card svc-c2 reveal d1">
+      <div class="svc-bar"></div>
+      <div class="svc-name">GST Registration &amp; Returns</div>
+      <div class="svc-desc">New GST registration, monthly GSTR-1 and GSTR-3B, annual GSTR-9 reconciliation, and handling of all department queries and notices. Nothing falls through the cracks.</div>
+      <a class="svc-enq" href="#contact">Enquire &#8594;</a>
+    </div>
+
+    <div class="svc-card svc-c3 reveal d2">
+      <div class="svc-bar"></div>
+      <div class="svc-name">TDS Compliance</div>
+      <div class="svc-desc">TDS computation, challan deposits, 24Q and 26Q quarterly returns, and Form 16 and 16A issuance. Every deductor's year-round compliance handled on time, every time.</div>
+      <a class="svc-enq" href="#contact">Enquire &#8594;</a>
+    </div>
+
+    <div class="svc-card svc-c4 reveal">
+      <div class="svc-bar"></div>
+      <div class="svc-name">Tax Audit Services</div>
+      <div class="svc-desc">Statutory audit under Section 44AB with complete 3CA and 3CB documentation, internal audits, and bank audits. All reports filed accurately and before the due date.</div>
+      <a class="svc-enq" href="#contact">Enquire &#8594;</a>
+    </div>
+
+    <div class="svc-card svc-c5 reveal d1">
+      <div class="svc-bar"></div>
+      <div class="svc-name">NRI Tax Services</div>
+      <div class="svc-desc">Foreign income declaration, DTAA benefits, FEMA compliance, repatriation planning, and Indian ITR filing for NRIs. Complex situations handled with clarity and precision.</div>
+      <a class="svc-enq" href="#contact">Enquire &#8594;</a>
+    </div>
+
+    <div class="svc-card svc-c6 reveal d2">
+      <div class="svc-bar"></div>
+      <div class="svc-name">Business Advisory</div>
+      <div class="svc-desc">MIS reporting, cash flow projections, business valuations, and financial planning for growing companies. Practical advice grounded in real numbers, not generic templates.</div>
+      <a class="svc-enq" href="#contact">Enquire &#8594;</a>
+    </div>
+
+    <div class="svc-card svc-c1 reveal">
+      <div class="svc-bar"></div>
+      <div class="svc-name">Company Registration</div>
+      <div class="svc-desc">Pvt Ltd, LLP, OPC, and partnership setup with PAN, TAN, GSTIN, bank account, and statutory registers. Everything in place before you start operations.</div>
+      <a class="svc-enq" href="#contact">Enquire &#8594;</a>
+    </div>
+
+    <div class="svc-card svc-c2 reveal d1">
+      <div class="svc-bar"></div>
+      <div class="svc-name">Payroll Management</div>
+      <div class="svc-desc">Monthly salary processing, PF and ESIC contributions, TDS on salary, and Form 16 generation. Your payroll compliance runs on schedule, every month, with zero errors.</div>
+      <a class="svc-enq" href="#contact">Enquire &#8594;</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="sec" id="about">
+  <div class="about-grid">
+    <div>
+      <div class="reveal"><div class="sec-eye">About the Practice</div></div>
+      <div class="reveal d1"><h2 class="sec-h2">Eighteen years. One standard: accuracy.</h2></div>
+      <div class="reveal d2">
+        <p style="font-size:15px;color:var(--text2);line-height:1.75;margin-bottom:10px">Priya Mehta &amp; Co. was established in 2007 in Bandra, Mumbai. From a two-person practice to a nine-member firm, the growth has been driven by one thing: clients who trust us enough to refer us to everyone they know.</p>
+        <p style="font-size:15px;color:var(--text2);line-height:1.75;margin-bottom:32px">We serve salaried individuals, freelancers, MSMEs, listed companies, and NRI clients across seven countries. The same attention to detail applies regardless of the size of the filing.</p>
+      </div>
+      <div class="ab-highs">
+        <div class="ab-item reveal d1">
+          <div class="ab-icon">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9l4.5 4.5 7.5-7.5" stroke="#1A44C0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <div class="ab-t">Every client type, every situation</div>
+            <div class="ab-d">Salaried professionals, freelancers, NRIs, partnership firms, Pvt Ltd companies. Eighteen years means we have seen every edge case, and we file without guesswork.</div>
+          </div>
+        </div>
+        <div class="ab-item reveal d2">
+          <div class="ab-icon">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9l4.5 4.5 7.5-7.5" stroke="#1A44C0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <div class="ab-t">Current on every rule change</div>
+            <div class="ab-d">Finance Act updates, GST council circulars, new ITR schema releases. We track all of it so you do not have to, and you always benefit from the latest positions.</div>
+          </div>
+        </div>
+        <div class="ab-item reveal d3">
+          <div class="ab-icon">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9l4.5 4.5 7.5-7.5" stroke="#1A44C0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <div class="ab-t">You talk to the person doing the work</div>
+            <div class="ab-d">No juniors answering on behalf of someone senior who will check later. Your queries are handled directly by the team member managing your file.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="reveal d2 pc-col">
+      <div class="pc-card">
+        <div class="pc-mono">PM</div>
+        <div class="pc-name">Priya Mehta</div>
+        <div class="pc-role">Founder &amp; Senior Tax Consultant</div>
+        <p class="pc-bio">Priya founded this practice in 2007 after seven years at a national CA firm, where she led the direct tax practice for western India. She specialises in complex ITR filings, tax planning for HNIs and NRIs, and FEMA compliance. She is known for giving clients clear, actionable answers rather than qualified opinions.</p>
+        <div class="pc-quals">
+          <div class="pc-q">Qualified professional with post-graduation in taxation</div>
+          <div class="pc-q">Registered Tax Return Preparer and GST Practitioner</div>
+          <div class="pc-q">FEMA and NRI tax specialist, 18 years of practice</div>
+          <div class="pc-q">Mumbai, Bandra West office since 2007</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="sec process-sec">
+  <div class="proc-inner">
+    <div class="reveal"><div class="sec-eye">How We Work</div></div>
+    <div class="reveal d1"><h2 class="sec-h2">Three steps from first call to done</h2></div>
+    <div class="reveal d2"><p class="sec-lead">No fees before we understand your situation. No paperwork before we speak.</p></div>
+    <div class="proc-grid">
+
+      <div class="proc-card reveal d1">
+        <div class="proc-arr">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M3 6h6M7 4l2 2-2 2" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="proc-n">01</div>
+        <div class="proc-t">Free 30-minute consultation</div>
+        <div class="proc-d">Tell us your situation: income type, filing history, any compliance gaps. We listen first, then tell you exactly what you need and what it costs. No surprise charges.</div>
+      </div>
+
+      <div class="proc-card reveal d2">
+        <div class="proc-arr">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M3 6h6M7 4l2 2-2 2" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="proc-n">02</div>
+        <div class="proc-t">Document review and gap check</div>
+        <div class="proc-d">Share documents via WhatsApp or email. We review everything for missed deductions, inconsistencies, and compliance gaps before any filing begins.</div>
+      </div>
+
+      <div class="proc-card reveal d3">
+        <div class="proc-n">03</div>
+        <div class="proc-t">Filing, acknowledgement, archive</div>
+        <div class="proc-d">We file accurately, send you the acknowledgement within the hour, and archive every document. You will never chase us for a receipt or a status update.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="sec testi-sec">
+  <div class="reveal"><div class="sec-eye">What Clients Say</div></div>
+  <div class="reveal d1"><h2 class="sec-h2">Trusted by 350+ clients across India and abroad</h2></div>
+  <div class="reveal d2"><p class="sec-lead">Salaried, business, NRI, and freelance clients — all with the same experience: accurate, on time, and easy to work with.</p></div>
+  <div class="testi-outer">
+    <div class="testi-carousel reveal d2">
+      <div class="testi-track" id="testiTrack">
+
+        <div class="tc">
+          <div class="tc-qm">&ldquo;</div>
+          <div class="tc-stars"><div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div></div>
+          <p class="tc-q">"I have been filing with Priya Mehta &amp; Co. for six years as a salaried IT professional. Not once has there been an error or a late filing. When I got a notice last year, they resolved it in a week with zero penalty."</p>
+          <div class="tc-au">
+            <div class="tc-av"><img src="https://randomuser.me/api/portraits/men/22.jpg" alt="" width="96" height="96" style="width:100%;height:100%;object-fit:cover"/></div>
+            <div><div class="tc-nm">Aditya Kulkarni</div><div class="tc-rl">Senior Software Engineer, Mumbai</div></div>
+          </div>
+        </div>
+
+        <div class="tc">
+          <div class="tc-qm">&ldquo;</div>
+          <div class="tc-stars"><div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div></div>
+          <p class="tc-q">"As an NRI based in Dubai, managing Indian taxes was always confusing. This team explained everything clearly — DTAA, FEMA, NRE account rules — and filed everything accurately. I finally feel in control of my Indian finances."</p>
+          <div class="tc-au">
+            <div class="tc-av"><img src="https://randomuser.me/api/portraits/women/28.jpg" alt="" width="96" height="96" style="width:100%;height:100%;object-fit:cover"/></div>
+            <div><div class="tc-nm">Shruti Iyer</div><div class="tc-rl">Marketing Manager, Dubai</div></div>
+          </div>
+        </div>
+
+        <div class="tc">
+          <div class="tc-qm">&ldquo;</div>
+          <div class="tc-stars"><div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div></div>
+          <p class="tc-q">"Our MSME has GST, TDS, payroll, and annual audit requirements. Priya's team handles all of it on a fixed monthly retainer. We have not missed a single compliance date in two years. Worth every rupee."</p>
+          <div class="tc-au">
+            <div class="tc-av"><img src="https://randomuser.me/api/portraits/men/55.jpg" alt="" width="96" height="96" style="width:100%;height:100%;object-fit:cover"/></div>
+            <div><div class="tc-nm">Rajan Naik</div><div class="tc-rl">Director, Naik Packaging Solutions</div></div>
+          </div>
+        </div>
+
+        <div class="tc">
+          <div class="tc-qm">&ldquo;</div>
+          <div class="tc-stars"><div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div></div>
+          <p class="tc-q">"I am a freelance content creator with multiple income sources. Every CA I approached before this one confused me with jargon. Priya explained everything in plain language, found deductions I had no idea about, and saved me almost &#8377;40,000 in tax."</p>
+          <div class="tc-au">
+            <div class="tc-av"><img src="https://randomuser.me/api/portraits/women/33.jpg" alt="" width="96" height="96" style="width:100%;height:100%;object-fit:cover"/></div>
+            <div><div class="tc-nm">Meera Joshi</div><div class="tc-rl">Freelance Content Strategist</div></div>
+          </div>
+        </div>
+
+        <div class="tc">
+          <div class="tc-qm">&ldquo;</div>
+          <div class="tc-stars"><div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div><div class="tc-star"></div></div>
+          <p class="tc-q">"Our startup was incorporated, GST registered, and payroll set up within 12 days of our first call. We went live clean, with every compliance in place. That gave us confidence to focus entirely on the product."</p>
+          <div class="tc-au">
+            <div class="tc-av"><img src="https://randomuser.me/api/portraits/men/68.jpg" alt="" width="96" height="96" style="width:100%;height:100%;object-fit:cover"/></div>
+            <div><div class="tc-nm">Karan Mehrotra</div><div class="tc-rl">Co-Founder, Vibe Fintech Pvt. Ltd.</div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <div class="testi-nav">
+    <button class="testi-arrow" id="testiPrev" aria-label="Previous testimonials">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="testi-dots" id="testiDots"></div>
+    <button class="testi-arrow" id="testiNext" aria-label="Next testimonials">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="sec" id="contact">
+  <div class="contact-grid">
+    <div>
+      <div class="reveal"><div class="sec-eye">Get in Touch</div></div>
+      <div class="reveal d1"><h2 class="sec-h2">Start with a free conversation</h2></div>
+      <div class="reveal d2"><p style="font-size:15px;color:var(--text2);line-height:1.75;margin-bottom:28px">No fee for the first call. We will review your situation and give you a straight answer about what you need and what it will cost.</p></div>
+      <div class="ct-list">
+        <div class="ct-item reveal d1">
+          <div class="ct-ic">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="4" width="14" height="10" rx="2" stroke="#1A44C0" stroke-width="1.5"/><path d="M2 6l7 5 7-5" stroke="#1A44C0" stroke-width="1.3" stroke-linecap="round"/></svg>
+          </div>
+          <div><div class="ct-l">Email</div><div class="ct-v">info@priyamehtaco.in</div><div class="ct-s">Reply within 4 hours on working days</div></div>
+        </div>
+        <div class="ct-item reveal d2">
+          <div class="ct-ic">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3.5 3a1 1 0 011-1h2.6l1.2 3.4-1.6 1a10 10 0 004.9 4.9l1-1.6 3.4 1.2V13a1 1 0 01-1 1C7 14 3 9.5 3.5 3z" stroke="#1A44C0" stroke-width="1.5" fill="none" stroke-linejoin="round"/></svg>
+          </div>
+          <div><div class="ct-l">Phone &amp; WhatsApp</div><div class="ct-v">+91 98200 57310</div><div class="ct-s">Available on WhatsApp</div></div>
+        </div>
+        <div class="ct-item reveal d3">
+          <div class="ct-ic">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a4 4 0 100 8A4 4 0 009 2z" stroke="#1A44C0" stroke-width="1.5" fill="none"/><path d="M2.5 16c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" stroke="#1A44C0" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+          </div>
+          <div><div class="ct-l">Office</div><div class="ct-v">204, Linking Road, Bandra West</div><div class="ct-s">Mumbai, Maharashtra 400050</div></div>
+        </div>
+        <div class="ct-item reveal d4">
+          <div class="ct-ic">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="#1A44C0" stroke-width="1.5"/><path d="M9 5v4l2.5 2.5" stroke="#1A44C0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div><div class="ct-l">Hours</div><div class="ct-v">Mon to Sat: 10:00 AM to 7:00 PM</div><div class="ct-s">Sunday on request</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="reveal d2">
+      <div class="form-card">
+        <div class="form-t">Request a Free Consultation</div>
+        <div class="form-s">We will call you back within 2 hours on working days.</div>
+        <div class="f-row">
+          <div class="fg" style="margin-bottom:0"><label class="fl">Full Name</label><input class="fi" type="text" placeholder="Your full name"></div>
+          <div class="fg" style="margin-bottom:0"><label class="fl">Mobile</label><input class="fi" type="tel" placeholder="+91 98200 57310"></div>
+        </div>
+        <div class="fg" style="margin-top:14px"><label class="fl">Email</label><input class="fi" type="email" placeholder="you@email.com"></div>
+        <div class="fg">
+          <label class="fl">Service Required</label>
+          <select class="fsel">
+            <option value="">Select a service</option>
+            <option>ITR Filing</option>
+            <option>GST Registration or Returns</option>
+            <option>TDS Compliance</option>
+            <option>Tax Audit</option>
+            <option>NRI Tax Services</option>
+            <option>Business Advisory</option>
+            <option>Company Registration</option>
+            <option>Payroll Management</option>
+            <option>Other / Not sure yet</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Brief Description (optional)</label><textarea class="fta" placeholder="A few lines about your situation saves time on the call."></textarea></div>
+        <button class="btn-submit" type="button">Send Enquiry</button>
+        <button class="btn-wa" type="button">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+          Chat on WhatsApp
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-grid">
+    <div>
+      <div class="foot-logo-row">
+        <div class="foot-mono">PM</div>
+        <img class="foot-logo-img" alt="">
+        <div><div class="foot-nm">Priya Mehta &amp; Co.</div><div class="foot-sub">Tax Consultants, Mumbai</div></div>
+      </div>
+      <p class="foot-desc">Established 2007, Bandra West, Mumbai. Serving salaried professionals, freelancers, businesses, and NRI clients across India with accuracy and accountability since day one.</p>
+      <div class="foot-ct" style="margin-top:22px">Follow Us</div>
+      <div class="foot-social">
+        <a class="foot-soc-a" href="#" target="_blank" rel="noopener" aria-label="LinkedIn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+          </svg>
+        </a>
+        <a class="foot-soc-a" href="#" target="_blank" rel="noopener" aria-label="Facebook">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+          </svg>
+        </a>
+        <a class="foot-soc-a" href="#" target="_blank" rel="noopener" aria-label="X">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L2.018 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+        </a>
+        <a class="foot-soc-a" href="#" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
+          </svg>
+        </a>
+        <a class="foot-soc-a" href="#" target="_blank" rel="noopener" aria-label="YouTube">
+          <svg width="17" height="13" viewBox="0 0 24 17" fill="currentColor">
+            <path d="M23.495 2.205a3.02 3.02 0 0 0-2.122-2.136C19.545 0 12 0 12 0S4.455 0 2.627.069A3.02 3.02 0 0 0 .505 2.205C0 4.04 0 8.5 0 8.5s0 4.46.505 6.295a3.02 3.02 0 0 0 2.122 2.136C4.455 17 12 17 12 17s7.545 0 9.373-.069a3.02 3.02 0 0 0 2.122-2.136C24 12.96 24 8.5 24 8.5s0-4.46-.505-6.295zM9.6 12.14V4.86L15.84 8.5 9.6 12.14z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+    <div>
+      <div class="foot-ct">Services</div>
+      <a class="foot-lnk" href="#services">ITR Filing</a>
+      <a class="foot-lnk" href="#services">GST Compliance</a>
+      <a class="foot-lnk" href="#services">TDS Management</a>
+      <a class="foot-lnk" href="#services">Audit Services</a>
+      <a class="foot-lnk" href="#services">NRI Tax Services</a>
+      <a class="foot-lnk" href="#services">Business Advisory</a>
+    </div>
+    <div>
+      <div class="foot-ct">Contact</div>
+      <a class="foot-lnk" href="tel:+919820057310">+91 98200 57310</a>
+      <a class="foot-lnk" href="mailto:info@priyamehtaco.in">info@priyamehtaco.in</a>
+      <span class="foot-lnk" style="cursor:default">Bandra West, Mumbai 400050</span>
+      <div class="foot-ct" style="margin-top:20px">Hours</div>
+      <span class="foot-lnk" style="cursor:default">Mon to Sat: 10AM to 7PM</span>
+    </div>
+  </div>
+  <div class="foot-bot">
+    <div class="foot-copy">&#169; 2025 Priya Mehta &amp; Co. All rights reserved.</div>
+    <div class="foot-pow">Powered by <a href="#">KDK Software</a></div>
+  </div>
+</footer>
+
+<button class="wa-float" onclick="window.open('https://wa.me/919820057310','_blank')" aria-label="Chat on WhatsApp">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+</button>
+
+<script>
+var ham = document.getElementById('navHamburger');
+var mob = document.getElementById('navMob');
+if (ham) {
+  ham.addEventListener('click', function() {
+    var open = mob.classList.toggle('open');
+    ham.classList.toggle('open', open);
+    ham.setAttribute('aria-expanded', open);
+  });
+  mob.querySelectorAll('a').forEach(function(a) {
+    a.addEventListener('click', function() {
+      mob.classList.remove('open');
+      ham.classList.remove('open');
+      ham.setAttribute('aria-expanded', 'false');
+    });
+  });
+}
+
+const observer = new IntersectionObserver(function(e) {
+  e.forEach(function(x) { if (x.isIntersecting) { x.target.classList.add('vis'); observer.unobserve(x.target) } });
+}, { threshold:.12 });
+document.querySelectorAll('.reveal').forEach(function(el) { observer.observe(el) });
+
+function easeOut(t) { return 1-Math.pow(1-t,3) }
+function countUp(el, target, dur) {
+  var start=performance.now(), suf=el.dataset.suffix||'';
+  (function step(now) {
+    var p=Math.min((now-start)/dur,1);
+    el.textContent=Math.floor(easeOut(p)*target).toLocaleString('en-IN')+suf;
+    if(p<1) requestAnimationFrame(step); else el.textContent=target.toLocaleString('en-IN')+suf;
+  })(start);
+}
+var cObs=new IntersectionObserver(function(e) {
+  e.forEach(function(x) { if(x.isIntersecting&&x.target.dataset.count){countUp(x.target,parseInt(x.target.dataset.count),1600);cObs.unobserve(x.target)} });
+},{threshold:.6});
+document.querySelectorAll('[data-count]').forEach(function(el){cObs.observe(el)});
+
+function bootTestiN() {
+  clearInterval(window.__tNTimer);
+  var track  = document.getElementById('testiTrack');
+  var dotsEl = document.getElementById('testiDots');
+  var prevB  = document.getElementById('testiPrev');
+  var nextB  = document.getElementById('testiNext');
+  if (!track) return;
+  var total = track.children.length;
+  if (!total) { if (dotsEl) dotsEl.innerHTML=''; return; }
+  var idx = 0;
+  function perView() { return window.innerWidth <= 960 ? 1 : Math.min(3, total); }
+  function maxIdx()  { return Math.max(0, total - perView()); }
+  function gap()     { var g = getComputedStyle(track).columnGap || getComputedStyle(track).gap || '0'; return parseFloat(g) || 0; }
+  function step()    { var c = track.children[0]; return c ? (c.getBoundingClientRect().width + gap()) : 0; }
+  function syncDots(){ if (dotsEl) Array.prototype.forEach.call(dotsEl.children,function(d,i){ d.classList.toggle('act', i===idx); }); }
+  function render(instant) {
+    if (idx > maxIdx()) idx = maxIdx();
+    if (idx < 0) idx = 0;
+    track.style.transition = instant ? 'none' : 'transform .5s cubic-bezier(.4,0,.2,1)';
+    track.style.transform  = 'translateX(-' + (idx * step()) + 'px)';
+    syncDots();
+    var single = maxIdx() === 0;   /* nothing to scroll: hide the controls */
+    if (prevB) prevB.style.display = single ? 'none' : '';
+    if (nextB) nextB.style.display = single ? 'none' : '';
+    if (dotsEl) dotsEl.style.display = single ? 'none' : '';
+  }
+  function buildDots() {
+    if (!dotsEl) return; dotsEl.innerHTML='';
+    for (var i=0; i<=maxIdx(); i++) {
+      (function(k){ var d=document.createElement('button'); d.className='testi-dot'+(k===idx?' act':''); d.setAttribute('aria-label','Slide '+(k+1));
+        d.addEventListener('click',function(){ idx=k; render(); resetTimer(); }); dotsEl.appendChild(d); })(i);
+    }
+  }
+  function move(delta) { idx += delta; if (idx > maxIdx()) idx = 0; if (idx < 0) idx = maxIdx(); render(); }
+  function resetTimer() { clearInterval(window.__tNTimer); if (maxIdx() > 0) window.__tNTimer = setInterval(function(){ move(1); }, 4500); }
+  if (nextB) nextB.onclick = function(){ move(1);  resetTimer(); };
+  if (prevB) prevB.onclick = function(){ move(-1); resetTimer(); };
+  if (window.__tNResizeFn) window.removeEventListener('resize', window.__tNResizeFn);
+  window.__tNResizeFn = function(){ clearTimeout(window.__tNResizeT); window.__tNResizeT = setTimeout(function(){ buildDots(); render(true); }, 150); };
+  window.addEventListener('resize', window.__tNResizeFn);
+  buildDots(); render(true);
+  requestAnimationFrame(function(){ render(true); });
+  resetTimer();
+}
+bootTestiN();
+
+function bootHero() {
+  clearInterval(window.__hvTimer);
+  var car = document.getElementById('hvCar');
+  if (!car) return;
+  var slides = car.querySelectorAll('.hv-slide');
+  var dotsBox = document.getElementById('hvDots');
+  var dots   = dotsBox ? dotsBox.querySelectorAll('.hv-dot') : [];
+  if (!slides.length) return;
+  var cur = 0;
+  function goTo(n) {
+    slides[cur].classList.remove('act');
+    if (dots[cur]) dots[cur].classList.remove('act');
+    cur = (n + slides.length) % slides.length;
+    slides[cur].classList.add('act');
+    if (dots[cur]) dots[cur].classList.add('act');
+  }
+  function start() { if (slides.length > 1) window.__hvTimer = setInterval(function() { goTo(cur + 1) }, 4200); }
+  function stop()  { clearInterval(window.__hvTimer); }
+  Array.prototype.forEach.call(dots, function(d, i) {
+    d.onclick = function() { stop(); goTo(i); start(); };
+  });
+  start();
+}
+bootHero();
+</script>
+
+<script>
+/* ============================================================
+   KDK Website Builder — config binding (Nova)
+   The published renderer for Nova.
+   ============================================================ */
+(function(){
+  function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function qs(s,r){return (r||document).querySelector(s);}
+  function qsa(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+
+  /* Enquiry-form options follow the professional's ROLE (profession), not the
+     visual template — a CA on any design sees CA services, an advocate sees
+     legal matters, and so on. */
+  var ROLE_SERVICES={
+    ca:['Income Tax Return Filing','GST Registration & Returns','Tax Audit (Section 44AB)','TDS Management','Tax Planning & Advisory','NRI Taxation Services','Company / LLP Incorporation','ROC Annual Filings','Statutory Audit','Virtual CFO Services','Accounting & Book-keeping','Business Registration & Licenses'],
+    advocate:['Civil Litigation','Criminal Defense','Corporate & Company Law','Tax Litigation','Property & Real Estate','Family & Matrimonial','Consumer & Arbitration','Cheque Bounce / Recovery','Labour & Employment','Contract Drafting & Review','Wills & Succession'],
+    tax_consultant:['Income Tax Return Filing','TDS Filing & Compliance','Tax Planning & Advisory','NRI Taxation','Advance Tax Computation','Income Tax Notice Handling','GST Returns','Capital Gains Advisory','Accounting & Book-keeping'],
+    gst_practitioner:['GST Registration','Monthly & Quarterly GST Returns','GST Annual Return (GSTR-9)','GST Audit','GST Refund Applications','GST Notice Response','E-Way Bill & E-Invoicing','LUT Filing (Exports)','GST Cancellation / Amendment'],
+    company_secretary:['Company Incorporation','LLP Registration','ROC Annual Filings','FEMA Compliance','Board Meeting & Secretarial Audit','Share Transfer & ESOP','Trademark & IP Registration','Winding Up / Strike Off','Legal & Statutory Drafting'],
+    cost_accountant:['Cost Audit','Management Accounting','Cost Records Maintenance','Product Costing','Budgeting & MIS Reports','CAS Compliance','Inventory & Process Costing','Cost Reduction Advisory']
+  };
+  function populateEnquiryOptions(sel,cfg,placeholder){
+    if(!sel) return;
+    var names=(ROLE_SERVICES[cfg.profession]||[]).slice();
+    if(!names.length && cfg.services && cfg.services.length) names=cfg.services.map(function(s){return s.name;});
+    if(!names.length) return; // nothing known — keep the template's default options
+    sel.innerHTML='<option value="">'+placeholder+'</option>'
+      +names.map(function(n){return '<option>'+esc(n)+'</option>';}).join('')
+      +'<option>General Consultation</option><option>Other / Not sure yet</option>';
+  }
+  function initials(name){
+    var skip={'ca':1,'cs':1,'cma':1,'adv':1,'adv.':1,'dr':1,'dr.':1,'mr':1,'mrs':1,'ms':1,'shri':1,'smt':1,'m/s':1};
+    var parts=String(name||'').replace(/&/g,' ').split(/\s+/).filter(Boolean);
+    var w=parts.filter(function(x){return !skip[x.toLowerCase()];}); if(!w.length)w=parts;
+    return (((w[0]||'')[0]||'')+((w[1]||'')[0]||'')).toUpperCase()||'—';
+  }
+  function toHex(c){ if(/^#[0-9a-fA-F]{6}$/.test(c))return c; var m=String(c).match(/^#([0-9a-fA-F]{3})$/); if(m)return '#'+m[1].split('').map(function(x){return x+x;}).join(''); return null; }
+  function mix(hex,amt){ var h=toHex(hex); if(!h)return hex; h=h.slice(1); var p=[0,2,4].map(function(i){return parseInt(h.slice(i,i+2),16);}); return '#'+p.map(function(x){x=Math.max(0,Math.min(255,Math.round(x+amt))); return ('0'+x.toString(16)).slice(-2);}).join(''); }
+  function setText(sel,val){ var el=qs(sel); if(el&&val!=null&&val!=='') el.textContent=val; }
+
+  function fmtHeadline(headline,hl,tag,cls,sty){
+    var open='<'+tag+(cls?' class="'+cls+'"':'')+(sty?' style="'+sty+'"':'')+'>', close='</'+tag+'>';
+    var lines=String(headline).split(/\r?\n/); // each new line the user typed becomes a line break
+    return lines.map(function(seg){ seg=seg.trim(); if(!seg) return '';
+      if(hl){ var i=seg.indexOf(hl); if(i>=0){ var end=i+hl.length; while(end<seg.length&&'.,!?:'.indexOf(seg.charAt(end))>=0)end++; return esc(seg.slice(0,i))+open+esc(seg.slice(i,end))+close+esc(seg.slice(end)); } }
+      return esc(seg);
+    }).filter(Boolean).join('<br>');
+  }
+  /* Swap the monogram for an uploaded logo (or restore it when cleared). */
+  function applyLogo(cfg,navImgSel,navMarkSel,footImgSel,footMarkSel){
+    var url=cfg&&cfg.logo, name=(cfg&&cfg.firmName)||'';
+    var navImg=qs(navImgSel),navMark=qs(navMarkSel),footImg=qs(footImgSel),footMark=qs(footMarkSel);
+    if(url){
+      if(navImg){ navImg.src=url; navImg.alt=name+' logo'; navImg.style.display='block'; }
+      if(navMark) navMark.style.display='none';
+      if(footImg){ footImg.src=url; footImg.alt=name+' logo'; footImg.style.display='block'; }
+      if(footMark) footMark.style.display='none';
+    } else {
+      if(navImg) navImg.style.display='none';
+      if(navMark) navMark.style.display='';
+      if(footImg) footImg.style.display='none';
+      if(footMark) footMark.style.display='';
+    }
+  }
+  /* ── FOUNDERS & PARTNERS ──
+     A firm can be one founder, two equal partners, or a small partnership, so the
+     About section has three layouts and the count picks one. people[] is the
+     source of truth; a config saved before people[] existed still carries the
+     founder* keys, so it is read as a single-partner firm and renders unchanged. */
+  var PEOPLE_MAX=4;
+  var TICK='<svg width="11" height="11" viewBox="0 0 18 18" fill="none"><path d="M3 9l4.5 4.5 7.5-7.5" stroke="var(--blue)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  function peopleOf(cfg){
+    var arr=(Array.isArray(cfg.people)&&cfg.people.length)?cfg.people
+      :[{name:cfg.founderName,role:cfg.founderRole,bio:cfg.founderBio,credentials:cfg.credentials,photo:cfg.founderPhoto}];
+    return arr.filter(function(p){ return p&&String(p.name||'').trim(); }).slice(0,PEOPLE_MAX);
+  }
+  /* `photos` is true when at least one partner in the section has a portrait, so
+     every card switches to the portrait block together. */
+  function bigCard(p,photos){
+    var creds=(p.credentials||[]).map(function(c){ return '<div class="pc-q">'+esc(c)+'</div>'; }).join('');
+    var id='<div class="pc-name">'+esc(p.name)+'</div>'+(p.role?'<div class="pc-role">'+esc(p.role)+'</div>':'');
+    var head=photos
+      ? '<div class="pc-top"><div class="pc-photo">'+(p.photo?'<img src="'+esc(p.photo)+'" alt="'+esc(p.name)+'">':esc(initials(p.name)))+'</div>'+
+        '<div class="pc-id">'+id+'</div></div>'
+      : '<div class="pc-mono">'+esc(initials(p.name))+'</div>'+id;
+    return '<div class="pc-card">'+head+
+      (p.bio?'<p class="pc-bio">'+esc(p.bio)+'</p>':'')+
+      (creds?'<div class="pc-quals">'+creds+'</div>':'')+
+    '</div>';
+  }
+  function miniCard(p,photos){
+    var head=photos
+      ? '<div class="tm-top"><div class="tm-photo">'+(p.photo?'<img src="'+esc(p.photo)+'" alt="'+esc(p.name)+'">':esc(initials(p.name)))+'</div>'+
+        '<div><div class="tm-nm">'+esc(p.name)+'</div>'+(p.role?'<div class="tm-rl">'+esc(p.role)+'</div>':'')+'</div></div>'
+      : '<div class="tm-mono">'+esc(initials(p.name))+'</div>'+
+        '<div class="tm-nm">'+esc(p.name)+'</div>'+(p.role?'<div class="tm-rl">'+esc(p.role)+'</div>':'');
+    return '<div class="tm-card">'+head+
+      (p.bio?'<p class="tm-bio">'+esc(p.bio)+'</p>':'')+
+      ((p.credentials&&p.credentials.length)?'<div class="tm-cred">'+TICK+esc(p.credentials[0])+'</div>':'')+
+    '</div>';
+  }
+  function applyPeople(cfg){
+    var ppl=peopleOf(cfg);
+    var mode=(ppl.length<=1)?'solo':(ppl.length===2?'duo':'team');
+    var photos=ppl.some(function(p){ return !!p.photo; });
+    var about=qs('#about'), grid=qs('#about .about-grid'), col=qs('#about .pc-col');
+    if(!about||!grid||!col) return;
+    about.classList.remove('about-solo','about-duo','about-team');
+    about.classList.add('about-'+mode);
+    if(ppl.length) col.innerHTML=ppl.slice(0,mode==='duo'?2:1).map(function(p){ return bigCard(p,photos); }).join('');
+    /* highlights sit under the About text, except in duo mode where the text goes
+       full width and they become a row under the two cards */
+    var highs=qs('.ab-highs',about), textCol=grid.firstElementChild;
+    if(highs&&textCol) (mode==='duo'?grid:textCol).appendChild(highs);
+    var band=qs('#about .team-band');
+    if(mode==='team'){
+      if(!band){ band=document.createElement('div'); band.className='team-band'; about.appendChild(band); }
+      band.innerHTML='<div class="team-hd"><div class="team-h3">The partners</div>'+
+        '<div class="team-sub">Working alongside '+esc(ppl[0].name)+'</div></div>'+
+        '<div class="team-grid">'+ppl.slice(1).map(function(p){ return miniCard(p,photos); }).join('')+'</div>';
+      band.style.display='';
+    } else if(band){ band.style.display='none'; }
+  }
+
+  function applyConfig(cfg){
+    if(!cfg||typeof cfg!=='object') return;
+    var ini=initials(cfg.firmName);
+
+    /* identity */
+    setText('.nav-nm',cfg.firmName); setText('.foot-nm',cfg.firmName);
+    setText('.nav-sub',cfg.tagline); setText('.foot-sub',cfg.tagline);
+    var nm=qs('.nav-mono'); if(nm)nm.textContent=ini; var fm=qs('.foot-mono'); if(fm)fm.textContent=ini;
+    applyLogo(cfg,'.nav-logo-img','.nav-mono','.foot-logo-img','.foot-mono');
+
+    /* hero */
+    var h=cfg.hero||{};
+    if(cfg.hero){ var _hb=qs('.hero-eye'); if(_hb){ if(h.badge){ _hb.textContent=h.badge; _hb.style.display=''; } else _hb.style.display='none'; } }
+    if(h.headline){ var h1=qs('.hero-h1'); if(h1) h1.innerHTML=fmtHeadline(h.headline,h.highlight,'span','hl'); }
+    setText('.hero-para',h.sub);
+    setText('.hero-acts .btn-dk',h.cta1); setText('.hero-acts .btn-ol',h.cta2);
+    if(h.tags&&h.tags.length){ var ht=qs('.hero-types'); if(ht){ var cl=['ht-sal','ht-biz','ht-nri','ht-fre','ht-sta'];
+      ht.innerHTML=h.tags.map(function(t,i){return '<span class="ht '+cl[i%cl.length]+'">'+esc(t)+'</span>';}).join(''); } }
+    /* hero image carousel: rebuild slides + dots from the user's image list */
+    var imgs=(h.images&&h.images.length)?h.images:(h.image?[h.image]:null);
+    if(imgs&&imgs.length){
+      var car=qs('#hvCar'); if(car) car.innerHTML=imgs.map(function(src,i){return '<div class="hv-slide'+(i===0?' act':'')+'"><img src="'+src+'" alt=""></div>';}).join('');
+      var dots=qs('#hvDots'); if(dots) dots.innerHTML=imgs.map(function(_,i){return '<button class="hv-dot'+(i===0?' act':'')+'" aria-label="Slide '+(i+1)+'"></button>';}).join('');
+      if(typeof bootHero==='function') bootHero();
+    }
+
+    /* stats: strip + carousel overlay */
+    if(cfg.stats&&cfg.stats.length){
+      var ss=qs('.stats-strip'); if(ss) ss.innerHTML=cfg.stats.map(function(st){ return '<div class="stat-item"><div class="stat-num">'+esc(st.v)+'</div><div class="stat-lbl">'+esc(st.l)+'</div></div>'; }).join('');
+      qsa('.hv-cap-stats .hv-cs').forEach(function(el,i){ if(cfg.stats[i]){ var em=qs('em',el),sp=qs('span',el); if(em)em.textContent=cfg.stats[i].v; if(sp)sp.textContent=cfg.stats[i].l; } });
+    }
+
+    /* services */
+    if(cfg.services&&cfg.services.length){ var g=qs('.svc-grid'); if(g) g.innerHTML=cfg.services.map(function(sv,i){
+      return '<div class="svc-card svc-c'+((i%6)+1)+'"><div class="svc-bar"></div><div class="svc-name">'+esc(sv.name)+'</div><div class="svc-desc">'+esc(sv.desc||'')+'</div><a class="svc-enq" href="#contact">Enquire &#8594;</a></div>'; }).join(''); }
+
+    /* enquiry dropdown — driven by the professional's role, not the template */
+    populateEnquiryOptions(qs('.form-card .fsel'),cfg,'Select a service');
+
+    /* about text */
+    if(cfg.about){ var ps=qsa('.about-grid p').filter(function(p){return !p.classList.contains('pc-bio');}); if(ps[0])ps[0].textContent=cfg.about; for(var i=1;i<ps.length;i++)ps[i].style.display='none'; }
+
+    /* highlights */
+    if(cfg.highlights&&cfg.highlights.length){ var ah=qs('.ab-highs'); if(ah){ var icon='<div class="ab-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9l4.5 4.5 7.5-7.5" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
+      ah.innerHTML=cfg.highlights.map(function(x){ return '<div class="ab-item">'+icon+'<div><div class="ab-t">'+esc(x.t)+'</div><div class="ab-d">'+esc(x.d||'')+'</div></div></div>'; }).join(''); } }
+
+    /* founders & partners */
+    applyPeople(cfg);
+
+    /* process */
+    if(cfg.process&&cfg.process.length){ var pg=qs('.proc-grid'); if(pg){ var last=cfg.process.length-1,
+      arr='<div class="proc-arr"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 6h6M7 4l2 2-2 2" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
+      pg.innerHTML=cfg.process.map(function(p,i){ return '<div class="proc-card">'+(i<last?arr:'')+'<div class="proc-n">'+('0'+(i+1)).slice(-2)+'</div><div class="proc-t">'+esc(p.t)+'</div><div class="proc-d">'+esc(p.d||'')+'</div></div>'; }).join(''); } }
+
+    /* testimonials */
+    if(cfg.testimonials&&cfg.testimonials.length){ var tk=qs('#testiTrack'); if(tk){
+      tk.innerHTML=cfg.testimonials.map(function(t){ var r=Math.max(0,Math.min(5,t.s||5)),st=''; for(var i=0;i<r;i++)st+='<div class="tc-star"></div>';
+        return '<div class="tc"><div class="tc-qm">&ldquo;</div><div class="tc-stars">'+st+'</div><p class="tc-q">'+esc(t.q)+'</p><div class="tc-au">'+(t.img?'<div class="tc-av"><img src="'+t.img+'" alt="'+esc(t.n)+'" style="width:100%;height:100%;object-fit:cover"></div>':'<div class="tc-av" style="display:flex;align-items:center;justify-content:center;background:var(--blue);color:#fff;font-weight:700;font-size:15px">'+esc(initials(t.n))+'</div>')+'<div><div class="tc-nm">'+esc(t.n)+'</div><div class="tc-rl">'+esc(t.r||'')+'</div></div></div></div>'; }).join('');
+      if(typeof bootTestiN==='function'){ bootTestiN(); setTimeout(bootTestiN,140); setTimeout(bootTestiN,420); }
+    } }
+    /* No reviews is a legitimate choice, so drop the whole section rather than serve
+       the design's sample quotes as if they were this firm's clients. */
+    else { var tsec=qs('.testi-sec'); if(tsec) tsec.style.display='none'; }
+
+    /* contact — order: email, phone, address, hours
+       A detail that was not given REMOVES its row. Without the else branch a blank
+       field left the design's demo text live on a real firm's site. */
+    var ci=qsa('.ct-item');
+    function ctRow(el,val,fill){ if(!el) return; if(val){ fill(); } else { el.style.display='none'; } }
+    ctRow(ci[0],cfg.email,function(){ var e0=qs('.ct-v',ci[0]); if(e0)e0.textContent=cfg.email; });
+    ctRow(ci[1],cfg.phone,function(){ var e1=qs('.ct-v',ci[1]); if(e1)e1.textContent=cfg.phone; });
+    ctRow(ci[2],cfg.address,function(){ var e2=qs('.ct-v',ci[2]); if(e2)e2.textContent=cfg.address; var e2s=qs('.ct-s',ci[2]); if(e2s)e2s.textContent=cfg.city||''; });
+    ctRow(ci[3],cfg.hours,function(){ var e3=qs('.ct-v',ci[3]); if(e3)e3.textContent=cfg.hours; });
+
+    /* footer */
+    setText('.foot-desc',cfg.footerBlurb); setText('.foot-copy',cfg.copyright);
+    var fc=qsa('.foot-grid > div');
+    if(fc[1]&&cfg.services&&cfg.services.length) fc[1].innerHTML='<div class="foot-ct">Services</div>'+cfg.services.slice(0,6).map(function(sv){return '<a class="foot-lnk" href="#services">'+esc(sv.name)+'</a>';}).join('');
+    if(fc[2]&&(cfg.phone||cfg.email||cfg.address||cfg.hours)) fc[2].innerHTML='<div class="foot-ct">Contact</div>'+
+      (cfg.phone?'<a class="foot-lnk" href="tel:'+String(cfg.phone).replace(/\s/g,'')+'">'+esc(cfg.phone)+'</a>':'')+
+      (cfg.email?'<a class="foot-lnk" href="mailto:'+esc(cfg.email)+'">'+esc(cfg.email)+'</a>':'')+
+      (cfg.address?'<span class="foot-lnk" style="cursor:default">'+esc(cfg.address)+'</span>':'')+
+      (cfg.hours?'<div class="foot-ct" style="margin-top:20px">Hours</div><span class="foot-lnk" style="cursor:default">'+esc(cfg.hours)+'</span>':'');
+
+    /* social */
+    if(cfg.social){
+      var sm=[cfg.social.linkedin, cfg.social.facebook, null, cfg.social.instagram, cfg.social.youtube], shown=0;
+      qsa('.foot-social .foot-soc-a').forEach(function(a,i){ if(sm[i]){ a.href=sm[i]; a.style.display=''; shown++; } else a.style.display='none'; });
+      // No links: hide the whole social row and its "Follow Us" heading.
+      var fsoc=qs('.foot-social'); if(fsoc){ fsoc.style.display=shown?'':'none'; var flbl=fsoc.previousElementSibling; if(flbl&&flbl.classList&&flbl.classList.contains('foot-ct')) flbl.style.display=shown?'':'none'; }
+    }
+
+    /* whatsapp */
+    if(cfg.whatsapp){ var dg=String(cfg.whatsapp).replace(/\D/g,''); qsa('.wa-float, .btn-wa').forEach(function(b){ b.setAttribute('onclick',"window.open('https://wa.me/"+dg+"','_blank')"); }); }
+
+    /* title */
+    if(cfg.firmName) document.title=cfg.firmName+(cfg.tagline?(' | '+cfg.tagline):'');
+
+    /* colours — Nova's dark strips/footer/buttons use --navy, so retint that too */
+    var pri=toHex(cfg.primaryColor), acc=toHex(cfg.accentColor), root=document.documentElement;
+    if(cfg.nativeTheme){ // theme 0 — original palette
+      ['--blue','--blue-dk','--navy','--coral'].forEach(function(v){root.style.removeProperty(v);});
+    } else {
+      if(pri){ root.style.setProperty('--blue',pri); root.style.setProperty('--blue-dk',mix(pri,-18)); root.style.setProperty('--navy',mix(pri,-70)); }
+      if(acc) root.style.setProperty('--coral',acc);
+    }
+  }
+
+  try{ var raw=localStorage.getItem('kdk_nova_config')||localStorage.getItem('kdk_wb_config'); if(raw) applyConfig(JSON.parse(raw)); }catch(e){}
+  window.addEventListener('message',function(e){ var d=e&&e.data; if(d&&d.type==='kdk-wb-config'&&d.config) applyConfig(d.config); });
+  window.__applyConfig=applyConfig;
+})();
+</script>
+
+<script>
+/* ── ENQUIRY / LEAD CAPTURE ──
+   Posts the contact form to Supabase (wb_leads) when the published page has
+   been given credentials via window.__KDK (injected by the render function).
+   Opened directly or on a static host, it falls back to a visible confirmation
+   so the form always responds. */
+(function(){
+  var card=document.querySelector('.form-card'); if(!card) return;
+  var btn=card.querySelector('.btn-submit'); if(!btn) return;
+  var nameEl=card.querySelector('.fi[type="text"]'),
+      telEl =card.querySelector('.fi[type="tel"]'),
+      mailEl=card.querySelector('.fi[type="email"]'),
+      selEl =card.querySelector('.fsel'),
+      msgEl =card.querySelector('.fta');
+  var orig=btn.textContent;
+  function send(p){
+    var K=window.__KDK||{};
+    if(K.supabaseUrl&&K.supabaseAnonKey&&K.websiteId){
+      return fetch(K.supabaseUrl.replace(/\/+$/,'')+'/rest/v1/wb_leads',{
+        method:'POST',
+        headers:{'Content-Type':'application/json',apikey:K.supabaseAnonKey,Authorization:'Bearer '+K.supabaseAnonKey,Prefer:'return=minimal'},
+        body:JSON.stringify(p)
+      }).then(function(r){return r.ok;}).catch(function(){return false;});
+    }
+    return new Promise(function(res){ setTimeout(function(){res(true);},700); });
+  }
+  btn.addEventListener('click',function(){
+    var nm=(nameEl&&nameEl.value||'').trim(), ph=(telEl&&telEl.value||'').trim();
+    if(!nm||!ph){ alert('Please enter your name and mobile number.'); (nm?telEl:nameEl).focus(); return; }
+    var svc=selEl&&selEl.value?selEl.value:'', body=(msgEl&&msgEl.value||'').trim();
+    var parts=[]; if(svc)parts.push('Service: '+svc); if(body)parts.push(body);
+    var K=window.__KDK||{};
+    var p={ website_id:K.websiteId||null, name:nm, phone:ph,
+      email:(mailEl&&mailEl.value||'').trim()||null, message:parts.join('\n')||null };
+    btn.disabled=true; btn.textContent='Sending…';
+    send(p).then(function(ok){
+      btn.textContent=ok?'Enquiry Sent!':'Please try again';
+      if(ok){ btn.style.background='linear-gradient(135deg,#0F6B45,#0F8B55)';
+        [nameEl,telEl,mailEl,msgEl].forEach(function(el){if(el)el.value='';}); if(selEl)selEl.selectedIndex=0; }
+      setTimeout(function(){ btn.disabled=false; btn.textContent=orig; btn.style.background=''; }, ok?3200:2200);
+    });
+  });
+})();
+</script>

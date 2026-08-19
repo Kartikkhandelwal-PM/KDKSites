@@ -17,9 +17,92 @@ A **website builder product** embedded inside the KDK Software desktop/web app. 
 - **Live prototype:** https://kartikkhandelwal-pm.github.io/KDKSites/
 - **Repo:** https://github.com/Kartikkhandelwal-PM/KDKSites (branch: `main`)
 - The site opens **directly on the 6-step builder**. There is no landing dashboard.
-- The root **`index.html` IS the builder.** It was moved up from `Admin Panel/website-builder-admin-v4.html` on 2026-07-03, and its `../` asset paths were rewritten to be root-relative.
-- **Hosting:** GitHub Pages (static), serving the root of `main`. Every push triggers a Pages rebuild (typically 1 to 3 minutes) followed by a CDN cache refresh.
-- The four published website templates live in `Live/` (apex, nova, heritage, zenith). `New Design/` holds design iterations. `Admin Panel/` now holds only its notes file.
+- **`frontend/index.html` IS the builder.** It lived at the repo root until the 2026-07-25 reorg moved it into `frontend/`. The `index.html` still at the root is only a fallback redirect. Originally moved up from `Admin Panel/website-builder-admin-v4.html` on 2026-07-03.
+- **Hosting:** GitHub Pages (static) off `main`. **Action required:** set Settings -> Pages -> Source to **GitHub Actions** so `.github/workflows/pages.yml` serves `frontend/` as the site root. Every push triggers a rebuild (typically 1 to 3 minutes) followed by a CDN cache refresh.
+- The four published website templates live in `frontend/templates/` (apex, nova, heritage, zenith). Each is the design plus a binding script defining `window.__applyConfig(config)`. See [frontend/README.md](frontend/README.md).
+- **2026-07-25 reorg:** `Live/` -> `frontend/templates/`, logos -> `frontend/assets/`, `supabase/` + `netlify/` -> `backend/`, spec -> `backend/spec/`, `Admin Panel/` notes -> `docs/`. The stale `New Design copy/` duplicate was deleted.
+- **AI Writer + Auth + Supabase + Netlify (prototype, on branch `feature/ai-website-writer`, not yet merged to `main`):**
+  - **AI Writer** — a floating button runs a short interview and an LLM drafts the whole site. The AI key is now **server-side** in a Supabase Edge Function (`ai-generate`); the browser calls that, never the provider directly.
+  - **Auth** — Supabase Auth (email/password) gates the builder with an animated login; the profile menu has Sign Out.
+  - **Supabase** — project `hlhtopqbzfzlxxmolkok`; `wb_websites`/`wb_leads` tables + RLS applied; `ai-generate` function deployed. Public config (URL + anon key) is in committed `frontend/app-config.js`; local AI overrides in gitignored `frontend/local-ai-config.js`.
+  - **Publishing** — root `netlify.toml` + `backend/netlify/edge-functions/render.ts` serve published sites at `kdksites.netlify.app/s/<subdomain>` (no domain needed). Publish saves config to Supabase.
+  - **Netlify IS connected, and it deploys THIS branch** (verified 2026-07-28, correcting an earlier "pending" note). Evidence: the live page at `kdksites.netlify.app/` is byte-identical (sha256 `bec54c4d…`) to `index.html` at commit `693ae55`, which is exactly where `origin/feature/ai-website-writer` points. **So every push to this branch costs a deploy.** It is a cheap one: `command = ""`, so there is no build step, just a file upload plus the edge-function bundle. Confirm the production branch in Netlify under Site configuration -> Build & deploy -> Branches and deploy contexts.
+  - `SUPABASE_URL` and `SUPABASE_SERVICE_KEY` **are already set** on Netlify: `/s/<any-name>` returns a 404 "No site at …" from the Supabase lookup rather than the 500 "Not configured" that a missing var produces. `SITE_DOMAINS` is still unset, which is harmless because `render.ts` defaults it to `kdksites.in`.
+  - **Pushing will move the site root** from `publish = "."` to `publish = "frontend"`. The builder stays up: for the `*.netlify.app` host, `fromHost()` returns null and `/` is not a `/s/` path, so `render.ts` returns undefined and the request passes straight through to the static build.
+  - **Addresses are a PAIR `(domain, subdomain)`** (2026-07-27). KDK will own a pool of domains and the user picks one, so `sharma` can exist on two of them. The pool is `KDK_AI.siteDomains` in `frontend/app-config.js`; the picker hides while only one is configured. Adding a bought domain = edit that array + wildcard DNS + the `SITE_DOMAINS` env var. `render.ts` resolves by Host, falling back to `/s/<sub>` (default domain) and `/s/<domain>/<sub>`.
+  - **Availability + lifecycle** (2026-07-27) — `wb_subdomain_available()` gates Launch on a confirmed-free name; the publish step offers Take offline / Put back online. **There is no Delete anywhere in the product** (no button, no `deleteSite()`): Unpublish is the only way down, and it keeps the address and every enquiry. Migration `20260727100000` is **applied** to `hlhtopqbzfzlxxmolkok` and verified live.
+  - **Portrait crop** (2026-07-27) — every portrait upload (Step 5 and the AI Writer) opens a **Crop & adjust** dialog immediately and stores a **640px square**, because all four templates render the portrait as a square with `object-fit:cover`. `BOX_PHOTO` (3:4) is no longer used for partners. There is no re-crop button on a photo already in place: the cross removes it, and clicking the frame re-picks it, which opens the dialog again.
+  - **Mandatory AI Writer answers + no demo data on live sites** (2026-07-28). Two rules to know before touching either area:
+    1. **A template must never leave its own demo text standing.** All four bound content as "replace only if a value was given", so a skipped office address published "302, Barakhamba House, Connaught Place, New Delhi" on a Jaipur firm's site, and skipped reviews served the design's sample quotes. Contact rows now remove themselves and the testimonials section hides when empty. **Any new bound field needs an else branch**, or it reintroduces this.
+    2. **Completeness lives in one function**, `screenErr(q)` in the AI Writer, run by *both* `next()` and `doGen()`. It is not enough to check in `next()`: the step rail reaches the summary from screen 1, which is exactly how "required" used to be bypassable. Floors are hard (`req`+`min`) or conditional (`min` alone: zero allowed, one is not).
+    - Required now: firm, years practising, 2+ "best known for", 2+ "typical clients", 3+ workflow steps, 1+ partner with name **and** role, city, phone, email, office address, office hours (new field, prefilled). All-or-nothing at 3 to 6: Key Numbers and Client Reviews. Key Numbers stays optional on purpose, since forcing it invites an invented client count.
+  - **AI Writer prefills from the published site** (2026-07-28). `seedFromSite()` runs on open and fills only **hard facts**: firm, city, years (from Founded Year), phone, email, address, hours, socials, partner names/roles/photos. It deliberately does **not** fill the judgement fields (known-for, clients, numbers, workflow, review notes), because the builder stores only the model's polished prose, and feeding that back as a brief makes it paraphrase itself. Reviews stay empty so a skipped screen **preserves the testimonials already live** (`apply()` leaves `S.testimonials` alone when the model returns none).
+    - **Trap:** prefilling makes `anyAnswered()` true before the user types, and three places used that to skip the interview. Use `hasResumableAnswers()` for any resume decision, never `anyAnswered()` on its own.
+  - Full detail: [docs/DEV-LOG.md](docs/DEV-LOG.md) 2026-07-11 (Sessions 5 & 6), 2026-07-28 (Sessions 18 & 19).
+- **Profile upload -> AI pre-fills the interview (2026-08-13; built end to end, not yet released).**
+  Management asked for this: the user uploads their existing profile (PDF, DOCX, or a
+  photo) and AI builds the site from it. Three things to know before touching it:
+  1. **It is not a separate screen.** Upload is an alternate entry into the *existing*
+     AI Writer interview. AI fills what the document supports, leaves the rest empty,
+     and `screenErr()` then makes the interview ask for exactly the gaps. Upload and
+     "skip and answer questions" must carry **equal visual weight**: many users have no
+     profile document, and that path must not read as the lesser one.
+  2. **Nothing is parsed in the browser.** Models read PDFs and images natively, so the
+     file goes straight to the model. DOCX is unzipped inside the Edge Function with
+     zero dependencies. This is what makes the feature possible at all under the
+     no-CDN / no-build rule, which rules out pdf.js and every OCR library.
+  3. **The extraction prompt exists to hold back, not to fill in.** A field the document
+     does not state must come back EMPTY. This is the 2026-07-28 "no demo data on live
+     sites" rule one layer earlier: an invented "best known for" publishes a claim the
+     user never made, and for ICAI/Bar-regulated professionals that is their liability.
+  Runs through **OpenRouter** (`OPENROUTER_API_KEY`), default `google/gemini-3.5-flash-lite`
+  (~Rs 0.35/profile); cost table and escalation path in `frontend/app-config.js`
+  under `profileImport`. **The secret IS set and the function IS deployed**, but the
+  **OpenRouter account has no balance**, so a real PDF comes back
+  `402: requires at least $0.50 in balance for file processing` (hit 2026-08-17). A tiny
+  blank image still succeeds, which is what made this look unblocked; it is not. **Top the
+  account up before demoing or testing.** Also left: a UI that is functional rather than
+  final, and one untested path, a returning user with a published site who also uploads.
+  Test it standalone at `frontend/test-profile-import.html` (touches nothing in the
+  builder). It reuses `seedFromSite()`'s seeding path and its pale-green `.aiw-seeded`
+  styling rather than a second visual language.
+  - **This feature IS in the PRD now** (2026-08-17), as part of section 5.5 with its rules
+    in 6.13, because it is a way into the AI Writer rather than a feature of its own. The
+    deeper working record, including measured results per firm profile, stays in
+    [docs/FEATURE-Profile-Import.md](docs/FEATURE-Profile-Import.md).
+  - **New interview field:** partners now have "What do they handle?" (`about`). It was
+    added because the writer was inventing partner bios from nothing but a name and a
+    designation. Adding a partner field means editing SIX places — `freshPartner()`,
+    the QS item fields, the restore normalizer (**a whitelist: omit a key there and it
+    is silently dropped on reload**), the legacy `founder` migration, the generator's
+    seed, and the prompt payload.
+  - `CA Profile/` holds real client PDFs for testing and is gitignored. Do not commit them.
+- **Address is final once published (2026-08-13).** The "Change address" button is gone
+  from the publish step; a published site's `(domain, subdomain)` pair can no longer be
+  edited. The whole change-address flow is still in the code and merely unreachable, so
+  it is **one line in `renderPubActions()`** to put back (the comment there says which).
+  It was left in because the open questions could each need it: chiefly **Delete is
+  currently a bypass** (delete the site, publish again on a new address). Requirement,
+  rationale and open questions: [docs/REQUIREMENTS-PENDING.md](docs/REQUIREMENTS-PENDING.md).
+  Full detail: [docs/DEV-LOG.md](docs/DEV-LOG.md) 2026-08-13 (Session 22).
+- **Email alert on a new enquiry (2026-08-17) — SPECIFIED ONLY, no code.** An enquiry
+  emails the site owner, and one click in that email opens that enquiry. The requirement
+  and the email's wording live in the **PRD, sections 5.6 and 6.14**. Three things to know
+  before building it: the sender is **ZeptoMail** (KDK already has it), the enquiry must
+  be stored *before* any mail is attempted so a mail failure can never lose a lead, and
+  the click-through needs a **new per-enquiry address** that pages to the right row, since
+  only `#enquiries` (the inbox as a whole) exists today and the list pages at ten.
+  **The contact form has no captcha or rate limit**, so alerts would turn form spam into
+  mailbox spam and damage the sending domain's reputation for every client at once; junk
+  protection ships with the feature, not after it.
+  Full detail: [docs/DEV-LOG.md](docs/DEV-LOG.md) 2026-08-17 (Sessions 23 and 24).
+- **The PRD carries requirements; delivery status lives elsewhere (2026-08-17).** The PRD
+  says what the product does and how each screen behaves, and deliberately carries **no**
+  "built / not built / live" markers, so it never has to be restructured after a release.
+  Build state, blockers, open decisions and the screenshot retake list are in
+  [docs/REQUIREMENTS-PENDING.md](docs/REQUIREMENTS-PENDING.md). **Do not put status back
+  into the PRD**, and do not restate requirements in the status file.
+- **Second host: Cloudflare Workers, on its own `cloudflare` branch** (2026-07-29, forked from `feature/ai-website-writer`; that branch keeps deploying to Netlify, untouched). Daily-dev deploys go here instead of spending Netlify's usage limits. Builder + published sites both live at `kdksites.kartik-khandelwal.workers.dev`; deploy manually with `wrangler deploy` (no auto-deploy on push). Full reference, including two gotchas already hit once (a secret briefly leaked via a disk-vs-git deploy difference, and a hardcoded share-link host) — see [docs/CLOUDFLARE-DEPLOY.md](docs/CLOUDFLARE-DEPLOY.md) and [docs/DEV-LOG.md](docs/DEV-LOG.md) 2026-07-29 (Session 21).
 
 ### Deploy a change
 ```
@@ -27,8 +110,10 @@ git add -A && git commit -m "your message" && git push
 ```
 Then wait 1 to 3 minutes for the Pages rebuild. Preview locally without deploying:
 ```
-python3 -m http.server 8765     # then open http://localhost:8765/
+cd frontend && python3 -m http.server 8765    # then open http://localhost:8765/
 ```
+Serve from `frontend/`, not the repo root, so paths match production. (From the
+root it also works, at `http://localhost:8765/frontend/`.)
 
 ### GitHub auth
 Auth uses the `gh` CLI (installed via Homebrew). If a push fails with no credentials, run `gh auth login` (GitHub.com, HTTPS, login with a web browser) then `gh auth setup-git`.
@@ -50,31 +135,60 @@ Any new session should **START** by reading this file, then the top entry of [do
 
 ## Project Structure
 
+Split into `frontend/` + `backend/` + `docs/` on 2026-07-25. **`frontend/` is the
+published site root on both hosts** (GitHub Pages uploads it, Netlify publishes
+it), so paths inside it stay relative and resolve unchanged.
+
+Only `netlify.toml` is pinned to the repo root: Netlify reads its config from
+nowhere else. The root `index.html` is **not** the builder any more, just a
+fallback redirect (see the note under the tree).
+
 ```
-KDKSites/                             # repo root (this is what GitHub Pages serves)
-├── index.html                        # THE 6-step builder wizard (site entry point)
+KDKSites/
+├── netlify.toml                      # [PINNED to root] publish=frontend, edge_functions=backend/...
+├── index.html                        # NOT the builder — fallback redirect to frontend/
 ├── README.md                         # Repo readme + live URL
 ├── CLAUDE.md                         # This file — start here
-├── .gitignore                        # Excludes .claude/, New Design copy/, OS files
-├── CA India Logo.png                 # Logo asset used by builder + templates
-├── KDK Sites.png                     # KDK Sites brand logo (icon + wordmark)
-├── Admin Panel/
-│   └── ADMIN-PANEL-UNDERSTANDING.md  # Notes on admin/builder behaviour
-├── Live/                             # Published website templates (live renderers)
-│   ├── apex/index.html
-│   ├── nova/index.html
-│   ├── heritage/index.html
-│   └── zenith/index.html
-├── New Design/                       # Design iterations (apex, nova, heritage, zenith, zenith V2)
-├── docs/
-│   ├── PRD - Website Builder.md      # Full product requirements (note: still lists older 3-template lineup)
-│   ├── CHANGELOG.md                  # Version history & change log
-│   └── DEV-LOG.md                    # Detailed daily dev log
-└── backend/
-    ├── api-spec.md                   # 12 REST endpoints (Golang) — SPEC ONLY, not built
-    └── database-schema.sql           # MySQL schema, 5 tables + seed — SPEC ONLY, not built
+├── .gitignore                        # Excludes .claude/, "* copy/", OS files, local-ai-config.js
+├── .github/workflows/pages.yml       # Publishes frontend/ as the Pages site root
+│
+├── frontend/                         # EVERYTHING THE BROWSER DOWNLOADS = the site root
+│   ├── README.md                     # How templates/ works; adding a 5th design
+│   ├── index.html                    # THE 6-step builder wizard (real entry point)
+│   ├── app-config.js                 # Public Supabase config: URL + anon key
+│   ├── local-ai-config.js            # Local AI overrides — gitignored, holds a key
+│   ├── assets/
+│   │   ├── ca-india-logo.png         # Favicon for builder + all templates
+│   │   └── kdk-sites-logo.png        # KDK Sites brand logo (icon + wordmark)
+│   └── templates/                    # The 4 PUBLISHED renderers (was Live/)
+│       └── apex|nova|heritage|zenith/index.html
+│
+├── backend/
+│   ├── README.md                     # What is built vs spec-only; CLI + env vars
+│   ├── supabase/                     # BUILT: config.toml, migrations/, functions/ai-generate/
+│   ├── netlify/edge-functions/       # BUILT: render.ts — serves /s/<subdomain>
+│   └── spec/                         # NEVER BUILT: the planned Golang + MySQL backend
+│
+└── docs/
+    ├── PRD - Website Builder.md      # Full product requirements (note: still lists older 3-template lineup)
+    ├── CHANGELOG.md                  # Version history & change log
+    ├── DEV-LOG.md                    # Detailed daily dev log
+    └── ADMIN-PANEL-UNDERSTANDING.md  # Notes on admin/builder behaviour
 ```
-> `New Design copy/` exists locally but is gitignored (not published).
+
+### Three things that will bite you
+
+1. **`backend/spec/` is paper only.** The schema that actually runs is
+   `backend/supabase/migrations/` (Postgres), *not* `spec/database-schema.sql` (MySQL).
+2. **The Supabase CLI needs the right working directory** now that `config.toml`
+   sits at `backend/supabase/`: run `cd backend && supabase …` or
+   `supabase --workdir backend …`. Bare `supabase db push` from the root will not
+   find the project.
+3. **GitHub Pages needs a one-time settings change** to serve `frontend/` at the
+   site root: Settings -> Pages -> Source -> **GitHub Actions**. Until that is
+   flipped, Pages serves the branch root and the fallback `index.html` forwards
+   visitors to `/frontend/` so the live URL keeps working. Delete that fallback
+   once Pages is on GitHub Actions.
 
 ---
 
@@ -169,7 +283,7 @@ Base: `POST /api/v1/website-builder/` — all endpoints require JWT from KDK app
 
 12 endpoints covering: get-website, create, update-info, update-services, update-theme, publish, check-subdomain, get-leads, analytics, delete, preview, list-professions.
 
-Full spec in [backend/api-spec.md](backend/api-spec.md).
+Full spec in [backend/spec/api-spec.md](backend/spec/api-spec.md).
 
 ---
 
@@ -177,7 +291,7 @@ Full spec in [backend/api-spec.md](backend/api-spec.md).
 
 5 MySQL tables: `websites`, `website_business_info`, `website_services`, `website_leads`, `website_analytics`.
 
-Full schema + seed data for all 6 professions in [backend/database-schema.sql](backend/database-schema.sql).
+Full schema + seed data for all 6 professions in [backend/spec/database-schema.sql](backend/spec/database-schema.sql).
 
 ---
 
@@ -193,8 +307,8 @@ Full schema + seed data for all 6 professions in [backend/database-schema.sql](b
 
 ## Working With This Project
 
-- **To open the builder:** open `index.html` in a browser, or visit the live URL above
-- **To view a template:** open any `Live/<name>/index.html`
+- **To open the builder:** open `frontend/index.html` in a browser, or visit the live URL above
+- **To view a template:** open any `frontend/templates/<name>/index.html`
 - **To understand the product:** read `docs/PRD - Website Builder.md`
 - **To know the current state / how to continue:** read the **Current State** and **Session Handoff Protocol** sections at the top of this file, then the top entry of `docs/DEV-LOG.md`
 - **To track changes:** see `docs/CHANGELOG.md` and `docs/DEV-LOG.md`
